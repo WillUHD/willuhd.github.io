@@ -1,6 +1,5 @@
-<div class="page__footer-follow">
-  <!-- Classic minimal mistakes list style -->
-  <ul class="social-icons">
+<div class="page__footer-follow" style="text-align: center;">
+  <ul class="social-icons" style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; padding: 0; margin: 0; list-style: none;">
     {% for p in site.pages %}
       {% assign parts = p.url | split: '/' %}
       {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
@@ -14,6 +13,6 @@
   </ul>
 </div>
 
-<div class="page__footer-copyright">
+<div class="page__footer-copyright" style="text-align: center; margin-top: 1rem;">
   &copy; {{ "now" | date: "%Y" }} {{ site.title | default: site.name }}.
 </div>
