@@ -1,0 +1,15 @@
+main:
+  - title: "Home"
+    url: /
+  - title: "GPA Calculator"
+    url: /gpa-calc/
+  - title: "Contact"
+    url: /contact/
+
+main-sidebar:
+  - title: "Sections"
+    children:
+      - title: "GPA Calc"
+        url: /gpa-calc/
+      - title: "Other Post"
+        url: /gpa-calc/random/
