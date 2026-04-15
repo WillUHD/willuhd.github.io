@@ -1,34 +1,19 @@
 <div class="page__footer-follow">
-  <ul class="social-icons" style="display: flex; gap: 15px; margin: 0; padding: 0;">
-    
-    <!-- Automatic Sections Dropdown -->
-    <li style="display: inline-block;">
-      <select onchange="if(this.value !== '#') window.location.href=this.value" style="background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 6px; outline: none; cursor: pointer; font-family: inherit;">
-        <option value="#">Sections...</option>
-        {% for p in site.pages %}
-          {% assign parts = p.url | split: '/' %}
-          {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
-            <option value="{{ p.url | relative_url }}">{{ p.title }}</option>
-          {% endif %}
-        {% endfor %}
-      </select>
-    </li>
-
-    <!-- Automatic All Posts Dropdown -->
-    <li style="display: inline-block;">
-      <select onchange="if(this.value !== '#') window.location.href=this.value" style="background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 6px; outline: none; cursor: pointer; font-family: inherit;">
-        <option value="#">All Posts...</option>
-        {% for p in site.pages %}
-          {% if p.title and p.url != '/' and p.url != '/index.html' %}
-            <option value="{{ p.url | relative_url }}">{{ p.title }}</option>
-          {% endif %}
-        {% endfor %}
-      </select>
-    </li>
-
+  <!-- Classic minimal mistakes list style -->
+  <ul class="social-icons">
+    {% for p in site.pages %}
+      {% assign parts = p.url | split: '/' %}
+      {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
+        <li>
+          <a href="{{ p.url | relative_url }}" style="color: var(--text-secondary); text-decoration: none; font-weight: 600;">
+            {{ p.title }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
   </ul>
 </div>
 
-<div class="page__footer-copyright" style="margin-top: 1.5rem; color: var(--text-secondary); font-size: 0.8rem;">
+<div class="page__footer-copyright">
   &copy; {{ "now" | date: "%Y" }} {{ site.title | default: site.name }}.
 </div>
