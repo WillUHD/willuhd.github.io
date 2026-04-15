@@ -12,7 +12,6 @@ author:
       icon: "fab fa-fw fa-github"
       url: "https://github.com/willuhd"
 
-footer: show_powered_by: false
 feed: false
 
 collections:
@@ -27,7 +26,6 @@ defaults:
       layout: "single"
       author_profile: false
       share: true
-      # This enables the sidebar automatically for anything in the collection
       sidebar:
         nav: "main-sidebar" 
 
