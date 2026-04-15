@@ -2,37 +2,19 @@
 ---
 @import "minimal-mistakes";
 
-/* --- 1. Reset Text Selection to OS Defaults --- */
+/* --- System Default Selection (No Custom Colors) --- */
 ::selection {
-  background-color: Highlight !important;
-  color: HighlightText !important;
+  background-color: revert !important;
+  color: revert !important;
+  text-shadow: revert !important;
 }
 ::-moz-selection {
-  background-color: Highlight !important;
-  color: HighlightText !important;
+  background-color: revert !important;
+  color: revert !important;
+  text-shadow: revert !important;
 }
 
-/* --- 2. Fix Header Navigation Alignment & Hover --- */
-.masthead__inner-wrap {
-  justify-content: flex-start !important;
-}
-.masthead__menu {
-  margin-left: 2rem !important; /* Space between title and sections */
-}
-nav.greedy-nav {
-  justify-content: flex-start !important;
-}
-/* Remove annoying background hover animations on header */
-.greedy-nav a:hover, 
-.greedy-nav a:focus,
-.site-title:hover {
-  background: transparent !important;
-  box-shadow: none !important;
-  text-decoration: none !important;
-  opacity: 0.6; /* Simple Apple-style opacity fade */
-}
-
-/* --- 3. Robust Dark Mode Support --- */
+/* --- Apple Dark Mode Variables --- */
 :root {
   --bg-color: #ffffff;
   --card-bg: #f5f5f7;
@@ -40,6 +22,7 @@ nav.greedy-nav {
   --text-secondary: #86868b;
   --link-color: #0071e3;
   --border-color: #d2d2d7;
+  --code-bg: #f5f5f7;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -50,38 +33,56 @@ nav.greedy-nav {
     --text-secondary: #a1a1a6;
     --link-color: #2997ff;
     --border-color: #38383a;
+    --code-bg: #1c1c1e;
   }
 }
 
-/* Aggressively override all Minimal Mistakes structural backgrounds */
-body, .page, .archive, .masthead, .page__footer, .sidebar, .greedy-nav, .page__inner-wrap {
+/* --- Global Overrides --- */
+body, .page, .archive, .masthead, .page__footer, .sidebar, .page__inner-wrap {
   background-color: var(--bg-color) !important;
   color: var(--text-color) !important;
   font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6, .page__title, .archive__item-title, .site-title, .greedy-nav a, .nav__title {
+h1, h2, h3, h4, h5, h6, .archive__item-title, .site-title, .nav__title {
   color: var(--text-color) !important;
 }
 
-.archive__item {
-  background-color: var(--card-bg) !important;
-  border-radius: 18px;
-  padding: 25px;
-  border: 1px solid var(--border-color);
+/* Kill Blue Title Linking */
+.page__title, .page__title a {
+  color: var(--text-color) !important;
+  text-decoration: none !important;
+}
+
+/* Header/Permalink Button (Gray & Small) */
+.header-link {
+  color: var(--text-secondary) !important;
+  font-size: 0.6em !important;
 }
 
 a { color: var(--link-color) !important; }
 
-.page__meta, .nav__sub-title {
-  color: var(--text-secondary) !important;
+/* Remove Hover Animations in Header */
+.greedy-nav .visible-links a:before { display: none !important; }
+.greedy-nav a:hover, .site-title:hover {
+  background: transparent !important;
+  opacity: 0.6;
 }
 
+/* Code Blocks Fix */
+pre, code, .highlight {
+  font-family: "Lucida Console", monospace !important;
+  background-color: var(--code-bg) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color) !important;
+}
+
+/* Borders */
 .masthead { border-bottom: 1px solid var(--border-color) !important; }
 .page__footer { border-top: 1px solid var(--border-color) !important; }
 
-/* Hide default orange RSS/Feed buttons */
+/* Hide Feed/Subscribe UI */
 .social-icons .fa-rss-square, .social-icons .fa-rss, .footer__subscribe {
   display: none !important;
 }
