@@ -2,10 +2,17 @@ title: willuhd
 remote_theme: mmistakes/minimal-mistakes
 minimal_mistakes_skin: "default" 
 locale: "en-US"
-description: A collection of things I've worked on or have found interesting
-url: https://willuhd.github.io
+description: "A collection of things I've worked on or have found interesting"
+url: "https://willuhd.github.io"
 baseurl: ""
-author: will
+author:
+  name: "will"
+  links: 
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/willuhd"
+
+footer: show_powered_by: false
 
 defaults:
   - scope:
@@ -15,12 +22,11 @@ defaults:
       layout: single
       author_profile: false 
       read_time: false
-      comments: false
       share: true
       related: true
 
 navigation:
-  - title: "willuhd"
+  - title: "Home"
     url: /
   - title: "GPA Calculator"
     url: /gpa-calc/
