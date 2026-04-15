@@ -1,4 +1,4 @@
-remote_theme: mmistakes/minimal-mistakes
+theme: jekyll-theme-cayman
 title: willuhd
 description: A collection of things I've worked on or have found interesting
 url: https://willuhd.github.io
