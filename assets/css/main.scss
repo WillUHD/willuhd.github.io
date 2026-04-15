@@ -12,6 +12,14 @@
   color: inherit !important;
 }
 
+/* Force text to be selectable everywhere */
+* {
+  -webkit-user-select: auto !important;
+  -moz-user-select: auto !important;
+  -ms-user-select: auto !important;
+  user-select: auto !important;
+}
+
 /* --- Apple Dark Mode Variables --- */
 :root {
   --bg-color: #ffffff;
@@ -40,7 +48,8 @@
 }
 
 /* --- Global Overrides --- */
-body, .page, .archive, .masthead, .page__footer, .sidebar, .page__inner-wrap {
+/* Added .greedy-nav to ensure the header respects dark mode */
+body, .page, .archive, .masthead, .greedy-nav, .page__footer, .sidebar, .page__inner-wrap {
   background-color: var(--bg-color) !important;
   color: var(--text-color) !important;
   font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -51,21 +60,29 @@ h1, h2, h3, h4, h5, h6, .archive__item-title, .site-title, .nav__title {
   color: var(--text-color) !important;
 }
 
-/* --- 3. REMOVE PAGE TITLE (Only show MD content) --- */
-.page__title {
+/* --- REMOVE PAGE TITLE AND LINK --- */
+/* Catch all variations of the layout-injected title */
+#page-title, .page__title, .page__header, .header-link {
   display: none !important;
+  visibility: hidden !important;
 }
 
-/* --- 5. PERMALINK BUTTON FIX (Smaller & Gray) --- */
-.header-link {
-  color: var(--text-secondary) !important;
-  font-size: 0.4em !important; /* Made significantly smaller */
-  opacity: 0.5;
-  margin-left: 8px;
-  text-decoration: none !important;
+/* --- HEADER ALIGNMENT FIX --- */
+/* Stop Minimal Mistakes from pushing links to the right */
+.greedy-nav .visible-links {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
-.header-link:hover {
-  opacity: 1;
+
+/* --- FOOTER UNIFORMITY FIX --- */
+/* Prevent the sidebar from squishing the footer on section pages */
+.page__footer {
+  clear: both !important;
+  float: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  border-top: 1px solid var(--border-color) !important;
 }
 
 /* Links */
@@ -88,7 +105,6 @@ pre, code, .highlight {
 
 /* Borders */
 .masthead { border-bottom: 1px solid var(--border-color) !important; }
-.page__footer { border-top: 1px solid var(--border-color) !important; }
 
 /* Hide Feed/Subscribe UI */
 .social-icons .fa-rss-square, .social-icons .fa-rss, .footer__subscribe {
