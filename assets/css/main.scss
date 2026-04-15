@@ -2,16 +2,14 @@
 ---
 @import "minimal-mistakes";
 
-/* --- System Default Selection (No Custom Colors) --- */
+/* --- Fix Text Selection (Standard Light Blue OS Default) --- */
 ::selection {
-  background-color: revert !important;
-  color: revert !important;
-  text-shadow: revert !important;
+  background-color: rgba(0, 120, 255, 0.3) !important;
+  color: inherit !important;
 }
 ::-moz-selection {
-  background-color: revert !important;
-  color: revert !important;
-  text-shadow: revert !important;
+  background-color: rgba(0, 120, 255, 0.3) !important;
+  color: inherit !important;
 }
 
 /* --- Apple Dark Mode Variables --- */
@@ -35,6 +33,10 @@
     --border-color: #38383a;
     --code-bg: #1c1c1e;
   }
+  
+  ::selection {
+    background-color: rgba(0, 120, 255, 0.4) !important;
+  }
 }
 
 /* --- Global Overrides --- */
@@ -49,18 +51,24 @@ h1, h2, h3, h4, h5, h6, .archive__item-title, .site-title, .nav__title {
   color: var(--text-color) !important;
 }
 
-/* Kill Blue Title Linking */
-.page__title, .page__title a {
-  color: var(--text-color) !important;
-  text-decoration: none !important;
+/* --- 3. REMOVE PAGE TITLE (Only show MD content) --- */
+.page__title {
+  display: none !important;
 }
 
-/* Header/Permalink Button (Gray & Small) */
+/* --- 5. PERMALINK BUTTON FIX (Smaller & Gray) --- */
 .header-link {
   color: var(--text-secondary) !important;
-  font-size: 0.6em !important;
+  font-size: 0.4em !important; /* Made significantly smaller */
+  opacity: 0.5;
+  margin-left: 8px;
+  text-decoration: none !important;
+}
+.header-link:hover {
+  opacity: 1;
 }
 
+/* Links */
 a { color: var(--link-color) !important; }
 
 /* Remove Hover Animations in Header */
