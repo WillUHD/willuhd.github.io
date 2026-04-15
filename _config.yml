@@ -26,3 +26,10 @@ navigation:
     url: /gpa-calc/
   - title: "Contact"
     url: /contact/
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-include-cache
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
