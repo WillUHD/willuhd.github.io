@@ -1,15 +1,15 @@
+# Top Header Navigation Bar
 main:
-  - title: "Home"
-    url: /
   - title: "GPA Calculator"
     url: /gpa-calc/
   - title: "Contact"
     url: /contact/
 
-main-sidebar:
-  - title: "Sections"
+# The Map for the GPA Calc section specifically
+gpa-calc-sidebar:
+  - title: "GPA Calculator Map"
     children:
-      - title: "GPA Calc"
+      - title: "Overview"
         url: /gpa-calc/
-      - title: "Other Post"
-        url: /gpa-calc/random/
+      - title: "Calculation Logic"
+        url: /gpa-calc/logic/
