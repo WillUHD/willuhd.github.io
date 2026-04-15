@@ -6,7 +6,7 @@ layout: single
 # Privacy Policy for GPA Calculator v3
 > Last updated: Apr 15, 2026
 
-Will Chen / Michel Guo ("we," "our," or "us") operates the GPA Calculator mobile application.
+Will Chen (willuhd) / Michel Guo (michelg10) ("we," "our," or "us") operate the GPA Calculator application.
 
 ### 1. Data Collection
 We do **NOT** collect, store, or share **ANY** personal information, usage data, or device IDs. 
@@ -22,7 +22,7 @@ The app does not use any third-party SDKs, analytics, or advertising frameworks.
 
 When GPA Calculator downloads the profile at startup, the server that hosts the data (GitHub proxy) may be able to see your IP address. **This is necessary for any connection to exist**, same for every other website you visit. 
 
-We cannot control this, but we ensure we do not log anything ourselves. 
+We cannot control this, but we ensure we do not log anything ourselves. The app sandbox is physically disabled sending outgoing requests. 
 
 ### 3. Data Retention
 Since we do not collect any data, we do not retain any data. 
