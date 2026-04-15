@@ -1,15 +1,16 @@
 <div class="masthead">
-  <div class="masthead__inner-wrap" style="justify-content: flex-start; padding-left: 2rem;">
-    <div class="masthead__menu" style="margin-left: 0;">
-      <nav id="site-nav" class="greedy-nav" style="justify-content: flex-start;">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <!-- Flex-start pushes everything to the left -->
+      <nav id="site-nav" class="greedy-nav" style="justify-content: flex-start; padding-left: 0;">
         <a class="site-title" href="{{ '/' | relative_url }}" style="margin-right: 2rem;">{{ site.title }}</a>
         <ul class="visible-links" style="display: flex; gap: 1.5rem; list-style: none; padding: 0; margin: 0;">
           {% for p in site.pages %}
             {% assign parts = p.url | split: '/' %}
-            <!-- Auto-find top level folders (e.g., gpa-calc/) -->
             {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
               <li>
-                <a href="{{ p.url | relative_url }}">{{ p.title }}</a>
+                <!-- Forced text-color instead of link-color -->
+                <a href="{{ p.url | relative_url }}" style="color: var(--text-color) !important; font-weight: 400;">{{ p.title }}</a>
               </li>
             {% endif %}
           {% endfor %}
