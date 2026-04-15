@@ -13,25 +13,23 @@ author:
       url: "https://github.com/willuhd"
 
 footer: show_powered_by: false
+feed: false
+
+collections:
+  sections:
+    output: true
+    permalink: /:path/
 
 defaults:
   - scope:
       path: ""
-      type: posts
     values:
-      layout: single
-      author_profile: false 
-      read_time: false
+      layout: "single"
+      author_profile: false
       share: true
-      related: true
-
-navigation:
-  - title: "Home"
-    url: /
-  - title: "GPA Calculator"
-    url: /gpa-calc/
-  - title: "Contact"
-    url: /contact/
+      # This enables the sidebar automatically for anything in the collection
+      sidebar:
+        nav: "main-sidebar" 
 
 plugins:
   - jekyll-remote-theme
