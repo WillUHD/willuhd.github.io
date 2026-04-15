@@ -4,19 +4,3 @@ description: A collection of things I've worked on or have found interesting
 url: https://willuhd.github.io
 baseurl: ""
 author: will
-email: willcxd@outlook.com
-github_username: willuhd
-markdown: kramdown
-highlighter: rouge
-plugins:
-  - jekyll-seo-tag 
-  - jekyll-sitemap 
-  - jekyll-feed 
-  - jekyll-paginate 
-defaults:
-  - scope:
-      path: ""  
-      type: "posts" 
-    values:
-      layout: "post" 
-      author: "will"
