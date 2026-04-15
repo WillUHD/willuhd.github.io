@@ -1,6 +1,28 @@
-theme: jekyll-theme-cayman
 title: willuhd
+remote_theme: mmistakes/minimal-mistakes
+minimal_mistakes_skin: "default" 
+locale: "en-US"
 description: A collection of things I've worked on or have found interesting
 url: https://willuhd.github.io
 baseurl: ""
 author: will
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: false 
+      read_time: false
+      comments: false
+      share: true
+      related: true
+
+navigation:
+  - title: "willuhd"
+    url: /
+  - title: "GPA Calculator"
+    url: /gpa-calc/
+  - title: "Contact"
+    url: /contact/
