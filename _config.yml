@@ -1,16 +1,9 @@
 title: willuhd
 remote_theme: mmistakes/minimal-mistakes
-minimal_mistakes_skin: "default" 
+minimal_mistakes_skin: "default"
 locale: "en-US"
-description: "A collection of things I've worked on or have found interesting"
-url: "https://willuhd.github.io"
+url: https://willuhd.github.io
 baseurl: ""
-author:
-  name: "will"
-  links: 
-    - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-      url: "https://github.com/willuhd"
 
 feed: false
 
@@ -25,13 +18,18 @@ defaults:
     values:
       layout: "single"
       author_profile: false
-      share: true
+      share: false  
+      comments: false
+      read_time: false
+
+  - scope:
+      path: "_sections/gpa-calc"
+    values:
       sidebar:
-        nav: "main-sidebar" 
+        nav: "gpa-calc-sidebar" 
 
 plugins:
   - jekyll-remote-theme
   - jekyll-include-cache
   - jekyll-seo-tag
   - jekyll-sitemap
-  - jekyll-feed
