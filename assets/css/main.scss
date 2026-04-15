@@ -1,0 +1,65 @@
+---
+---
+@import "minimal-mistakes";
+$apple-font-stack: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+body {
+  font-family: $apple-font-stack;
+  -webkit-font-smoothing: antialiased; 
+  -moz-osx-font-smoothing: grayscale;
+  color: #1d1d1f; 
+  background-color: #ffffff;
+}
+
+h1, h2, h3, h4, .archive__item-title {
+  font-family: $apple-font-stack;
+  font-weight: 600; 
+  letter-spacing: -0.015em; 
+  color: #1d1d1f;
+}
+
+.page__title {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+.grid__item {
+  .archive__item {
+    background: #f5f5f7; 
+    border-radius: 20px;
+    padding: 30px;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    border: none;
+
+    &:hover {
+      transform: scale(1.015); // Subtle "lift" effect
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
+    
+    .archive__item-title {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.page__meta {
+  font-family: $apple-font-stack;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: #86868b; 
+}
+
+.btn--primary {
+  background-color: #0071e3; 
+  border-radius: 980px; 
+  padding: 8px 16px;
+  font-weight: 400;
+  
+  &:hover {
+    background-color: #0077ed;
+  }
+}
