@@ -4,92 +4,63 @@
 
 :root {
   --bg-color: #ffffff;
-  --card-bg: #f5f5f7;
   --text-color: #1d1d1f;
-  --text-secondary: #86868b;
-  --accent-color: #0071e3;
+  --card-bg: #f5f5f7;
   --border-color: #d2d2d7;
+  --accent: #0071e3;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-color: #000000;
-    --card-bg: #1c1c1e;
     --text-color: #f5f5f7;
-    --text-secondary: #a1a1a6;
-    --accent-color: #0a84ff;
+    --card-bg: #1c1c1e;
     --border-color: #38383a;
+    --accent: #0a84ff;
   }
 }
 
-$apple-font: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
-
 body {
-  font-family: $apple-font;
+  font-family: "SF Pro Display", "Inter", -apple-system, sans-serif;
   background-color: var(--bg-color) !important;
   color: var(--text-color) !important;
-  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: default; 
+  background: default;
 }
 
-.masthead {
+.section-header {
+  padding: 3rem 0;
   border-bottom: 1px solid var(--border-color);
-  background-color: rgba(var(--bg-color), 0.8);
-  backdrop-filter: saturate(180%) blur(20px);
-}
-
-h1, h2, h3, h4 {
-  color: var(--text-color);
-  letter-spacing: -0.02em;
-}
-
-.page__content {
-  color: var(--text-color);
-}
-
-.grid__item {
-  .archive__item {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 1.5rem;
-    border: none;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    &:hover {
-      transform: scale(1.02);
-    }
-
-    .archive__item-title {
-      color: var(--text-color);
-      margin-top: 0;
-    }
+  margin-bottom: 2rem;
+  
+  h1 { 
+    font-size: 3rem; 
+    font-weight: 700; 
+    letter-spacing: -0.04em; 
   }
 }
 
-.social-icons .fa-rss, 
-.social-icons .fa-rss-square, 
-.social-icons [href*="feed.xml"] {
-  display: none !important;
-}
-
-.btn--primary {
-  background-color: var(--accent-color) !important;
-  border-radius: 980px;
-  padding: 0.6em 1.2em;
-  font-weight: 500;
-  border: none;
-}
-
-.gpa-header-banner {
+.archive__item {
   background: var(--card-bg);
-  padding: 40px 0;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 2rem;
-  text-align: center;
+  border-radius: 18px;
+  padding: 25px;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+  border: 1px solid transparent;
+
+  &:hover {
+    transform: scale(1.02);
+  }
   
-  h1 { margin: 0; font-size: 2.5rem; }
-  p { color: var(--text-secondary); margin-top: 10px; }
+  a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 600;
+  }
+}
+
+.social-icons .fa-rss, .social-icons .fa-rss-square {
+  display: none !important;
 }
