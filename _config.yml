@@ -1,9 +1,9 @@
 title: willuhd
 locale: "en-US"
 url: https://willuhd.github.io
+permalink: /:title/
 baseurl: ""
 
-# Add Google Fonts for non-Apple devices
 head_scripts:
   - https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap
 
