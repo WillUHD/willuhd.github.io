@@ -14,6 +14,7 @@
   color: HighlightText !important;
 }
 
+/* Fixes cursor flashing and restores glove pointer */
 a, button {
   cursor: pointer !important;
   -webkit-user-select: auto !important;
@@ -62,13 +63,11 @@ body {
 
 /* 
   SYNC SIDEBAR & CONTENT ALIGNMENT 
+  Forces the shared parent container down by 60px.
 */
 #main {
   padding-top: 60px !important;
   align-items: flex-start !important;
-  max-width: 1100px !important;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .sidebar, .page, .page__inner-wrap {
@@ -76,19 +75,16 @@ body {
   padding-top: 0 !important;
 }
 
-/* Strip hidden margins from Markdown content */
+/* 🚨 FIX: Gives the sticky sidebar a buffer so it doesn't touch the header on scroll 🚨 */
+.sidebar {
+  top: 85px !important; 
+}
+
+/* Strips the hidden top margins from Markdown that cause the misalignment */
 .nav__title, 
 .nav__list,
 .page__content > *:first-child {
   margin-top: 0 !important;
-}
-
-/* 
-  SIDEBAR STICKY PADDING
-  This prevents the sidebar from touching the header when you scroll down.
-*/
-.sidebar.sticky {
-  top: 100px !important; /* Header height (~60px) + 40px breathing room */
 }
 
 /* --- Header / Masthead --- */
@@ -115,12 +111,12 @@ body {
   padding: 0 20px !important;
 }
 
-/* FORCED LEFT ALIGNMENT */
 .greedy-nav {
   display: flex !important;
   justify-content: flex-start !important; 
 }
 
+/* Forces header links to the left instead of right-aligned */
 .greedy-nav .visible-links {
   display: flex !important;
   flex: 0 0 auto !important; 
@@ -129,26 +125,22 @@ body {
   padding-left: 0 !important;
 }
 
-.greedy-nav .visible-links li {
-  margin-right: 25px !important; /* Space between header links */
-}
-
 .site-title {
   flex: 0 0 auto !important;
   font-weight: 600 !important;
   font-size: 21px !important;
   margin-right: 40px !important; 
   color: var(--apple-text) !important;
+  font-family: var(--font-family) !important;
 }
 
 .greedy-nav a {
   color: var(--apple-text) !important;
   opacity: 0.8;
   font-size: 14px !important;
-  position: relative;
 }
 
-/* Remove theme bar animation */
+/* Kills the hover underline bar animation */
 .greedy-nav a::before, 
 .greedy-nav a::after {
   display: none !important;
@@ -168,7 +160,6 @@ body {
 
 .nav__title a:hover {
   color: var(--apple-jet-black) !important;
-  text-decoration: none !important;
 }
 
 .sidebar ul li a {
@@ -181,7 +172,7 @@ body {
   text-decoration: none !important;
 }
 
-/* --- Content Typography & Links --- */
+/* --- Content Typography --- */
 p, li, div {
   font-family: var(--font-family) !important;
 }
@@ -191,12 +182,12 @@ p {
   line-height: 1.5 !important;
 }
 
+/* 🚨 FIX: Underlines main body content links only on hover 🚨 */
 .page__content a {
   color: var(--apple-link) !important;
-  text-decoration: none; /* No underline by default */
+  text-decoration: none !important;
 }
 
-/* Add underline ONLY on hover for main body links */
 .page__content a:hover {
   text-decoration: underline !important;
 }
