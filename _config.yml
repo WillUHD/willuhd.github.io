@@ -1,6 +1,5 @@
 title: willuhd
-remote_theme: mmistakes/minimal-mistakes
-minimal_mistakes_skin: "default"
+theme: minima
 locale: "en-US"
 url: https://willuhd.github.io
 baseurl: ""
