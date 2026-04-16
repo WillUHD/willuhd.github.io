@@ -1,5 +1,5 @@
 title: willuhd
-theme: minima
+remote-theme:
 locale: "en-US"
 url: https://willuhd.github.io
 baseurl: ""
@@ -21,6 +21,5 @@ defaults:
         nav: "auto"
 
 plugins:
-  - jekyll-remote-theme
-  - jekyll-include-cache
+  - jekyll-paginate
   - jekyll-sitemap
