@@ -4,7 +4,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 @import "minimal-mistakes";
 
-/* --- 1. SELECTION --- */
+/* --- 1. SELECTION & CURSOR FIX --- */
 ::selection {
   background: Highlight !important;
   color: HighlightText !important;
@@ -14,10 +14,11 @@
   color: HighlightText !important;
 }
 
-/* --- 2. THE CURSOR FIX --- */
-/* We force the cursor on the link AND everything inside/around it to prevent the "flicker" */
-a, a *, button, button *, .btn, [role="button"] {
+/* Fixes the "flashing" cursor bug by preventing links from acting like selectable text */
+a, button {
   cursor: pointer !important;
+  -webkit-user-select: auto !important;
+  user-select: auto !important;
 }
 
 /* --- Apple Newsroom Design System --- */
@@ -31,8 +32,7 @@ a, a *, button, button *, .btn, [role="button"] {
   --apple-link-dark: #004499;
   --apple-border: #d2d2d7;
   --apple-footer: #f5f5f7;
-  /* SF Pro -> Inter -> System Default */
-  --font-family: "SF Pro Display", "SF Pro Text", "Inter", system-ui, -apple-system, sans-serif;
+  --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -62,21 +62,17 @@ body {
 }
 
 /* 
-   FIX: SYNC VERTICAL STARTING POINT
-   Instead of applying margins to individual columns, we apply it to the parent container 
+  SYNC SIDEBAR & CONTENT ALIGNMENT 
+  Strips individual spacing and drops the shared parent container down instead.
 */
-#main {
-  margin-top: 60px !important;
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 20px;
-}
-
-/* Reset individual offsets so they start at the exact same pixel */
-.page__inner-wrap, .sidebar {
+.sidebar, .page, .page__inner-wrap {
   margin-top: 0 !important;
   padding-top: 0 !important;
+}
+
+#main {
+  padding-top: 60px !important;
+  align-items: flex-start !important;
 }
 
 /* --- Header / Masthead --- */
@@ -90,7 +86,9 @@ body {
   z-index: 1000;
 }
 
-.masthead__inner-wrap, .masthead__menu, .greedy-nav {
+.masthead__inner-wrap,
+.masthead__menu,
+.greedy-nav {
   background: transparent !important;
 }
 
@@ -112,6 +110,7 @@ body {
   font-size: 21px !important;
   margin-right: 40px !important; 
   color: var(--apple-text) !important;
+  font-family: var(--font-family) !important;
 }
 
 .greedy-nav a {
@@ -120,36 +119,31 @@ body {
   font-size: 14px !important;
 }
 
-/* --- Sidebar Styling & Hover Logic --- */
-.sidebar {
-  border-right: none !important;
-}
-
-/* Sidebar Title (Jet Black - No color change on hover) */
+/* --- Sidebar Hover Logic --- */
 .nav__title a {
   color: var(--apple-jet-black) !important; 
-  text-decoration: none !important;
+  text-decoration: none;
   transition: none !important;
 }
 
+/* Keeps sidebar header Apple Jet Black on hover */
 .nav__title a:hover {
-  color: var(--apple-jet-black) !important; /* Stays black */
-  opacity: 1 !important;
+  color: var(--apple-jet-black) !important;
 }
 
-/* Sidebar Links (Instant blue shift) */
+/* Subsection Link Hover: Instant color shift */
 .sidebar ul li a {
   transition: none !important; 
 }
 
 .sidebar ul li a:hover {
   color: var(--apple-link-dark) !important;
-  opacity: 1 !important;
+  opacity: 1 !important; 
   text-decoration: none !important;
 }
 
 /* --- Content Typography --- */
-p, li, div, span {
+p, li, div {
   font-family: var(--font-family) !important;
 }
 
