@@ -2,7 +2,6 @@
   {% assign url_parts = page.url | split: '/' %}
   {% assign section_dir = "/" | append: url_parts[1] | append: "/" %}
   
-  <!-- Find the Title of the current section -->
   {% assign section_title = url_parts[1] | capitalize %}
   {% for p in site.pages %}
     {% if p.url == section_dir or p.url == section_dir | append: "index.html" %}
@@ -12,15 +11,14 @@
   
   <div class="sidebar sticky">
     <nav class="nav__list">
-      <h3 class="nav__title" style="padding-left: 0;">{{ section_title }}</h3>
-      <ul style="list-style: none; padding-left: 0;">
+      <h3 class="nav__title" style="padding-left: 0; margin-bottom: 1.5rem; font-size: 1.1rem;">{{ section_title }}</h3>
+      <ul style="list-style: none; padding-left: 0; margin: 0;">
         {% for p in site.pages %}
           {% if p.url contains section_dir and p.title %}
-            <!-- Automatically indent nested folders -->
             {% assign p_parts = p.url | split: '/' %}
             {% assign depth = p_parts.size | minus: 3 | at_least: 0 %}
-            <li>
-              <a href="{{ p.url | relative_url }}" style="padding-left: {{ depth | times: 15 }}px; {% if page.url == p.url %}font-weight: 700; color: var(--text-color);{% endif %}">
+            <li style="margin-bottom: 0.8rem;"> <!-- Extra vertical spacing -->
+              <a href="{{ p.url | relative_url }}" style="display: block; padding-left: {{ depth | times: 15 }}px; text-decoration: none; font-size: 0.95rem; {% if page.url == p.url %}font-weight: 600; color: var(--text-color);{% else %}color: var(--text-secondary);{% endif %}">
                 {{ p.title }}
               </a>
             </li>
