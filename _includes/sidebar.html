@@ -1,64 +1,63 @@
 {% comment %} 
-  1. Identify the top-level section (e.g., /gpa-calc/) 
-{% endcomment %}
-{% assign path_parts = page.dir | split: "/" %}
-{% assign top_level_slug = path_parts[1] %}
-{% assign top_level_dir = top_level_slug | prepend: "/" | append: "/" %}
-
-{% comment %} 
-  2. Identify the parent directory for the back button 
+  1. Setup Paths 
 {% endcomment %}
 {% assign current_dir = page.dir %}
-{% assign parent_dir = "" %}
-{% if current_dir != top_level_dir %}
-  {% assign dir_segments = current_dir | split: "/" %}
-  {% assign segment_count = dir_segments.size | minus: 1 %}
-  {% for i in (0..segment_count) %}
-    {% if forloop.index <= segment_count %}
-      {% if dir_segments[i] != "" %}
-        {% assign parent_dir = parent_dir | append: "/" | append: dir_segments[i] %}
-      {% endif %}
+{% assign path_parts = current_dir | split: "/" | array_to_sentence_string | split: " " %}
+{% comment %} path_parts size will be 1 for /folder/, 2 for /folder/sub/ {% endcomment %}
+
+{% comment %} 
+  2. Find the index page of the CURRENT directory to use as the Header 
+{% endcomment %}
+{% assign current_index_page = nil %}
+{% for p in site.pages %}
+  {% assign p_url = p.url | replace: "index.html", "" %}
+  {% if p_url == current_dir %}
+    {% assign current_index_page = p %}
+  {% endif %}
+{% endfor %}
+
+{% comment %} 
+  3. Determine Parent Directory for the Back Button 
+{% endcomment %}
+{% assign parent_dir = nil %}
+{% if path_parts.size > 1 %}
+  {% assign parts = current_dir | split: "/" %}
+  {% assign slice_end = parts.size | minus: 1 %}
+  {% assign parent_dir = "/" %}
+  {% for i in (1..slice_end) %}
+    {% if parts[i] != "" and i < slice_end %}
+      {% assign parent_dir = parent_dir | append: parts[i] | append: "/" %}
     {% endif %}
   {% endfor %}
-  {% assign parent_dir = parent_dir | append: "/" %}
-  {% comment %} Logic to ensure parent_dir is actually the level above {% endcomment %}
-  {% assign parent_dir = current_dir | replace_first: dir_segments.last, "" | replace: "//", "/" %}
 {% endif %}
 
 <nav class="sidebar">
-  {% comment %} 3. Sidebar Header (Always the Top-Level Folder Index) {% endcomment %}
+  {% comment %} SIDEBAR HEADER {% endcomment %}
   <div class="nav__header-container">
-    {% if current_dir != top_level_dir %}
+    {% if parent_dir %}
       <a href="{{ parent_dir | relative_url }}" class="back-button">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </a>
     {% endif %}
 
-    {% for p in site.pages %}
-      {% assign p_url = p.url | replace: "index.html", "" %}
-      {% if p_url == top_level_dir %}
-        <div class="nav__title">
-          <a href="{{ p.url | relative_url }}" class="{% if page.url == p.url %}active{% endif %}">
-            {{ p.title }}
-          </a>
-        </div>
-      {% endif %}
-    {% endfor %}
+    <div class="nav__title">
+      <a href="{{ current_index_page.url | relative_url }}" class="active">
+        {{ current_index_page.title | default: "Section" }}
+      </a>
+    </div>
   </div>
 
   <ul class="sidebar-links">
     {% assign sorted_pages = site.pages | sort: 'order' %}
-    
-    {% comment %} 4. List items in the CURRENT directory {% endcomment %}
+
+    {% comment %} 4. LIST REGULAR FILES (Blue Links) {% endcomment %}
     {% for p in sorted_pages %}
       {% assign p_dir = p.dir %}
       {% assign p_url = p.url | replace: "index.html", "" %}
       
+      {% comment %} Show if in this folder, has a title, and isn't the index itself {% endcomment %}
       {% if p_dir == current_dir and p.title and p.url != "/index.html" %}
-        {% comment %} Skip the index of the current directory if we are in it, unless it's the top level {% endcomment %}
-        {% if p.url contains "index.html" and current_dir != top_level_dir %}{% continue %}{% endif %}
-        {% if p_url == top_level_dir %}{% continue %}{% endif %}
-
+        {% if p.url contains "index.html" %}{% continue %}{% endif %}
         <li>
           <a href="{{ p.url | relative_url }}" class="{% if page.url == p.url %}active{% endif %}">
             {{ p.title }}
@@ -67,15 +66,15 @@
       {% endif %}
     {% endfor %}
 
-    {% comment %} 5. List nested SUB-FOLDERS in the current directory {% endcomment %}
+    {% comment %} 5. LIST SUB-FOLDERS (Black Links with Chevron) {% endcomment %}
     {% for p in sorted_pages %}
       {% if p.url contains "index.html" %}
         {% assign p_dir = p.dir %}
-        {% comment %} Check if this page is exactly one level deeper than current_dir {% endcomment %}
+        {% comment %} Check if this index.md is exactly one level deeper {% endcomment %}
         {% assign rel_path = p_dir | replace: current_dir, "" %}
-        {% assign path_depth = rel_path | split: "/" %}
+        {% assign depth_check = rel_path | split: "/" %}
         
-        {% if p_dir contains current_dir and p_dir != current_dir and path_depth.size == 1 %}
+        {% if p_dir contains current_dir and p_dir != current_dir and depth_check.size == 1 %}
           <li>
             <a href="{{ p.url | relative_url }}" class="nav__subtitle">
               {{ p.title }}
