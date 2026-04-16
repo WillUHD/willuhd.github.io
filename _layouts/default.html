@@ -5,37 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ page.title }} | {{ site.title }}</title>
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-  {% include head-custom.html %} <!-- Optional: for analytics/meta -->
 </head>
 <body>
 
-  {% include masthead.html %}
+  <!-- 4. Header with Title and Nav on one line -->
+  <header class="masthead">
+    <div class="masthead__inner-wrap">
+      <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      <nav class="greedy-nav">
+        <ul class="visible-links">
+          {% for p in site.pages %}
+            {% assign parts = p.url | split: '/' %}
+            {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
+              <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+  </header>
 
   <main id="main-container">
     <div class="content-wrapper">
       
-      <!-- Sidebar Column -->
+      <!-- Sidebar -->
       <aside class="sidebar-column">
         {% include sidebar.html %}
       </aside>
 
-      <!-- Main Content Column -->
-      <article class="article-column">
-        {% if page.title %}
-          <h1 class="post-title">{{ page.title }}</h1>
-        {% endif %}
-        
-        <div class="markdown-content">
-          {{ content }}
-        </div>
+      <!-- 3. Main Content (Title Removed) -->
+      <article class="article-column markdown-content">
+        {{ content }}
       </article>
 
     </div>
   </main>
 
+  <!-- 5. Footer Fix -->
   <footer class="site-footer">
-    <div class="content-wrapper">
-      {% include footer.html %}
+    <div class="content-wrapper footer-stack">
+      <div class="footer-links">
+        <ul class="social-icons">
+          {% for p in site.pages %}
+            {% assign parts = p.url | split: '/' %}
+            {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
+              <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="footer-copyright">
+        <span>Copyright © {{ "now" | date: "%Y" }} {{ site.title }}. All rights reserved.</span>
+      </div>
     </div>
   </footer>
 
