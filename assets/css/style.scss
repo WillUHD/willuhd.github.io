@@ -23,21 +23,34 @@
   }
 }
 
+/* 1. GLOBAL RESET */
 body {
-  margin: 0; font-family: var(--font-main);
-  background: var(--apple-bg); color: var(--apple-text);
+  margin: 0; 
+  font-family: var(--font-main);
+  background: var(--apple-bg); 
+  color: var(--apple-text);
   -webkit-font-smoothing: antialiased;
 }
 
-a { cursor: pointer; text-decoration: none; color: inherit; }
+/* Force pointer cursor on all links and interactive elements */
+a, button, [role="button"] { 
+  cursor: pointer !important; 
+  text-decoration: none; 
+  color: inherit; 
+}
 
-/* Layout */
-.content-wrapper { max-width: 1080px; margin: 0 auto; padding: 0 20px; display: flex; }
+/* 2. LAYOUT */
+.content-wrapper { 
+  max-width: 1080px; 
+  margin: 0 auto; 
+  padding: 0 20px; 
+  display: flex; 
+}
 #main-container { padding-top: 100px; min-height: 80vh; }
 .sidebar-column { width: 260px; flex-shrink: 0; position: sticky; top: 100px; height: fit-content; }
 .article-column { flex-grow: 1; padding-left: 60px; max-width: 780px; }
 
-/* Masthead */
+/* 3. MASTHEAD */
 .masthead {
   position: fixed; top: 0; width: 100%; z-index: 1000;
   background: var(--apple-bg); border-bottom: 1px solid var(--apple-border);
@@ -46,46 +59,59 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   height: 52px; display: flex; align-items: center; 
   max-width: 1080px; margin: 0 auto; padding: 0 20px;
 }
-.site-title { font-size: 21px; font-weight: 600; margin-right: 40px; }
+.site-title { font-size: 21px; font-weight: 600; margin-right: 40px; display: block; }
 .visible-links { display: flex; list-style: none; gap: 24px; margin: 0; padding: 0; font-size: 14px; }
-.visible-links a { opacity: 0.7; }
+.visible-links a { 
+  opacity: 0.7; 
+  display: block; 
+  padding: 10px 0; /* Larger hit area */
+  transition: opacity 0.2s; 
+}
 .visible-links a:hover { opacity: 1; }
 
-/* Sidebar */
+/* 4. DYNAMIC SIDEBAR */
 .nav__title { margin-bottom: 12px; }
 .nav__title a {
   color: var(--apple-text) !important; /* Jet Black */
   font-size: 17px;
   font-weight: 500;
   display: block;
+  width: 100%;
 }
 .nav__title a:hover { color: #000000 !important; } /* Pure Black */
 .nav__title a.active { font-weight: 700 !important; color: #000 !important; }
 
 .sidebar-links { list-style: none; padding: 0; margin: 0; }
-.sidebar-links li { margin-bottom: 10px; }
+.sidebar-links li { margin-bottom: 4px; }
 .sidebar-links a {
   color: var(--apple-link) !important; /* Apple Blue */
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 6px 0; /* Larger hit area */
+  width: 100%;
 }
 .sidebar-links a:hover { color: var(--apple-link-dark) !important; }
 .sidebar-links a.active { font-weight: 700 !important; }
 
-.chevron-icon { opacity: 0.8; color: var(--apple-secondary); display: flex; align-items: center; }
+.chevron-icon { opacity: 0.8; color: var(--apple-secondary); display: flex; align-items: center; pointer-events: none; }
 
-/* Markdown */
+/* 5. MARKDOWN CONTENT */
 .markdown-content { font-size: 19px; line-height: 1.5; }
-.markdown-content a { color: var(--apple-link); }
+.markdown-content p { margin-bottom: 1.5em; }
+.markdown-content a { color: var(--apple-link); cursor: pointer; }
 .markdown-content a:hover { text-decoration: underline; }
 
-/* Footer */
+/* 6. FOOTER */
 .site-footer {
   background: var(--apple-footer);
   padding: 40px 0; margin-top: 100px; border-top: 1px solid var(--apple-border);
 }
-.social-icons { display: flex; list-style: none; gap: 20px; padding: 0; margin: 0 0 20px 0; font-size: 14px; border-bottom: 1px solid var(--apple-border); padding-bottom: 20px; }
-.social-icons a { color: var(--apple-secondary); }
+.social-icons { 
+  display: flex; list-style: none; gap: 20px; padding: 0; margin: 0 0 20px 0; 
+  font-size: 14px; border-bottom: 1px solid var(--apple-border); padding-bottom: 20px; 
+}
+.social-icons a { color: var(--apple-secondary); display: block; }
+.social-icons a:hover { color: var(--apple-text); }
 .footer-copyright { font-size: 12px; color: var(--apple-secondary); }
