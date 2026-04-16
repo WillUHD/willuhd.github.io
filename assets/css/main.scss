@@ -2,7 +2,7 @@
 ---
 @import "minimal-mistakes";
 
-/* --- Apple Newsroom Design System --- */
+/* --- System Defaults --- */
 :root {
   --apple-bg: #ffffff;
   --apple-text: #1d1d1f;
@@ -10,7 +10,8 @@
   --apple-link: #0066cc;
   --apple-border: #d2d2d7;
   --apple-footer: #f5f5f7;
-  --font-family: "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* SF Pro on Apple, Inter on others, Helvetica as fallback */
+  --font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,101 +25,63 @@
   }
 }
 
+/* Removal of selection overrides - browser will now use its default blue/graphite */
+::selection {
+  background: auto;
+  color: auto;
+}
+
 body {
   font-family: var(--font-family) !important;
   background-color: var(--apple-bg) !important;
   color: var(--apple-text) !important;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* --- Masthead (Apple Global Nav Style) --- */
+/* --- Masthead (No blue, No bars) --- */
 .masthead {
-  background: rgba(var(--apple-bg), 0.8) !important;
-  backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--apple-border) !important;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
 }
 
-.masthead__inner-wrap {
-  max-width: 1024px !important;
-  padding: 0 20px !important;
-}
-
-.site-title {
-  font-weight: 600 !important;
-  letter-spacing: -0.01em !important;
-  font-size: 21px !important;
-  color: var(--apple-text) !important;
+/* Hide the underline animation bar entirely */
+.greedy-nav a::before,
+.greedy-nav a::after {
+  display: none !important;
 }
 
 .greedy-nav a {
   color: var(--apple-text) !important;
-  opacity: 0.8;
-  font-size: 14px !important;
+  text-decoration: none !important;
   transition: opacity 0.2s;
   &:hover {
-    opacity: 1;
-    color: var(--apple-link) !important;
+    color: var(--apple-text) !important; /* No blue on hover */
+    opacity: 0.6;
+    text-decoration: none !important;
   }
 }
 
-/* --- Content Styling --- */
-.page__inner-wrap {
-  margin-top: 40px;
-}
-
+/* --- Hide the Auto-Generated Header Link --- */
 .page__title {
-  font-weight: 700 !important;
-  letter-spacing: -0.02em !important;
-  font-size: 40px !important; /* Newsroom style headline */
-  line-height: 1.1 !important;
-  margin-bottom: 0.5em !important;
-  color: var(--apple-text) !important;
-  display: block !important; /* Overriding your 'none' to show titles like Newsroom */
-}
-
-h2, h3, h4 {
-  font-weight: 600 !important;
-  color: var(--apple-text) !important;
-}
-
-p {
-  font-size: 19px !important;
-  line-height: 1.5 !important;
-  font-weight: 400 !important;
-  color: var(--apple-text) !important;
+  display: none !important;
 }
 
 /* --- Sidebar --- */
-.sidebar {
-  border-right: 1px solid var(--apple-border);
-  padding-right: 20px;
-}
-
 .nav__title {
-  text-transform: uppercase;
-  font-size: 12px !important;
-  letter-spacing: 0.05em;
-  color: var(--apple-secondary) !important;
+  text-transform: none !important; /* Removed All-Caps */
+  font-size: 17px !important;
+  margin-bottom: 15px !important;
 }
 
-/* --- Footer (Apple Style) --- */
+.nav__list .active {
+  font-weight: 600 !important;
+  text-decoration: none !important;
+}
+
+/* --- Footer --- */
 .page__footer {
   background-color: var(--apple-footer) !important;
   border-top: 1px solid var(--apple-border) !important;
-  padding: 40px 0 !important;
-  font-size: 12px !important;
+  padding: 30px 0 !important;
+  /* Increased font size but still smaller than body (19px) */
+  font-size: 15px !important; 
   color: var(--apple-secondary) !important;
-}
-
-.page__footer-follow, .page__footer-copyright {
-  max-width: 1024px;
-  margin: 0 auto !important;
-  padding: 0 20px !important;
-}
-
-hr {
-  border-top: 1px solid var(--apple-border);
 }
