@@ -1,9 +1,10 @@
 ---
 ---
+/* Import Inter for non-Apple systems */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 @import "minimal-mistakes";
 
-/* --- 1. SELECTION FIX --- */
-/* Using 'revert' forces the browser to ignore theme styles and use the OS default */
+/* --- 1. SELECTION & CURSOR FIX --- */
 ::selection {
   background: Highlight !important;
   color: HighlightText !important;
@@ -13,19 +14,17 @@
   color: HighlightText !important;
 }
 
-/* --- 2. CURSOR FIX --- */
-/* Explicitly forcing the glove pointer on all link elements */
-a, button, .btn, [role="button"], 
-.masthead__menu-item a, 
-.sidebar a,
-.nav__list a {
+/* Fixes cursor flashing and restores glove pointer */
+a, button {
   cursor: pointer !important;
+  -webkit-user-select: auto !important;
+  user-select: auto !important;
 }
 
 /* --- Apple Newsroom Design System --- */
 :root {
   --apple-bg: #ffffff;
-  --apple-header-bg: rgba(255, 255, 255, 0.7); /* Valid RGBA for blur */
+  --apple-header-bg: rgba(255, 255, 255, 0.7); 
   --apple-text: #1d1d1f;
   --apple-jet-black: #000000;
   --apple-secondary: #6e6e73;
@@ -33,7 +32,7 @@ a, button, .btn, [role="button"],
   --apple-link-dark: #004499;
   --apple-border: #d2d2d7;
   --apple-footer: #f5f5f7;
-  --font-family: "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -62,13 +61,30 @@ body {
   display: none !important;
 }
 
-/* Synchronizing Sidebar and Content top padding */
-.page__inner-wrap, .sidebar {
-  margin-top: 60px !important;
+/* 
+  SYNC SIDEBAR & CONTENT ALIGNMENT 
+  Forces the shared parent container down by 60px.
+*/
+#main {
+  padding-top: 60px !important;
+  align-items: flex-start !important;
 }
 
+.sidebar, .page, .page__inner-wrap {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* 🚨 FIX: Strips the hidden top margins from Markdown that cause the misalignment 🚨 */
+.nav__title, 
+.nav__list,
+.page__content > *:first-child {
+  margin-top: 0 !important;
+}
+
+/* --- Header / Masthead --- */
 .masthead {
-  background: var(--apple-header-bg) !important;
+  background-color: var(--apple-header-bg) !important;
   backdrop-filter: saturate(180%) blur(50px) !important;
   -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
   border-bottom: 1px solid var(--apple-border) !important;
@@ -77,38 +93,40 @@ body {
   z-index: 1000;
 }
 
-/* Aligns "willuhd" and sidebar vertically */
-.masthead__inner-wrap, .page__inner-wrap {
+.masthead__inner-wrap,
+.masthead__menu,
+.greedy-nav {
+  background: transparent !important;
+}
+
+.masthead__inner-wrap {
   max-width: 1100px !important;
   margin-left: auto;
   margin-right: auto;
   padding: 0 20px !important;
 }
 
-/* --- Header Navigation (Left Aligned) --- */
 .greedy-nav {
   display: flex !important;
-  justify-content: flex-start !important; /* Moves links next to title */
-  align-items: center;
+  justify-content: flex-start !important; 
+}
+
+/* 🚨 FIX: Forces header links to the left instead of right-aligned 🚨 */
+.greedy-nav .visible-links {
+  display: flex !important;
+  flex: 0 0 auto !important; 
+  justify-content: flex-start !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
 
 .site-title {
   flex: 0 0 auto !important;
   font-weight: 600 !important;
   font-size: 21px !important;
-  margin-right: 40px !important; /* Gap after willuhd */
+  margin-right: 40px !important; 
   color: var(--apple-text) !important;
-}
-
-.visible-links {
-  display: flex !important;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.masthead__menu-item {
-  margin-right: 25px !important;
+  font-family: var(--font-family) !important;
 }
 
 .greedy-nav a {
@@ -117,17 +135,43 @@ body {
   font-size: 14px !important;
 }
 
-/* --- Sidebar Styling --- */
-.sidebar {
-  border-right: none !important;
+/* 🚨 FIX: Kills the hover underline bar animation 🚨 */
+.greedy-nav a::before, 
+.greedy-nav a::after {
+  display: none !important;
+  content: none !important;
 }
 
+.greedy-nav a:hover {
+  opacity: 1 !important;
+}
+
+/* --- Sidebar Hover Logic --- */
 .nav__title a {
-  color: var(--apple-jet-black) !important; /* Apple Jet Black */
+  color: var(--apple-jet-black) !important; 
   text-decoration: none;
+  transition: none !important;
 }
 
-/* --- Content --- */
+.nav__title a:hover {
+  color: var(--apple-jet-black) !important;
+}
+
+.sidebar ul li a {
+  transition: none !important; 
+}
+
+.sidebar ul li a:hover {
+  color: var(--apple-link-dark) !important;
+  opacity: 1 !important; 
+  text-decoration: none !important;
+}
+
+/* --- Content Typography --- */
+p, li, div {
+  font-family: var(--font-family) !important;
+}
+
 p {
   font-size: 19px !important;
   line-height: 1.5 !important;
