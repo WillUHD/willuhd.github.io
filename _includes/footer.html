@@ -4,12 +4,9 @@
       <ul class="social-icons">
         {% for p in site.pages %}
           {% assign parts = p.url | split: '/' %}
-          {% comment %} Only show top-level sections and exclude the posts folder {% endcomment %}
-          {% unless p.path contains "posts/" %}
-            {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
-              <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a></li>
-            {% endif %}
-          {% endunless %}
+          {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
+            <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a></li>
+          {% endif %}
         {% endfor %}
       </ul>
     </div>
