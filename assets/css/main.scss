@@ -2,28 +2,37 @@
 ---
 @import "minimal-mistakes";
 
-/* --- FORCE OS SYSTEM SELECTION --- */
-/* The theme forces custom highlights. "Highlight" and "HighlightText" tell the browser to pull the user's native macOS system colors. */
-*::selection {
-  background-color: Highlight !important;
+/* --- 1. SELECTION FIX --- */
+::selection {
+  background: Highlight !important;
   color: HighlightText !important;
 }
-*::-moz-selection {
-  background-color: Highlight !important;
+::-moz-selection {
+  background: Highlight !important;
   color: HighlightText !important;
 }
 
-/* --- FORCE VANILLA GLOVE CURSOR --- */
-/* The theme breaks native cursors, so we must explicitly force the pointer back */
-a, a:hover, a *, button, .btn, [role="button"] {
+/* --- 2. CURSOR FIX --- */
+/* Strong-arming the theme: explicitly targets all link states, child elements, and specific nav classes */
+a, 
+a:hover,
+a *, 
+.site-title,
+.greedy-nav a,
+.masthead__menu-item a,
+.sidebar a,
+.nav__title a,
+.nav__list a,
+button, 
+.btn, 
+[role="button"] {
   cursor: pointer !important;
 }
 
 /* --- Apple Newsroom Design System --- */
 :root {
   --apple-bg: #ffffff;
-  /* Fixed: explicit RGBA values so transparency actually works for the blur */
-  --apple-masthead-bg: rgba(255, 255, 255, 0.72); 
+  --apple-header-bg: rgba(255, 255, 255, 0.7); 
   --apple-text: #1d1d1f;
   --apple-jet-black: #000000;
   --apple-secondary: #6e6e73;
@@ -32,13 +41,12 @@ a, a:hover, a *, button, .btn, [role="button"] {
   --apple-border: #d2d2d7;
   --apple-footer: #f5f5f7;
   --font-family: "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --site-max-width: 1100px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --apple-bg: #000000;
-    --apple-masthead-bg: rgba(0, 0, 0, 0.72);
+    --apple-header-bg: rgba(0, 0, 0, 0.7);
     --apple-text: #f5f5f7;
     --apple-jet-black: #ffffff;
     --apple-secondary: #86868b;
@@ -56,19 +64,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* --- Layout Adjustments --- */
+/* --- Layout Alignment --- */
 #page-title, .page__title, .page__header, .header-link {
   display: none !important;
 }
 
-.page__inner-wrap {
+.page__inner-wrap, .sidebar {
   margin-top: 60px !important;
-  max-width: var(--site-max-width);
 }
 
-/* --- Masthead (Header) --- */
+/* --- Header / Masthead --- */
 .masthead {
-  background: var(--apple-masthead-bg) !important;
+  background-color: var(--apple-header-bg) !important;
   backdrop-filter: saturate(180%) blur(50px) !important;
   -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
   border-bottom: 1px solid var(--apple-border) !important;
@@ -77,30 +84,44 @@ body {
   z-index: 1000;
 }
 
-.masthead__inner-wrap {
-  max-width: var(--site-max-width) !important;
-  padding: 0 20px !important;
+/* 🚨 BLUR FIX: Forces the theme's solid child elements to be transparent so the blur shows through 🚨 */
+.masthead__inner-wrap,
+.masthead__menu,
+.greedy-nav {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.masthead__inner-wrap, .page__inner-wrap {
+  max-width: 1100px !important;
   margin-left: auto;
   margin-right: auto;
+  padding: 0 20px !important;
 }
 
 .greedy-nav {
-  justify-content: flex-start !important;
+  display: flex !important;
+  justify-content: flex-start !important; 
+  align-items: center;
 }
 
 .site-title {
-  font-weight: 600 !important;
-  letter-spacing: -0.01em !important;
-  font-size: 21px !important;
-  color: var(--apple-text) !important;
-  margin-right: 30px !important; 
   flex: 0 0 auto !important;
+  font-weight: 600 !important;
+  font-size: 21px !important;
+  margin-right: 40px !important; 
+  color: var(--apple-text) !important;
 }
 
 .visible-links {
-  flex: 0 0 auto !important;
   display: flex !important;
-  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.masthead__menu-item {
+  margin-right: 25px !important;
 }
 
 .greedy-nav a {
@@ -109,41 +130,24 @@ body {
   font-size: 14px !important;
 }
 
-.greedy-nav a:hover {
-  opacity: 1 !important;
-  text-decoration: none !important;
-}
-
-/* --- Sidebar Alignment & Style --- */
+/* --- Sidebar Styling --- */
 .sidebar {
   border-right: none !important;
-  padding-right: 20px;
-  margin-top: 60px !important; 
 }
 
-/* Forces Apple Jet Black regardless of inline HTML styles */
 .nav__title a {
-  color: var(--apple-jet-black) !important;
+  color: var(--apple-jet-black) !important; 
   text-decoration: none;
-  text-transform: none;
-  font-weight: 400;
 }
 
-.nav__title a.active, 
-.sidebar .nav__list h3 a[style*="font-weight: 700"] {
-  font-weight: 700 !important;
-}
-
-/* --- Content Typography --- */
+/* --- Content --- */
 p {
   font-size: 19px !important;
   line-height: 1.5 !important;
-  font-weight: 400 !important;
 }
 
 .page__content a {
   color: var(--apple-link) !important;
-  text-decoration: none;
 }
 
 /* --- Footer --- */
