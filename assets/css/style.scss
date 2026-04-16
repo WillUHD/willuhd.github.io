@@ -65,13 +65,76 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
 .visible-links a { opacity: 0.7; }
 .visible-links a:hover { opacity: 1; }
 
-/* 7. SIDEBAR LOGIC */
-.nav__title a {
-  color: var(--apple-secondary) !important;
-  font-weight: 400;
-  font-size: 16px;
+/* 7. SIDEBAR LOGIC (Apple Documentation Style) */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-.nav__title a:hover { color: var(--apple-black) !important; }
+
+/* Section Header (The Index/Folder Title) */
+.nav__title a {
+  color: var(--apple-text) !important; /* Jet Black */
+  font-weight: 500;
+  font-size: 17px; /* Slightly larger */
+  display: block;
+  padding-bottom: 8px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.nav__title a:hover { 
+  opacity: 1; 
+  color: #000000 !important; /* Pure Black on Hover */
+}
+
+.nav__title a.active {
+  font-weight: 700 !important;
+  opacity: 1;
+}
+
+/* Sidebar Links (Sub-pages) */
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-links li a {
+  color: var(--apple-link) !important; /* Apple Blue */
+  font-size: 14px;
+  font-weight: 400;
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Pushes Chevron to right */
+  transition: color 0.2s ease;
+}
+
+.sidebar-links li a:hover {
+  color: var(--apple-link-dark) !important; /* Apple Dark Blue */
+}
+
+.sidebar-links li a.active {
+  font-weight: 700 !important;
+}
+
+/* Chevron Styling */
+.chevron {
+  opacity: 0.5;
+  display: flex;
+  align-items: center;
+}
+
+/* 8. LONE PAGE FIX: 
+   If sidebar is empty, expand the article to full width */
+.sidebar-column:empty {
+  display: none;
+}
+.sidebar-column:empty + .article-column {
+  padding-left: 0;
+  margin: 0 auto;
+}
 
 /* Subsection Links */
 .sidebar ul li a {
