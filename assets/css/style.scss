@@ -83,11 +83,12 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
 }
 .sidebar ul li a:hover { color: var(--apple-link-dark) !important; }
 
-/* BOLDING LOGIC: If current page or section title */
-.sidebar a.active, 
-.sidebar .current-page,
+/* BOLDING LOGIC: Ensure the current page stands out */
+.sidebar a.current-page,
+.sidebar .active, 
 .nav__title a.active {
   font-weight: 700 !important;
+  color: var(--apple-text) !important; /* Darker for the active state */
 }
 
 /* 5. FOOTER FIX */
