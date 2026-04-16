@@ -179,3 +179,69 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   border-top: 1px solid var(--apple-border);
   margin: 40px 0;
 }
+
+/* --- Paste these into assets/css/style.scss --- */
+
+/* Sidebar Layout adjustments */
+.nav__header-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  color: var(--apple-link);
+  margin-left: -4px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  opacity: 0.7;
+}
+
+/* Sidebar Titles */
+.nav__title {
+  margin-bottom: 0; /* reset for flex container */
+}
+
+.nav__title a {
+  color: var(--apple-text) !important;
+  font-size: 17px;
+  font-weight: 500;
+  display: block;
+}
+
+.nav__title a:hover { color: var(--apple-text) !important; opacity: 0.7; }
+.nav__title a.active { font-weight: 700 !important; color: var(--apple-text) !important; }
+
+/* Nested Section Links (Sub-folders) */
+.sidebar-links a.nav__subtitle {
+  color: var(--apple-text) !important; /* Same color as header */
+  font-size: 14px; /* Smaller font */
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.sidebar-links a.nav__subtitle:hover {
+  opacity: 0.7;
+}
+
+/* Adjustments to standard sidebar links */
+.sidebar-links li {
+  margin-bottom: 8px;
+}
+
+.sidebar-links a {
+  color: var(--apple-link) !important;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-links a.active {
+  font-weight: 700 !important;
+}
