@@ -1,6 +1,6 @@
 ---
 title: "Privacy Policy"
-layout: single
+layout: default
 ---
 
 # Privacy Policy for GPA Calculator v3
