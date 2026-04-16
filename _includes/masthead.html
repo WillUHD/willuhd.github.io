@@ -2,13 +2,13 @@
   <div class="masthead__inner-wrap">
     <div class="masthead__menu">
       <nav id="site-nav" class="greedy-nav" style="display: flex; align-items: center; justify-content: flex-start !important;">
-        <a class="site-title" href="{{ '/' | relative_url }}" style="margin-right: 2.5rem; font-weight: 600;">{{ site.title }}</a>
-        <ul class="visible-links" style="display: flex; gap: 1.5rem; list-style: none; padding: 0; margin: 0;">
+        <a class="site-title" href="{{ '/' | relative_url }}" style="font-weight: 600; margin-right: 0;">{{ site.title }}</a>
+        <ul class="visible-links" style="padding-left: 2rem; list-style: none; display: flex; gap: 1.5rem;">
           {% for p in site.pages %}
             {% assign parts = p.url | split: '/' %}
             {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
               <li>
-                <a href="{{ p.url | relative_url }}" style="color: var(--text-color) !important; font-weight: 400; font-size: 0.9rem;">{{ p.title }}</a>
+                <a href="{{ p.url | relative_url }}" style="color: var(--text-color) !important; font-weight: 400; font-size: 0.95rem;">{{ p.title }}</a>
               </li>
             {% endif %}
           {% endfor %}
