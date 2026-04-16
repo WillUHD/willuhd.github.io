@@ -36,14 +36,38 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
 
 .content-wrapper { max-width: 1080px; margin: 0 auto; padding: 0 20px; display: flex; }
 #main-container { padding-top: 80px; min-height: 80vh; }
-.sidebar-column { width: 260px; flex-shrink: 0; position: sticky; top: 80px; height: fit-content; padding-top: 0; }
-.article-column { flex-grow: 1; padding-left: 60px; max-width: 780px; }
+
+/* 1. Allow sidebar to shrink down to a limit */
+.sidebar-column { 
+  width: 260px; 
+  flex-shrink: 1; /* Changed from 0 to 1 */
+  min-width: 180px; /* Breakpoint where it stops shrinking */
+  position: sticky; 
+  top: 80px; 
+  height: fit-content; 
+  padding-top: 0; 
+}
+
+/* 2. Min-width: 0 ensures flexbox items don't overflow when handling long text */
+.article-column { 
+  flex-grow: 1; 
+  padding-left: 60px; 
+  max-width: 780px; 
+  min-width: 0; 
+}
 
 .markdown-content > *:first-child { margin-top: 0; }
-.markdown-content { font-size: 19px; line-height: 1.5; }
+
+/* 3. Add proper word-wrapping to Markdown */
+.markdown-content { 
+  font-size: 19px; 
+  line-height: 1.5; 
+  overflow-wrap: break-word; 
+  word-wrap: break-word;
+  word-break: break-word; 
+}
 .markdown-content a { color: var(--accent-blue); }
 .markdown-content a:hover { text-decoration: underline; }
-
 
 .masthead {
   position: fixed; top: 0; width: 100%; z-index: 1000;
@@ -133,12 +157,14 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   font-style: italic;
 }
 
+/* Let inline code break properly on long un-spaced words */
 .markdown-content code {
   font-family: "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.85em;
   background: var(--ui-footer-bg);
   padding: 0.2em 0.4em;
   border-radius: 6px;
+  white-space: pre-wrap; 
 }
 
 .markdown-content pre {
@@ -149,12 +175,15 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   border: 1px solid var(--ui-border);
 }
 
+/* Keep formatting inside actual codeblocks so horizontal scrolling still works */
 .markdown-content pre code {
   background: none;
   padding: 0;
   font-size: 14px;
   color: var(--text-primary);
   line-height: 1.6;
+  white-space: pre; 
+  word-break: normal;
 }
 
 .markdown-content ul, .markdown-content ol {
@@ -196,4 +225,36 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   border: 0;
   border-top: 1px solid var(--ui-border);
   margin: 40px 0;
+}
+
+/* ========================================================
+   RESPONSIVE MEDIA QUERIES
+   ======================================================== */
+
+/* Intermediate fallback: Shrink left gap slightly before breaking */
+@media (max-width: 900px) {
+  .article-column {
+    padding-left: 30px;
+  }
+}
+
+/* Final fallback: Move sidebar above markdown content */
+@media (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+  
+  .sidebar-column {
+    width: 100%;
+    position: relative; /* Stops it from awkwardly sticking when stacked */
+    top: 0;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--ui-border); /* Visual separator */
+  }
+
+  .article-column {
+    padding-left: 0;
+    max-width: 100%;
+  }
 }
