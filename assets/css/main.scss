@@ -2,16 +2,6 @@
 ---
 @import "minimal-mistakes";
 
-/* --- Fix Text Selection (Revert to Browser Default) --- */
-::selection {
-  background-color: revert !important;
-  color: revert !important;
-}
-::-moz-selection {
-  background-color: revert !important;
-  color: revert !important;
-}
-
 /* --- Apple Newsroom Design System --- */
 :root {
   --apple-bg: #ffffff;
@@ -87,7 +77,7 @@ body {
   display: none !important; /* Removes the sliding bar animation */
 }
 
-/* --- Content Styling --- */
+/* --- Content Styling (Markdown files) --- */
 .page__inner-wrap {
   margin-top: 40px;
 }
@@ -102,6 +92,15 @@ p {
   line-height: 1.5 !important;
   font-weight: 400 !important;
   color: var(--apple-text) !important;
+}
+
+/* Make Markdown links the exact same Apple blue */
+.page__content a {
+  color: var(--apple-link) !important;
+  text-decoration: none;
+}
+.page__content a:hover {
+  text-decoration: underline;
 }
 
 /* --- Sidebar --- */
@@ -123,12 +122,18 @@ p {
   text-decoration: none !important;
 }
 
+/* Instant dim effect for sidebar links, NO animations */
+.sidebar a:hover {
+  opacity: 0.5 !important;
+  transition: none !important; 
+}
+
 /* --- Footer (Apple Style) --- */
 .page__footer {
   background-color: var(--apple-footer) !important;
   border-top: 1px solid var(--apple-border) !important;
   padding: 40px 0 !important;
-  font-size: 14px !important; /* Bigger, but smaller than the 19px body text */
+  font-size: 14px !important;
   color: var(--apple-secondary) !important;
 }
 

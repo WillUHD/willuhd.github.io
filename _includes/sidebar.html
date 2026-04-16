@@ -14,18 +14,17 @@
   
   <div class="sidebar sticky">
     <nav class="nav__list">
-      <!-- Section Title is now a clickable link to the index page -->
-      <h3 class="nav__title" style="margin-top: 0;">
-        <a href="{{ section_index_url | relative_url }}">{{ section_title }}</a>
+      <!-- Section Title perfectly aligned left -->
+      <h3 class="nav__title" style="margin: 0 0 12px 0; padding: 0; text-align: left;">
+        <a href="{{ section_index_url | relative_url }}" style="text-decoration: none; color: var(--apple-text); display: block; text-transform: none;">{{ section_title }}</a>
       </h3>
-      <ul style="list-style: none; padding: 0; margin: 0;">
+      <ul style="list-style: none; padding: 0; margin: 0; text-align: left;">
         {% for p in site.pages %}
           {% if p.url contains section_dir and p.title %}
-            <!-- This skips the index file so it doesn't appear twice -->
             {% if p.url != section_index_url %}
-              <li style="margin-bottom: 12px;">
+              <li style="margin-bottom: 12px; padding: 0;">
                 <a href="{{ p.url | relative_url }}" 
-                   style="text-decoration: none; font-size: 14px; color: {% if page.url == p.url %}var(--apple-text){% else %}var(--apple-link){% endif %}; font-weight: {% if page.url == p.url %}600{% else %}400{% endif %};">
+                   style="text-decoration: none; display: block; font-size: 14px; color: {% if page.url == p.url %}var(--apple-text){% else %}var(--apple-link){% endif %}; font-weight: {% if page.url == p.url %}600{% else %}400{% endif %};">
                   {{ p.title }}
                 </a>
               </li>
