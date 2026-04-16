@@ -18,11 +18,6 @@ defaults:
       read_time: false
       sidebar:
         nav: "auto"
-  # New default for the posts folder
-  - scope:
-      path: "posts"
-    values:
-      permalink: /:basename/
 
 plugins:
   - jekyll-paginate
