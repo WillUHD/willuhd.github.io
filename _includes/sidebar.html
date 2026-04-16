@@ -1,6 +1,4 @@
 {% assign current_dir = page.dir %}
-
-{% comment %} 1. Calculate if we need a back button (depth > 2) {% endcomment %}
 {% assign dir_parts = current_dir | split: "/" %}
 {% assign show_back = false %}
 {% assign parent_dir = "" %}
@@ -17,7 +15,6 @@
   {% assign parent_dir = parent_dir | append: "/" %}
 {% endif %}
 
-{% comment %} 2. Find the exact title of the current directory's index page {% endcomment %}
 {% assign header_title = "" %}
 {% for p in site.pages %}
   {% if p.url == current_dir %}
@@ -26,8 +23,6 @@
 {% endfor %}
 
 <nav class="sidebar">
-  
-  {% comment %} 3. Render Header (with optional Back Button) {% endcomment %}
   <div class="nav__header-container">
     {% if show_back %}
       <a href="{{ parent_dir | relative_url }}" class="back-button">
@@ -43,8 +38,6 @@
 
   <ul class="sidebar-links">
     {% assign sorted_pages = site.pages | sort: 'order' %}
-    
-    {% comment %} 4. Standard Pages (Strictly excludes index.md) {% endcomment %}
     {% for p in sorted_pages %}
       {% if p.dir == current_dir and p.url != p.dir and p.title %}
         <li>
@@ -55,15 +48,13 @@
       {% endif %}
     {% endfor %}
 
-    {% comment %} 5. Nested Sub-sections (Exactly 1 level deeper) {% endcomment %}
     {% for p in sorted_pages %}
-      {% if p.url == p.dir %} <!-- Only look at directory index pages -->
+      {% if p.url == p.dir %} 
         {% if p.dir contains current_dir and p.dir != current_dir and p.title %}
           
           {% assign p_rel = p.dir | replace_first: current_dir, "" %}
           {% assign p_rel_parts = p_rel | split: "/" %}
           
-          {% comment %} If it has exactly 1 remaining folder part, it's a direct child subsection {% endcomment %}
           {% if p_rel_parts.size == 1 %}
             <li>
               <a href="{{ p.url | relative_url }}" class="nav__subtitle">
