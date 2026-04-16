@@ -28,16 +28,15 @@
   <main id="main-container">
     <div class="content-wrapper">
       
-      <!-- Sidebar -->
+      <!-- Sidebar only renders if content exists inside -->
       <aside class="sidebar-column">
         {% include sidebar.html %}
       </aside>
-
-      <!-- 3. Main Content (Title Removed) -->
+  
       <article class="article-column markdown-content">
         {{ content }}
       </article>
-
+  
     </div>
   </main>
 
