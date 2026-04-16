@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: 'en' }}">
+  {% include head.html %} <!-- Minima's default head handles SEO and basic meta -->
+  <body>
+    <!-- Your Custom Masthead -->
+    {% include masthead.html %}
+
+    <main class="page-content" aria-label="Content" id="main" style="display: flex; max-width: 1100px; margin: 0 auto; padding: 60px 20px 0;">
+      
+      <!-- Your Custom Sidebar -->
+      <aside style="width: 250px; flex-shrink: 0;">
+        {% include sidebar.html %}
+      </aside>
+
+      <!-- The actual Markdown content -->
+      <article class="page__content" style="flex-grow: 1; padding-left: 40px; max-width: 800px;">
+        {{ content }}
+      </article>
+
+    </main>
+
+    <!-- Your Custom Footer -->
+    <footer class="page__footer">
+      <div style="max-width: 1100px; margin: 0 auto; padding: 0 20px;">
+        {% include footer.html %}
+      </div>
+    </footer>
+  </body>
+</html>
