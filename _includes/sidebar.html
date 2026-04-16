@@ -1,63 +1,50 @@
-{% comment %} 
-  1. Setup Paths 
-{% endcomment %}
 {% assign current_dir = page.dir %}
-{% assign path_parts = current_dir | split: "/" | array_to_sentence_string | split: " " %}
-{% comment %} path_parts size will be 1 for /folder/, 2 for /folder/sub/ {% endcomment %}
 
-{% comment %} 
-  2. Find the index page of the CURRENT directory to use as the Header 
-{% endcomment %}
-{% assign current_index_page = nil %}
+{% comment %} 1. Calculate parent directory for back button {% endcomment %}
+{% assign dir_parts = current_dir | split: "/" %}
+{% assign parent_dir = "" %}
+{% if dir_parts.size > 2 %}
+  {% assign parent_size = dir_parts.size | minus: 1 %}
+  {% for i in (1..parent_size) limit: parent_size %}
+    {% if forloop.last == false %}
+      {% assign parent_dir = parent_dir | append: "/" | append: dir_parts[i] %}
+    {% endif %}
+  {% endfor %}
+  {% assign parent_dir = parent_dir | append: "/" %}
+{% endif %}
+
+{% comment %} 2. Find the title of the current directory's index page (The Header) {% endcomment %}
+{% assign header_title = "" %}
 {% for p in site.pages %}
   {% assign p_url = p.url | replace: "index.html", "" %}
   {% if p_url == current_dir %}
-    {% assign current_index_page = p %}
+    {% assign header_title = p.title %}
   {% endif %}
 {% endfor %}
 
-{% comment %} 
-  3. Determine Parent Directory for the Back Button 
-{% endcomment %}
-{% assign parent_dir = nil %}
-{% if path_parts.size > 1 %}
-  {% assign parts = current_dir | split: "/" %}
-  {% assign slice_end = parts.size | minus: 1 %}
-  {% assign parent_dir = "/" %}
-  {% for i in (1..slice_end) %}
-    {% if parts[i] != "" and i < slice_end %}
-      {% assign parent_dir = parent_dir | append: parts[i] | append: "/" %}
-    {% endif %}
-  {% endfor %}
-{% endif %}
-
 <nav class="sidebar">
-  {% comment %} SIDEBAR HEADER {% endcomment %}
+  
+  {% comment %} 3. Render Header & Back Button {% endcomment %}
   <div class="nav__header-container">
-    {% if parent_dir %}
+    {% if parent_dir != "" %}
       <a href="{{ parent_dir | relative_url }}" class="back-button">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </a>
     {% endif %}
-
     <div class="nav__title">
-      <a href="{{ current_index_page.url | relative_url }}" class="active">
-        {{ current_index_page.title | default: "Section" }}
+      <a href="{{ current_dir | relative_url }}" class="active">
+        {{ header_title }}
       </a>
     </div>
   </div>
 
   <ul class="sidebar-links">
     {% assign sorted_pages = site.pages | sort: 'order' %}
-
-    {% comment %} 4. LIST REGULAR FILES (Blue Links) {% endcomment %}
+    
+    {% comment %} 4. Standard Pages in current dir {% endcomment %}
     {% for p in sorted_pages %}
-      {% assign p_dir = p.dir %}
       {% assign p_url = p.url | replace: "index.html", "" %}
-      
-      {% comment %} Show if in this folder, has a title, and isn't the index itself {% endcomment %}
-      {% if p_dir == current_dir and p.title and p.url != "/index.html" %}
-        {% if p.url contains "index.html" %}{% continue %}{% endif %}
+      {% if p.dir == current_dir and p_url != current_dir and p.title %}
         <li>
           <a href="{{ p.url | relative_url }}" class="{% if page.url == p.url %}active{% endif %}">
             {{ p.title }}
@@ -66,27 +53,26 @@
       {% endif %}
     {% endfor %}
 
-    {% comment %} 5. LIST SUB-FOLDERS (Black Links with Chevron) {% endcomment %}
+    {% comment %} 5. Sub-sections (Folders exactly 1 level deeper) {% endcomment %}
+    {% assign target_depth = dir_parts.size | plus: 1 %}
     {% for p in sorted_pages %}
-      {% if p.url contains "index.html" %}
-        {% assign p_dir = p.dir %}
-        {% comment %} Check if this index.md is exactly one level deeper {% endcomment %}
-        {% assign rel_path = p_dir | replace: current_dir, "" %}
-        {% assign depth_check = rel_path | split: "/" %}
-        
-        {% if p_dir contains current_dir and p_dir != current_dir and depth_check.size == 1 %}
-          <li>
-            <a href="{{ p.url | relative_url }}" class="nav__subtitle">
-              {{ p.title }}
-              <span class="chevron-icon">
-                <svg width="7" height="11" viewBox="0 0 7 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L5.5 5.5L1 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-            </a>
-          </li>
-        {% endif %}
+      {% assign p_url = p.url | replace: "index.html", "" %}
+      {% assign p_dir_parts = p.dir | split: "/" %}
+      
+      {% comment %} Checks: Is it an index? Is it inside current_dir? Is it exactly 1 level deeper? {% endcomment %}
+      {% if p_url == p.dir and p.dir contains current_dir and p_dir_parts.size == target_depth and p.title %}
+        <li>
+          <a href="{{ p.url | relative_url }}" class="nav__subtitle">
+            {{ p.title }}
+            <span class="chevron-icon">
+              <svg width="7" height="11" viewBox="0 0 7 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5.5 5.5L1 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </a>
+        </li>
       {% endif %}
     {% endfor %}
   </ul>
+  
 </nav>
