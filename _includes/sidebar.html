@@ -41,7 +41,7 @@
     {% for p in sorted_pages %}
       {% if p.dir == current_dir and p.url != p.dir and p.title %}
         <li>
-          <a href="{{ p.url | relative_url }}" class="{% if page.url == p.url %}active{% endif %}">
+          <a href="{{ p.url | replace: '.html', '' | relative_url }}" class="{% if page.url == p.url %}active{% endif %}">
             {{ p.title }}
           </a>
         </li>
@@ -57,7 +57,7 @@
           
           {% if p_rel_parts.size == 1 %}
             <li>
-              <a href="{{ p.url | relative_url }}" class="nav__subtitle">
+              <a href="{{ p.url | replace: '.html', '' | relative_url }}" class="nav__subtitle">
                 {{ p.title }}
                 <span class="chevron-icon">
                   <svg width="6" height="10" viewBox="0 0 7 11" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -72,5 +72,4 @@
       {% endif %}
     {% endfor %}
   </ul>
-  
 </nav>
