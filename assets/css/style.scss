@@ -180,75 +180,47 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   margin: 40px 0;
 }
 
-/* --- Paste/Update these in assets/css/style.scss --- */
+/* --- Sidebar Dynamic Layout Fixes --- */
 
+/* Header and Back Button Alignment */
 .nav__header-container {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
-  gap: 4px; /* Space between back button and text */
+  margin-bottom: 12px;
+  margin-left: -6px; /* Pulls back button slightly left for visual alignment */
 }
 
 .back-button {
+  color: var(--apple-secondary);
   display: flex;
   align-items: center;
-  color: var(--apple-link);
-  margin-left: -8px; /* Optical alignment */
+  padding-right: 6px;
   cursor: pointer;
-  transition: opacity 0.2s;
 }
 
 .back-button:hover {
-  opacity: 0.6;
+  color: var(--apple-text);
 }
 
 .nav__title {
-  margin: 0;
+  margin-bottom: 0; /* Override previous margin since flex container handles it */
 }
 
-.nav__title a {
-  color: var(--apple-text) !important;
-  font-size: 17px;
-  font-weight: 500;
-  display: block;
-}
-
-.nav__title a.active {
-  font-weight: 700 !important;
-}
-
-/* Nested Folder Links */
+/* Sub-section Links (Nested folder links) */
 .sidebar-links a.nav__subtitle {
-  color: var(--apple-text) !important; /* Header color */
-  font-size: 14px; /* Smaller font */
-  font-weight: 500;
-  margin-top: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  color: var(--apple-text) !important; /* Same color as the header */
+  font-size: 15px; /* Smaller than the 17px header */
+  font-weight: 600;
+  margin-top: 16px; /* Separation from regular file links */
 }
 
 .sidebar-links a.nav__subtitle:hover {
   opacity: 0.7;
 }
 
-/* Sidebar Standard Links */
-.sidebar-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar-links li {
-  margin-bottom: 10px;
-}
-
-.sidebar-links a {
-  color: var(--apple-link) !important;
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.sidebar-links a.active {
-  font-weight: 700 !important;
+.chevron-icon {
+  opacity: 0.8;
+  color: var(--apple-secondary);
+  display: flex;
+  align-items: center;
 }
