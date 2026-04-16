@@ -14,8 +14,11 @@
   color: HighlightText !important;
 }
 
-/* --- 2. CURSOR --- */
-/* All custom cursor patches removed as requested to restore default browser behavior */
+/* --- 2. THE CURSOR FIX --- */
+/* We force the cursor on the link AND everything inside/around it to prevent the "flicker" */
+a, a *, button, button *, .btn, [role="button"] {
+  cursor: pointer !important;
+}
 
 /* --- Apple Newsroom Design System --- */
 :root {
@@ -28,8 +31,8 @@
   --apple-link-dark: #004499;
   --apple-border: #d2d2d7;
   --apple-footer: #f5f5f7;
-  /* Priority: SF Pro (System) -> Inter (Webfont) -> Sans-Serif */
-  --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* SF Pro -> Inter -> System Default */
+  --font-family: "SF Pro Display", "SF Pro Text", "Inter", system-ui, -apple-system, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -58,17 +61,22 @@ body {
   display: none !important;
 }
 
-/* SYNC SIDEBAR & CONTENT ALIGNMENT */
-.page__inner-wrap {
+/* 
+   FIX: SYNC VERTICAL STARTING POINT
+   Instead of applying margins to individual columns, we apply it to the parent container 
+*/
+#main {
   margin-top: 60px !important;
-  padding-top: 0 !important;
   max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
 }
 
-.sidebar {
-  margin-top: 60px !important; 
+/* Reset individual offsets so they start at the exact same pixel */
+.page__inner-wrap, .sidebar {
+  margin-top: 0 !important;
   padding-top: 0 !important;
-  border-right: none !important;
 }
 
 /* --- Header / Masthead --- */
@@ -82,9 +90,7 @@ body {
   z-index: 1000;
 }
 
-.masthead__inner-wrap,
-.masthead__menu,
-.greedy-nav {
+.masthead__inner-wrap, .masthead__menu, .greedy-nav {
   background: transparent !important;
 }
 
@@ -106,7 +112,6 @@ body {
   font-size: 21px !important;
   margin-right: 40px !important; 
   color: var(--apple-text) !important;
-  font-family: var(--font-family) !important;
 }
 
 .greedy-nav a {
@@ -115,25 +120,36 @@ body {
   font-size: 14px !important;
 }
 
-/* --- Sidebar Hover Logic --- */
+/* --- Sidebar Styling & Hover Logic --- */
+.sidebar {
+  border-right: none !important;
+}
+
+/* Sidebar Title (Jet Black - No color change on hover) */
 .nav__title a {
   color: var(--apple-jet-black) !important; 
-  text-decoration: none;
+  text-decoration: none !important;
+  transition: none !important;
 }
 
-/* Subsection Link Hover: Direct color shift, no fade, no opacity changes */
-.sidebar a {
-  transition: none !important; /* Removes the "fading" effect */
+.nav__title a:hover {
+  color: var(--apple-jet-black) !important; /* Stays black */
+  opacity: 1 !important;
 }
 
-.sidebar a:hover {
+/* Sidebar Links (Instant blue shift) */
+.sidebar ul li a {
+  transition: none !important; 
+}
+
+.sidebar ul li a:hover {
   color: var(--apple-link-dark) !important;
-  opacity: 1 !important; /* Ensures it doesn't dim */
+  opacity: 1 !important;
   text-decoration: none !important;
 }
 
 /* --- Content Typography --- */
-p, li, div {
+p, li, div, span {
   font-family: var(--font-family) !important;
 }
 
