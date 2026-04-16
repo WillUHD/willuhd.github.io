@@ -1,6 +1,6 @@
 ---
 title: "Support"
-layout: single
+layout: default
 ---
 
 # Support for GPA Calculator v3
