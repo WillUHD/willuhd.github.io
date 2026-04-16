@@ -1,18 +1,17 @@
-<div class="page__footer-follow">
-  <ul class="social-icons" style="display: flex; gap: 20px; flex-wrap: wrap; list-style: none; padding: 0; margin: 0 0 20px 0; border-bottom: 1px solid var(--apple-border); padding-bottom: 20px;">
-    {% for p in site.pages %}
-      {% assign parts = p.url | split: '/' %}
-      {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
-        <li>
-          <a href="{{ p.url | relative_url }}" style="color: var(--apple-secondary); text-decoration: none; text-transform: none !important; font-size: 14px;">
-            {{ p.title }}
-          </a>
-        </li>
-      {% endif %}
-    {% endfor %}
-  </ul>
-</div>
-
-<div class="page__footer-copyright" style="font-size: 14px; color: var(--apple-secondary); text-transform: none !important;">
-  <span>Copyright © {{ "now" | date: "%Y" }} {{ site.title }}. All rights reserved.</span>
-</div>
+<footer class="site-footer">
+  <div class="content-wrapper" style="flex-direction: column;">
+    <div class="footer-links">
+      <ul class="social-icons">
+        {% for p in site.pages %}
+          {% assign parts = p.url | split: '/' %}
+          {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
+            <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="footer-copyright">
+      <span>Copyright © {{ "now" | date: "%Y" }} {{ site.title }}. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
