@@ -1,7 +1,6 @@
 title: willuhd
 locale: "en-US"
 url: https://willuhd.github.io
-permalink: /:title/
 baseurl: ""
 
 head_scripts:
