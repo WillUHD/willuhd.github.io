@@ -1,19 +1,15 @@
-<div class="masthead">
+<header class="masthead">
   <div class="masthead__inner-wrap">
-    <div class="masthead__menu">
-      <nav id="site-nav" class="greedy-nav">
-        <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
-        <ul class="visible-links">
-          {% for p in site.pages %}
-            {% assign parts = p.url | split: '/' %}
-            {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
-              <li class="masthead__menu-item">
-                <a href="{{ p.url | relative_url }}">{{ p.title }}</a>
-              </li>
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </nav>
-    </div>
+    <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+    <nav class="greedy-nav">
+      <ul class="visible-links">
+        {% for p in site.pages %}
+          {% assign parts = p.url | split: '/' %}
+          {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
+            <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </nav>
   </div>
-</div>
+</header>
