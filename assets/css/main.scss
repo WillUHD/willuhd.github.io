@@ -1,10 +1,9 @@
 ---
 ---
-/* Import Inter for non-Apple systems */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 @import "minimal-mistakes";
 
-/* --- 1. SELECTION & CURSOR FIX --- */
+/* --- 1. SELECTION FIX --- */
+/* Using 'revert' forces the browser to ignore theme styles and use the OS default */
 ::selection {
   background: Highlight !important;
   color: HighlightText !important;
@@ -14,17 +13,19 @@
   color: HighlightText !important;
 }
 
-/* Fixes the "flashing" cursor bug by preventing links from acting like selectable text */
-a, button {
+/* --- 2. CURSOR FIX --- */
+/* Explicitly forcing the glove pointer on all link elements */
+a, button, .btn, [role="button"], 
+.masthead__menu-item a, 
+.sidebar a,
+.nav__list a {
   cursor: pointer !important;
-  -webkit-user-select: auto !important;
-  user-select: auto !important;
 }
 
 /* --- Apple Newsroom Design System --- */
 :root {
   --apple-bg: #ffffff;
-  --apple-header-bg: rgba(255, 255, 255, 0.7); 
+  --apple-header-bg: rgba(255, 255, 255, 0.7); /* Valid RGBA for blur */
   --apple-text: #1d1d1f;
   --apple-jet-black: #000000;
   --apple-secondary: #6e6e73;
@@ -32,7 +33,7 @@ a, button {
   --apple-link-dark: #004499;
   --apple-border: #d2d2d7;
   --apple-footer: #f5f5f7;
-  --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family: "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -61,23 +62,13 @@ body {
   display: none !important;
 }
 
-/* 
-  SYNC SIDEBAR & CONTENT ALIGNMENT 
-  Strips individual spacing and drops the shared parent container down instead.
-*/
-.sidebar, .page, .page__inner-wrap {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
+/* Synchronizing Sidebar and Content top padding */
+.page__inner-wrap, .sidebar {
+  margin-top: 60px !important;
 }
 
-#main {
-  padding-top: 60px !important;
-  align-items: flex-start !important;
-}
-
-/* --- Header / Masthead --- */
 .masthead {
-  background-color: var(--apple-header-bg) !important;
+  background: var(--apple-header-bg) !important;
   backdrop-filter: saturate(180%) blur(50px) !important;
   -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
   border-bottom: 1px solid var(--apple-border) !important;
@@ -86,31 +77,38 @@ body {
   z-index: 1000;
 }
 
-.masthead__inner-wrap,
-.masthead__menu,
-.greedy-nav {
-  background: transparent !important;
-}
-
-.masthead__inner-wrap {
+/* Aligns "willuhd" and sidebar vertically */
+.masthead__inner-wrap, .page__inner-wrap {
   max-width: 1100px !important;
   margin-left: auto;
   margin-right: auto;
   padding: 0 20px !important;
 }
 
+/* --- Header Navigation (Left Aligned) --- */
 .greedy-nav {
   display: flex !important;
-  justify-content: flex-start !important; 
+  justify-content: flex-start !important; /* Moves links next to title */
+  align-items: center;
 }
 
 .site-title {
   flex: 0 0 auto !important;
   font-weight: 600 !important;
   font-size: 21px !important;
-  margin-right: 40px !important; 
+  margin-right: 40px !important; /* Gap after willuhd */
   color: var(--apple-text) !important;
-  font-family: var(--font-family) !important;
+}
+
+.visible-links {
+  display: flex !important;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.masthead__menu-item {
+  margin-right: 25px !important;
 }
 
 .greedy-nav a {
@@ -119,34 +117,17 @@ body {
   font-size: 14px !important;
 }
 
-/* --- Sidebar Hover Logic --- */
+/* --- Sidebar Styling --- */
+.sidebar {
+  border-right: none !important;
+}
+
 .nav__title a {
-  color: var(--apple-jet-black) !important; 
+  color: var(--apple-jet-black) !important; /* Apple Jet Black */
   text-decoration: none;
-  transition: none !important;
 }
 
-/* Keeps sidebar header Apple Jet Black on hover */
-.nav__title a:hover {
-  color: var(--apple-jet-black) !important;
-}
-
-/* Subsection Link Hover: Instant color shift */
-.sidebar ul li a {
-  transition: none !important; 
-}
-
-.sidebar ul li a:hover {
-  color: var(--apple-link-dark) !important;
-  opacity: 1 !important; 
-  text-decoration: none !important;
-}
-
-/* --- Content Typography --- */
-p, li, div {
-  font-family: var(--font-family) !important;
-}
-
+/* --- Content --- */
 p {
   font-size: 19px !important;
   line-height: 1.5 !important;
