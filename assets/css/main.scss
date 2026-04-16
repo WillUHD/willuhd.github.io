@@ -2,33 +2,28 @@
 ---
 @import "minimal-mistakes";
 
-/* --- 1. FORCE VANILLA SYSTEM SELECTION --- */
-/* 'revert' tells the browser to use the OS default highlight colors */
-::selection {
-  background: revert !important;
-  color: revert !important;
+/* --- FORCE OS SYSTEM SELECTION --- */
+/* The theme forces custom highlights. "Highlight" and "HighlightText" tell the browser to pull the user's native macOS system colors. */
+*::selection {
+  background-color: Highlight !important;
+  color: HighlightText !important;
 }
-::-moz-selection {
-  background: revert !important;
-  color: revert !important;
+*::-moz-selection {
+  background-color: Highlight !important;
+  color: HighlightText !important;
 }
 
-/* --- 2. FORCE VANILLA GLOVE CURSOR --- */
-/* Explicitly forcing the pointer cursor on all link elements */
-a, 
-a *, 
-button, 
-.btn, 
-[role="button"],
-.pagination a {
+/* --- FORCE VANILLA GLOVE CURSOR --- */
+/* The theme breaks native cursors, so we must explicitly force the pointer back */
+a, a:hover, a *, button, .btn, [role="button"] {
   cursor: pointer !important;
 }
 
 /* --- Apple Newsroom Design System --- */
 :root {
-  /* We use Hex with Alpha (last 2 digits) so the blur works */
   --apple-bg: #ffffff;
-  --apple-bg-translucent: rgba(255, 255, 255, 0.7); 
+  /* Fixed: explicit RGBA values so transparency actually works for the blur */
+  --apple-masthead-bg: rgba(255, 255, 255, 0.72); 
   --apple-text: #1d1d1f;
   --apple-jet-black: #000000;
   --apple-secondary: #6e6e73;
@@ -37,13 +32,13 @@ button,
   --apple-border: #d2d2d7;
   --apple-footer: #f5f5f7;
   --font-family: "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --site-max-width: 1024px; 
+  --site-max-width: 1100px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --apple-bg: #000000;
-    --apple-bg-translucent: rgba(0, 0, 0, 0.7);
+    --apple-masthead-bg: rgba(0, 0, 0, 0.72);
     --apple-text: #f5f5f7;
     --apple-jet-black: #ffffff;
     --apple-secondary: #86868b;
@@ -59,9 +54,6 @@ body {
   background-color: var(--apple-bg) !important;
   color: var(--apple-text) !important;
   -webkit-font-smoothing: antialiased;
-  /* Ensures user selection is allowed */
-  user-select: text !important;
-  -webkit-user-select: text !important;
 }
 
 /* --- Layout Adjustments --- */
@@ -71,15 +63,14 @@ body {
 
 .page__inner-wrap {
   margin-top: 60px !important;
-  max-width: var(--site-max-width) !important;
+  max-width: var(--site-max-width);
 }
 
-/* --- Masthead (Header) & Volumetric Blur --- */
+/* --- Masthead (Header) --- */
 .masthead {
-  background-color: var(--apple-bg-translucent) !important;
-  /* High radius volumetric blur */
-  backdrop-filter: saturate(180%) blur(30px) !important;
-  -webkit-backdrop-filter: saturate(180%) blur(30px) !important;
+  background: var(--apple-masthead-bg) !important;
+  backdrop-filter: saturate(180%) blur(50px) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
   border-bottom: 1px solid var(--apple-border) !important;
   position: sticky;
   top: 0;
@@ -93,16 +84,8 @@ body {
   margin-right: auto;
 }
 
-/* Align Nav to the Left (directly next to title) */
 .greedy-nav {
-  display: flex !important;
   justify-content: flex-start !important;
-}
-
-.greedy-nav .visible-links {
-  display: flex !important;
-  flex: 0 1 auto !important;
-  margin-left: 20px !important; /* Spacing between willuhd and first link */
 }
 
 .site-title {
@@ -110,8 +93,14 @@ body {
   letter-spacing: -0.01em !important;
   font-size: 21px !important;
   color: var(--apple-text) !important;
+  margin-right: 30px !important; 
   flex: 0 0 auto !important;
-  padding-right: 10px !important;
+}
+
+.visible-links {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center;
 }
 
 .greedy-nav a {
@@ -125,30 +114,24 @@ body {
   text-decoration: none !important;
 }
 
-/* Remove the default underline/decoration on nav items */
-.greedy-nav a::before, .greedy-nav a::after {
-  display: none !important;
-}
-
 /* --- Sidebar Alignment & Style --- */
 .sidebar {
   border-right: none !important;
   padding-right: 20px;
-  /* Align top-pad with content */
   margin-top: 60px !important; 
 }
 
-/* Sidebar Title - Jet Black Color */
+/* Forces Apple Jet Black regardless of inline HTML styles */
 .nav__title a {
   color: var(--apple-jet-black) !important;
-  text-decoration: none !important;
-  text-transform: none !important;
+  text-decoration: none;
+  text-transform: none;
+  font-weight: 400;
 }
 
-/* Sidebar Hover logic - subtle Apple fade */
-.sidebar a:hover {
-  opacity: 0.5 !important;
-  transition: opacity 0.2s ease;
+.nav__title a.active, 
+.sidebar .nav__list h3 a[style*="font-weight: 700"] {
+  font-weight: 700 !important;
 }
 
 /* --- Content Typography --- */
@@ -169,3 +152,86 @@ p {
   border-top: 1px solid var(--apple-border) !important;
   padding: 40px 0 !important;
 }
+
+<div class="page__footer-follow">
+  <ul class="social-icons" style="display: flex; gap: 20px; flex-wrap: wrap; list-style: none; padding: 0; margin: 0 0 20px 0; border-bottom: 1px solid var(--apple-border); padding-bottom: 20px;">
+    {% for p in site.pages %}
+      {% assign parts = p.url | split: '/' %}
+      {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
+        <li>
+          <a href="{{ p.url | relative_url }}" style="color: var(--apple-secondary); text-decoration: none; text-transform: none !important; font-size: 14px;">
+            {{ p.title }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="page__footer-copyright" style="font-size: 14px; color: var(--apple-secondary); text-transform: none !important;">
+  <span>Copyright © {{ "now" | date: "%Y" }} {{ site.title }}. All rights reserved.</span>
+</div>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+        <ul class="visible-links">
+          {% for p in site.pages %}
+            {% assign parts = p.url | split: '/' %}
+            {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
+              <li class="masthead__menu-item">
+                <a href="{{ p.url | relative_url }}">{{ p.title }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+{% if page.url != '/' and page.url != '/index.html' %}
+  {% assign url_parts = page.url | split: '/' %}
+  {% assign section_dir = "/" | append: url_parts[1] | append: "/" %}
+  
+  {% assign section_title = url_parts[1] | replace: "-", " " | capitalize %}
+  {% assign section_index_url = section_dir %}
+
+  {% for p in site.pages %}
+    {% if p.url == section_dir or p.url == section_dir | append: "index.html" %}
+      {% assign section_title = p.title %}
+      {% assign section_index_url = p.url %}
+    {% endif %}
+  {% endfor %}
+  
+  <div class="sidebar sticky">
+    <nav class="nav__list">
+      <h3 class="nav__title" style="margin: 0 0 12px 0; padding: 0; text-align: left;">
+        <a href="{{ section_index_url | relative_url }}" 
+           style="text-decoration: none; text-transform: none; 
+                  font-weight: {% if page.url == section_index_url %}700{% else %}400{% endif %};">
+          {{ section_title }}
+        </a>
+      </h3>
+      
+      <ul style="list-style: none; padding: 0; margin: 0; text-align: left;">
+        {% for p in site.pages %}
+          {% if p.url contains section_dir and p.title %}
+            {% if p.url != section_index_url %}
+              <li style="margin-bottom: 12px; padding: 0;">
+                <a href="{{ p.url | relative_url }}" 
+                   style="text-decoration: none; display: block; font-size: 14px; 
+                          color: {% if page.url == p.url %}var(--apple-link-dark){% else %}var(--apple-link){% endif %}; 
+                          font-weight: {% if page.url == p.url %}700{% else %}400{% endif %};">
+                  {{ p.title }}
+                </a>
+              </li>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+{% endif %}
