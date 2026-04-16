@@ -1,21 +1,48 @@
-<nav class="sidebar">
-  <!-- Section Header -->
-  <div class="nav__title">
-    <a href="/">Navigation</a>
-  </div>
+{% assign url_parts = page.url | split: '/' %}
+{% assign path_depth = url_parts | size %}
 
-  <ul style="list-style: none; padding: 0; margin: 0;">
+{% if path_depth > 2 %}
+  {% comment %} 
+    Identify the current section folder (e.g., /gpa-calc/) 
+  {% endcomment %}
+  {% assign section_dir = url_parts[1] | prepend: "/" | append: "/" %}
+  
+  <nav class="sidebar">
+    {% comment %} 1. FIND THE SECTION INDEX (The Title) {% endcomment %}
     {% for p in site.pages %}
-      {% assign parts = p.url | split: '/' %}
-      <!-- Only show top-level pages and skip index -->
-      {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
-        <li>
-          <a href="{{ p.url | relative_url }}" 
-             class="{% if page.url == p.url %}current-page{% endif %}">
+      {% if p.url == section_dir or p.url == "/gpa-calc/index.html" %}
+        <div class="nav__title">
+          <a href="{{ p.url | relative_url }}" class="{% if page.url == p.url %}active{% endif %}">
             {{ p.title }}
           </a>
-        </li>
+        </div>
       {% endif %}
     {% endfor %}
-  </ul>
-</nav>
+
+    {% comment %} 2. FIND THE SUB-PAGES {% endcomment %}
+    <ul class="sidebar-links">
+      {% for p in site.pages %}
+        {% if p.url contains section_dir and p.title %}
+          {% comment %} Skip the index page because it's already the Title {% endcomment %}
+          {% if p.url != section_dir and p.url != "/gpa-calc/index.html" %}
+            
+            {% assign p_parts = p.url | split: '/' %}
+            <li>
+              <a href="{{ p.url | relative_url }}" class="{% if page.url == p.url %}active{% endif %}">
+                {{ p.title }}
+                {% comment %} 3. SUBSECTION LOGIC (If it's an index in a deeper folder) {% endcomment %}
+                {% if p_parts.size > 3 and p.url contains "index.html" %}
+                  <span class="chevron">
+                    <svg width="7" height="11" viewBox="0 0 7 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1L5.5 5.5L1 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                {% endif %}
+              </a>
+            </li>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}
