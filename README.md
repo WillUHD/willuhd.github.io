@@ -1,6 +1,6 @@
 ---
-title: willuhd
 layout: default
+permalink: /
 ---
 
 # willuhd
