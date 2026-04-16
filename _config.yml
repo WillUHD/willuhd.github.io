@@ -5,8 +5,9 @@ locale: "en-US"
 url: https://willuhd.github.io
 baseurl: ""
 
-# Disable the feed
-feed: false
+# Add Google Fonts for non-Apple devices
+head_scripts:
+  - https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap
 
 defaults:
   - scope:
@@ -14,11 +15,11 @@ defaults:
     values:
       layout: single
       author_profile: false
-      share: false        # Removes Twitter, Facebook, etc.
+      share: false
       comments: false
       read_time: false
       sidebar:
-        nav: "auto"       # Handled automatically by our override
+        nav: "auto"
 
 plugins:
   - jekyll-remote-theme

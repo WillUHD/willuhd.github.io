@@ -2,7 +2,7 @@
   {% assign url_parts = page.url | split: '/' %}
   {% assign section_dir = "/" | append: url_parts[1] | append: "/" %}
   
-  {% assign section_title = url_parts[1] | capitalize %}
+  {% assign section_title = url_parts[1] | replace: "-", " " | capitalize %}
   {% for p in site.pages %}
     {% if p.url == section_dir or p.url == section_dir | append: "index.html" %}
       {% assign section_title = p.title %}
@@ -11,14 +11,13 @@
   
   <div class="sidebar sticky">
     <nav class="nav__list">
-      <h3 class="nav__title" style="padding-left: 0; margin-bottom: 1.2rem; font-size: 1rem; color: var(--text-color);">{{ section_title }}</h3>
-      <ul style="list-style: none; padding-left: 0; margin: 0;">
+      <h3 class="nav__title">{{ section_title }}</h3>
+      <ul style="list-style: none; padding: 0; margin: 0;">
         {% for p in site.pages %}
           {% if p.url contains section_dir and p.title %}
-            {% assign p_parts = p.url | split: '/' %}
-            {% assign depth = p_parts.size | minus: 3 | at_least: 0 %}
-            <li style="margin-bottom: 0.8rem;">
-              <a href="{{ p.url | relative_url }}" style="display: block; padding-left: {{ depth | times: 15 }}px; text-decoration: none; font-size: 0.95rem; color: var(--link-color); {% if page.url == p.url %}font-weight: 700; text-decoration: underline;{% endif %}">
+            <li style="margin-bottom: 12px;">
+              <a href="{{ p.url | relative_url }}" 
+                 style="text-decoration: none; font-size: 14px; color: {% if page.url == p.url %}var(--apple-text){% else %}var(--apple-link){% endif %}; font-weight: {% if page.url == p.url %}600{% else %}400{% endif %};">
                 {{ p.title }}
               </a>
             </li>
