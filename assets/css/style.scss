@@ -180,31 +180,30 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   margin: 40px 0;
 }
 
-/* --- Paste these into assets/css/style.scss --- */
+/* --- Paste/Update these in assets/css/style.scss --- */
 
-/* Sidebar Layout adjustments */
 .nav__header-container {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
-  gap: 8px;
+  margin-bottom: 15px;
+  gap: 4px; /* Space between back button and text */
 }
 
 .back-button {
   display: flex;
   align-items: center;
   color: var(--apple-link);
-  margin-left: -4px;
+  margin-left: -8px; /* Optical alignment */
   cursor: pointer;
+  transition: opacity 0.2s;
 }
 
 .back-button:hover {
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
-/* Sidebar Titles */
 .nav__title {
-  margin-bottom: 0; /* reset for flex container */
+  margin: 0;
 }
 
 .nav__title a {
@@ -214,32 +213,40 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   display: block;
 }
 
-.nav__title a:hover { color: var(--apple-text) !important; opacity: 0.7; }
-.nav__title a.active { font-weight: 700 !important; color: var(--apple-text) !important; }
+.nav__title a.active {
+  font-weight: 700 !important;
+}
 
-/* Nested Section Links (Sub-folders) */
+/* Nested Folder Links */
 .sidebar-links a.nav__subtitle {
-  color: var(--apple-text) !important; /* Same color as header */
+  color: var(--apple-text) !important; /* Header color */
   font-size: 14px; /* Smaller font */
   font-weight: 500;
-  margin-top: 10px;
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .sidebar-links a.nav__subtitle:hover {
   opacity: 0.7;
 }
 
-/* Adjustments to standard sidebar links */
+/* Sidebar Standard Links */
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .sidebar-links li {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .sidebar-links a {
   color: var(--apple-link) !important;
   font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  text-decoration: none;
 }
 
 .sidebar-links a.active {
