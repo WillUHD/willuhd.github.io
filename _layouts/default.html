@@ -16,8 +16,8 @@
   <main id="main-container">
     <div class="content-wrapper">
       
-      {% assign url_parts = page.url | split: '/' %}
-      {% if url_parts.size > 2 %}
+      <!-- Show sidebar if page is in a subfolder -->
+      {% if page.dir != "/" %}
       <aside class="sidebar-column">
         {% include sidebar.html %}
       </aside>
