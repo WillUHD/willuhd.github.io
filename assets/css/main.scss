@@ -2,39 +2,29 @@
 ---
 @import "minimal-mistakes";
 
-/* --- FORCE VANILLA SYSTEM SELECTION --- */
-/* 'unset' tells the browser to ignore the theme and use the OS default */
-*::selection {
-  background-color: unset !important;
-  color: unset !important;
-}
-*::-moz-selection {
-  background-color: unset !important;
-  color: unset !important;
-}
-
-/* --- FORCE VANILLA GLOVE CURSOR --- */
-/* We target 'a' and all its children to ensure the pointer appears */
-a, a *, button, .btn, [role="button"] {
-  cursor: pointer !important;
-}
+/* --- RESET & BROWSER DEFAULTS --- */
+/* Removed custom selection overrides to restore browser defaults */
+/* Removed custom cursor overrides to restore browser defaults */
 
 /* --- Apple Newsroom Design System --- */
 :root {
   --apple-bg: #ffffff;
   --apple-text: #1d1d1f;
+  --apple-jet-black: #000000;
   --apple-secondary: #6e6e73;
-  --apple-link: #0066cc;        /* Standard Apple Blue */
-  --apple-link-dark: #004499;   /* Darker Blue for selection */
+  --apple-link: #0066cc;
+  --apple-link-dark: #004499;
   --apple-border: #d2d2d7;
   --apple-footer: #f5f5f7;
   --font-family: "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --site-max-width: 1100px; /* Synchronized width for title and sidebar alignment */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --apple-bg: #000000;
     --apple-text: #f5f5f7;
+    --apple-jet-black: #ffffff;
     --apple-secondary: #86868b;
     --apple-link: #2997ff;
     --apple-link-dark: #66b2ff;
@@ -48,6 +38,9 @@ body {
   background-color: var(--apple-bg) !important;
   color: var(--apple-text) !important;
   -webkit-font-smoothing: antialiased;
+  /* Ensures text selection is enabled globally */
+  user-select: text !important; 
+  -webkit-user-select: text !important;
 }
 
 /* --- Layout Adjustments --- */
@@ -55,14 +48,17 @@ body {
   display: none !important;
 }
 
-/* Padding between Masthead and Markdown Content */
 .page__inner-wrap {
-  margin-top: 60px !important; /* Added more breathing room at the top */
+  margin-top: 60px !important;
+  max-width: var(--site-max-width);
 }
 
+/* --- Masthead (Header) --- */
 .masthead {
-  background: rgba(var(--apple-bg), 0.8) !important;
-  backdrop-filter: saturate(180%) blur(20px);
+  background: rgba(var(--apple-bg), 0.7) !important;
+  /* Volumetric Blur effect */
+  backdrop-filter: saturate(180%) blur(50px) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
   border-bottom: 1px solid var(--apple-border) !important;
   position: sticky;
   top: 0;
@@ -70,8 +66,15 @@ body {
 }
 
 .masthead__inner-wrap {
-  max-width: 1024px !important;
+  max-width: var(--site-max-width) !important;
   padding: 0 20px !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Align navigation links to the left, directly next to title */
+.greedy-nav {
+  justify-content: flex-start !important;
 }
 
 .site-title {
@@ -79,6 +82,14 @@ body {
   letter-spacing: -0.01em !important;
   font-size: 21px !important;
   color: var(--apple-text) !important;
+  margin-right: 30px !important; /* Space between "willuhd" and sections */
+  flex: 0 0 auto !important;
+}
+
+.visible-links {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center;
 }
 
 .greedy-nav a {
@@ -92,8 +103,26 @@ body {
   text-decoration: none !important;
 }
 
-.greedy-nav a::before, .greedy-nav a::after {
-  display: none !important;
+/* --- Sidebar Alignment & Style --- */
+.sidebar {
+  border-right: none !important;
+  padding-right: 20px;
+  /* Matches the 60px top margin of the main content */
+  margin-top: 60px !important; 
+}
+
+/* Sidebar Title - Apple Jet Black */
+.nav__title a {
+  color: var(--apple-jet-black) !important;
+  text-decoration: none;
+  text-transform: none;
+  font-weight: 400;
+}
+
+/* Keep bold when page is active */
+.nav__title a.active, 
+.sidebar .nav__list h3 a[style*="font-weight: 700"] {
+  font-weight: 700 !important;
 }
 
 /* --- Content Typography --- */
@@ -106,20 +135,6 @@ p {
 .page__content a {
   color: var(--apple-link) !important;
   text-decoration: none;
-}
-
-/* --- Sidebar (No separator) --- */
-.sidebar {
-  border-right: none !important; /* REMOVED SEPARATOR */
-  padding-right: 20px;
-}
-
-.sidebar a {
-  transition: none !important; 
-}
-
-.sidebar a:hover {
-  opacity: 0.5 !important;
 }
 
 /* --- Footer --- */
