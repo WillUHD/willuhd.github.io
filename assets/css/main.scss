@@ -2,13 +2,33 @@
 ---
 @import "minimal-mistakes";
 
-/* --- RESET & BROWSER DEFAULTS --- */
-/* Removed custom selection overrides to restore browser defaults */
-/* Removed custom cursor overrides to restore browser defaults */
+/* --- 1. FORCE VANILLA SYSTEM SELECTION --- */
+/* 'revert' tells the browser to use the OS default highlight colors */
+::selection {
+  background: revert !important;
+  color: revert !important;
+}
+::-moz-selection {
+  background: revert !important;
+  color: revert !important;
+}
+
+/* --- 2. FORCE VANILLA GLOVE CURSOR --- */
+/* Explicitly forcing the pointer cursor on all link elements */
+a, 
+a *, 
+button, 
+.btn, 
+[role="button"],
+.pagination a {
+  cursor: pointer !important;
+}
 
 /* --- Apple Newsroom Design System --- */
 :root {
+  /* We use Hex with Alpha (last 2 digits) so the blur works */
   --apple-bg: #ffffff;
+  --apple-bg-translucent: rgba(255, 255, 255, 0.7); 
   --apple-text: #1d1d1f;
   --apple-jet-black: #000000;
   --apple-secondary: #6e6e73;
@@ -17,12 +37,13 @@
   --apple-border: #d2d2d7;
   --apple-footer: #f5f5f7;
   --font-family: "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --site-max-width: 1100px; /* Synchronized width for title and sidebar alignment */
+  --site-max-width: 1024px; 
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --apple-bg: #000000;
+    --apple-bg-translucent: rgba(0, 0, 0, 0.7);
     --apple-text: #f5f5f7;
     --apple-jet-black: #ffffff;
     --apple-secondary: #86868b;
@@ -38,8 +59,8 @@ body {
   background-color: var(--apple-bg) !important;
   color: var(--apple-text) !important;
   -webkit-font-smoothing: antialiased;
-  /* Ensures text selection is enabled globally */
-  user-select: text !important; 
+  /* Ensures user selection is allowed */
+  user-select: text !important;
   -webkit-user-select: text !important;
 }
 
@@ -50,15 +71,15 @@ body {
 
 .page__inner-wrap {
   margin-top: 60px !important;
-  max-width: var(--site-max-width);
+  max-width: var(--site-max-width) !important;
 }
 
-/* --- Masthead (Header) --- */
+/* --- Masthead (Header) & Volumetric Blur --- */
 .masthead {
-  background: rgba(var(--apple-bg), 0.7) !important;
-  /* Volumetric Blur effect */
-  backdrop-filter: saturate(180%) blur(50px) !important;
-  -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
+  background-color: var(--apple-bg-translucent) !important;
+  /* High radius volumetric blur */
+  backdrop-filter: saturate(180%) blur(30px) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(30px) !important;
   border-bottom: 1px solid var(--apple-border) !important;
   position: sticky;
   top: 0;
@@ -72,9 +93,16 @@ body {
   margin-right: auto;
 }
 
-/* Align navigation links to the left, directly next to title */
+/* Align Nav to the Left (directly next to title) */
 .greedy-nav {
+  display: flex !important;
   justify-content: flex-start !important;
+}
+
+.greedy-nav .visible-links {
+  display: flex !important;
+  flex: 0 1 auto !important;
+  margin-left: 20px !important; /* Spacing between willuhd and first link */
 }
 
 .site-title {
@@ -82,14 +110,8 @@ body {
   letter-spacing: -0.01em !important;
   font-size: 21px !important;
   color: var(--apple-text) !important;
-  margin-right: 30px !important; /* Space between "willuhd" and sections */
   flex: 0 0 auto !important;
-}
-
-.visible-links {
-  flex: 0 0 auto !important;
-  display: flex !important;
-  align-items: center;
+  padding-right: 10px !important;
 }
 
 .greedy-nav a {
@@ -103,26 +125,30 @@ body {
   text-decoration: none !important;
 }
 
+/* Remove the default underline/decoration on nav items */
+.greedy-nav a::before, .greedy-nav a::after {
+  display: none !important;
+}
+
 /* --- Sidebar Alignment & Style --- */
 .sidebar {
   border-right: none !important;
   padding-right: 20px;
-  /* Matches the 60px top margin of the main content */
+  /* Align top-pad with content */
   margin-top: 60px !important; 
 }
 
-/* Sidebar Title - Apple Jet Black */
+/* Sidebar Title - Jet Black Color */
 .nav__title a {
   color: var(--apple-jet-black) !important;
-  text-decoration: none;
-  text-transform: none;
-  font-weight: 400;
+  text-decoration: none !important;
+  text-transform: none !important;
 }
 
-/* Keep bold when page is active */
-.nav__title a.active, 
-.sidebar .nav__list h3 a[style*="font-weight: 700"] {
-  font-weight: 700 !important;
+/* Sidebar Hover logic - subtle Apple fade */
+.sidebar a:hover {
+  opacity: 0.5 !important;
+  transition: opacity 0.2s ease;
 }
 
 /* --- Content Typography --- */
