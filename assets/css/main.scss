@@ -2,30 +2,15 @@
 ---
 @import "minimal-mistakes";
 
-/* --- FORCE VANILLA SYSTEM SELECTION --- */
-/* 'unset' tells the browser to ignore the theme and use the OS default */
-*::selection {
-  background-color: unset !important;
-  color: unset !important;
-}
-*::-moz-selection {
-  background-color: unset !important;
-  color: unset !important;
-}
-
-/* --- FORCE VANILLA GLOVE CURSOR --- */
-/* We target 'a' and all its children to ensure the pointer appears */
-a, a *, button, .btn, [role="button"] {
-  cursor: pointer !important;
-}
-
 /* --- Apple Newsroom Design System --- */
 :root {
   --apple-bg: #ffffff;
+  /* Defining RGB parts so we can use them for transparency/blur */
+  --apple-bg-rgb: 255, 255, 255; 
   --apple-text: #1d1d1f;
   --apple-secondary: #6e6e73;
-  --apple-link: #0066cc;        /* Standard Apple Blue */
-  --apple-link-dark: #004499;   /* Darker Blue for selection */
+  --apple-link: #0066cc;
+  --apple-link-dark: #004499;
   --apple-border: #d2d2d7;
   --apple-footer: #f5f5f7;
   --font-family: "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -34,6 +19,7 @@ a, a *, button, .btn, [role="button"] {
 @media (prefers-color-scheme: dark) {
   :root {
     --apple-bg: #000000;
+    --apple-bg-rgb: 0, 0, 0;
     --apple-text: #f5f5f7;
     --apple-secondary: #86868b;
     --apple-link: #2997ff;
@@ -50,19 +36,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* --- Layout Adjustments --- */
-#page-title, .page__title, .page__header, .header-link {
-  display: none !important;
-}
-
-/* Padding between Masthead and Markdown Content */
-.page__inner-wrap {
-  margin-top: 60px !important; /* Added more breathing room at the top */
-}
-
+/* --- Masthead (High-Radius Blur) --- */
 .masthead {
-  background: rgba(var(--apple-bg), 0.8) !important;
-  backdrop-filter: saturate(180%) blur(20px);
+  /* Apple style: 72% opacity + 50px blur */
+  background-color: rgba(var(--apple-bg-rgb), 0.72) !important;
+  backdrop-filter: saturate(180%) blur(50px) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
   border-bottom: 1px solid var(--apple-border) !important;
   position: sticky;
   top: 0;
@@ -76,24 +55,17 @@ body {
 
 .site-title {
   font-weight: 600 !important;
-  letter-spacing: -0.01em !important;
   font-size: 21px !important;
   color: var(--apple-text) !important;
 }
 
-.greedy-nav a {
-  color: var(--apple-text) !important;
-  opacity: 0.8;
-  font-size: 14px !important;
-}
-
-.greedy-nav a:hover {
-  opacity: 1 !important;
-  text-decoration: none !important;
-}
-
-.greedy-nav a::before, .greedy-nav a::after {
+/* --- Layout & Padding --- */
+#page-title, .page__title, .page__header, .header-link {
   display: none !important;
+}
+
+.page__inner-wrap {
+  margin-top: 80px !important; /* Spacing between header and content */
 }
 
 /* --- Content Typography --- */
@@ -108,9 +80,9 @@ p {
   text-decoration: none;
 }
 
-/* --- Sidebar (No separator) --- */
+/* --- Sidebar --- */
 .sidebar {
-  border-right: none !important; /* REMOVED SEPARATOR */
+  border-right: none !important; /* Removed separator line */
   padding-right: 20px;
 }
 
@@ -119,7 +91,7 @@ p {
 }
 
 .sidebar a:hover {
-  opacity: 0.5 !important;
+  opacity: 0.6 !important;
 }
 
 /* --- Footer --- */
