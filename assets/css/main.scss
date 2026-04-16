@@ -14,11 +14,12 @@
   color: HighlightText !important;
 }
 
-/* Fixes cursor flashing and restores glove pointer */
-a, button {
+/* 🚨 FIX: Force pointer cursor on all link-related elements 🚨 */
+a, a *, button, button *, .nav__list a, .pagination a {
   cursor: pointer !important;
   -webkit-user-select: auto !important;
   user-select: auto !important;
+  pointer-events: auto !important;
 }
 
 /* --- Apple Newsroom Design System --- */
@@ -63,7 +64,7 @@ body {
 
 /* 
   SYNC SIDEBAR & CONTENT ALIGNMENT 
-  Forces the shared parent container down by 60px.
+  Forces the shared parent container down by 60px for the initial view.
 */
 #main {
   padding-top: 60px !important;
@@ -75,9 +76,11 @@ body {
   padding-top: 0 !important;
 }
 
-/* 🚨 FIX: Gives the sticky sidebar a buffer so it doesn't touch the header on scroll 🚨 */
+/* 🚨 FIX: Sidebar spacing when scrolling 🚨 
+   Increased top from 85px to 100px to ensure it doesn't "touch" the sticky header.
+*/
 .sidebar {
-  top: 85px !important; 
+  top: 100px !important; 
 }
 
 /* Strips the hidden top margins from Markdown that cause the misalignment */
@@ -116,7 +119,6 @@ body {
   justify-content: flex-start !important; 
 }
 
-/* Forces header links to the left instead of right-aligned */
 .greedy-nav .visible-links {
   display: flex !important;
   flex: 0 0 auto !important; 
@@ -140,7 +142,6 @@ body {
   font-size: 14px !important;
 }
 
-/* Kills the hover underline bar animation */
 .greedy-nav a::before, 
 .greedy-nav a::after {
   display: none !important;
@@ -182,14 +183,19 @@ p {
   line-height: 1.5 !important;
 }
 
-/* 🚨 FIX: Underlines main body content links only on hover 🚨 */
+/* 🚨 FIX: Underline on hover and Dim on click 🚨 */
 .page__content a {
   color: var(--apple-link) !important;
   text-decoration: none !important;
+  transition: opacity 0.1s ease-in-out;
 }
 
 .page__content a:hover {
   text-decoration: underline !important;
+}
+
+.page__content a:active {
+  opacity: 0.5 !important; /* Dims the color when clicked */
 }
 
 /* --- Footer --- */
