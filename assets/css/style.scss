@@ -58,10 +58,11 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
 
 .markdown-content > *:first-child { margin-top: 0; }
 
-/* 3. Add proper word-wrapping to Markdown */
+/* 3. Add proper word-wrapping and normal tracking to Markdown */
 .markdown-content { 
   font-size: 19px; 
   line-height: 1.5; 
+  letter-spacing: normal; /* This resets tracking to standard */
   overflow-wrap: break-word; 
   word-wrap: break-word;
   word-break: break-word; 
