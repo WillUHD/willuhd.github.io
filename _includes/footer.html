@@ -1,10 +1,10 @@
-<div class="page__footer-follow" style="text-align: left;">
-  <ul class="social-icons" style="display: flex; gap: 2rem; justify-content: flex-start; flex-wrap: wrap; padding: 0; margin: 0; list-style: none;">
+<div class="page__footer-follow" style="text-align: left; padding-left: 1rem;">
+  <ul class="social-icons" style="display: flex; gap: 1.5rem; justify-content: flex-start; flex-wrap: wrap; padding: 0; margin: 0; list-style: none;">
     {% for p in site.pages %}
       {% assign parts = p.url | split: '/' %}
       {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
         <li>
-          <a href="{{ p.url | relative_url }}" style="color: var(--text-secondary) !important; text-decoration: none; font-weight: 400; font-size: 12px;">
+          <a href="{{ p.url | relative_url }}" style="color: var(--text-secondary) !important; text-decoration: none; font-weight: 400; font-size: 11px;">
             {{ p.title }}
           </a>
         </li>
@@ -13,6 +13,6 @@
   </ul>
 </div>
 
-<div class="page__footer-copyright" style="text-align: left; margin-top: 1.5rem; font-size: 12px; color: var(--text-secondary); opacity: 0.8;">
+<div class="page__footer-copyright" style="text-align: left; padding-left: 1rem; margin-top: 0.5rem; font-size: 11px; color: var(--text-secondary);">
   &copy; {{ "now" | date: "%Y" }} {{ site.title | default: site.name }}.
 </div>
