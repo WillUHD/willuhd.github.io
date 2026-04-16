@@ -1,6 +1,6 @@
 ---
 title: "GPA Calculator"
-layout: single
+layout: default
 ---
 
 # My GPA Calculator
