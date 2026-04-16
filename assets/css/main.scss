@@ -2,6 +2,21 @@
 ---
 @import "minimal-mistakes";
 
+/* --- Force Native OS Text Selection --- */
+::selection {
+  background-color: Highlight !important;
+  color: HighlightText !important;
+}
+::-moz-selection {
+  background-color: Highlight !important;
+  color: HighlightText !important;
+}
+
+/* --- Force Pointer Cursor (Glove Hand) --- */
+a, a:hover {
+  cursor: pointer !important;
+}
+
 /* --- Apple Newsroom Design System --- */
 :root {
   --apple-bg: #ffffff;
@@ -74,7 +89,7 @@ body {
 
 .greedy-nav a::before,
 .greedy-nav a::after {
-  display: none !important; /* Removes the sliding bar animation */
+  display: none !important;
 }
 
 /* --- Content Styling (Markdown files) --- */
@@ -110,7 +125,7 @@ p {
 }
 
 .nav__title {
-  text-transform: none !important; /* Removes All Caps */
+  text-transform: none !important;
   font-size: 16px !important;
   font-weight: 600 !important;
   color: var(--apple-text) !important;
