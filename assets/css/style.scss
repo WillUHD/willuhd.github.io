@@ -180,21 +180,18 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   margin: 40px 0;
 }
 
-/* --- Sidebar Dynamic Layout Fixes --- */
-
-/* Header and Back Button Alignment */
+/* --- Sidebar CSS Fixes --- */
 .nav__header-container {
   display: flex;
   align-items: center;
   margin-bottom: 12px;
-  margin-left: -6px; /* Pulls back button slightly left for visual alignment */
+  gap: 8px; /* Space between the < and Header Text */
 }
 
 .back-button {
   color: var(--apple-secondary);
   display: flex;
   align-items: center;
-  padding-right: 6px;
   cursor: pointer;
 }
 
@@ -202,25 +199,42 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   color: var(--apple-text);
 }
 
-.nav__title {
-  margin-bottom: 0; /* Override previous margin since flex container handles it */
+.nav__title { margin-bottom: 0; }
+.nav__title a {
+  color: var(--apple-text) !important;
+  font-size: 17px;
+  font-weight: 500;
+  display: block;
 }
+.nav__title a:hover { color: var(--apple-text) !important; opacity: 0.7; } 
+.nav__title a.active { font-weight: 700 !important; color: var(--apple-text) !important; }
 
-/* Sub-section Links (Nested folder links) */
+.sidebar-links { list-style: none; padding: 0; margin: 0; }
+.sidebar-links li { margin-bottom: 10px; }
+
+/* Standard links and chevron alignments */
+.sidebar-links a {
+  color: var(--apple-link) !important; /* Apple Blue */
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Keeps the chevron tightly next to the text */
+  gap: 6px; /* Gap between text and chevron */
+}
+.sidebar-links a:hover { color: var(--apple-link-dark) !important; }
+.sidebar-links a.active { font-weight: 700 !important; }
+
+/* Subsections (Same size/weight as standard, just changes color) */
 .sidebar-links a.nav__subtitle {
-  color: var(--apple-text) !important; /* Same color as the header */
-  font-size: 15px; /* Smaller than the 17px header */
-  font-weight: 600;
-  margin-top: 16px; /* Separation from regular file links */
+  color: var(--apple-text) !important; /* Changes text to black/white instead of blue */
 }
-
 .sidebar-links a.nav__subtitle:hover {
   opacity: 0.7;
 }
 
-.chevron-icon {
-  opacity: 0.8;
-  color: var(--apple-secondary);
-  display: flex;
-  align-items: center;
+.chevron-icon { 
+  opacity: 0.8; 
+  color: var(--apple-secondary); 
+  display: flex; 
+  align-items: center; 
 }
