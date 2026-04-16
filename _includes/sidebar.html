@@ -1,42 +1,48 @@
-{% assign url_parts = page.url | split: '/' %}
-{% assign section_slug = url_parts[1] %}
-{% assign section_root = section_slug | prepend: "/" | append: "/" %}
+{% comment %} 
+  Identify the top-level section (e.g., /gpa-calc/) 
+{% endcomment %}
+{% assign dir_parts = page.dir | split: "/" %}
+{% assign section_slug = dir_parts[1] %}
+{% assign section_dir = section_slug | prepend: "/" | append: "/" %}
+
+{% comment %} Normalize the current URL for comparison {% endcomment %}
+{% assign current_url = page.url | replace: "index.html", "" %}
 
 <nav class="sidebar">
-  {% comment %} 1. Header: The Folder Index {% endcomment %}
+  {% comment %} 1. Section Header (The Folder Index) {% endcomment %}
   {% for p in site.pages %}
-    {% if p.url == section_root or p.url == "/gpa-calc/index.html" or p.url == "/gpa-calc/" %}
+    {% assign p_url = p.url | replace: "index.html", "" %}
+    {% if p_url == section_dir %}
       <div class="nav__title">
-        <a href="{{ p.url | relative_url }}" class="{% if page.url == p.url %}active{% endif %}">
+        <a href="{{ p.url | relative_url }}" class="{% if current_url == p_url %}active{% endif %}">
           {{ p.title }}
         </a>
       </div>
     {% endif %}
   {% endfor %}
 
-  {% comment %} 2. Links: Siblings in the same folder {% endcomment %}
+  {% comment %} 2. Sub-links (Everything else in that folder) {% endcomment %}
   <ul class="sidebar-links">
     {% assign sorted_pages = site.pages | sort: 'order' %}
     {% for p in sorted_pages %}
-      {% if p.url contains section_root and p.title %}
-        {% if p.url != section_root and p.url != "/gpa-calc/index.html" %}
-          
-          {% assign p_parts = p.url | split: '/' %}
-          <li>
-            <a href="{{ p.url | relative_url }}" class="{% if page.url == p.url %}active{% endif %}">
-              {{ p.title }}
-              
-              {% comment %} 3. Subsection Chevron Logic {% endcomment %}
-              {% if p_parts.size > 3 %}
-                <span class="chevron-icon">
-                  <svg width="7" height="11" viewBox="0 0 7 11" fill="none">
-                    <path d="M1 1L5.5 5.5L1 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-              {% endif %}
-            </a>
-          </li>
-        {% endif %}
+      {% assign p_url = p.url | replace: "index.html", "" %}
+      
+      {% comment %} If page is in this section and is NOT the section header {% endcomment %}
+      {% if p_url contains section_dir and p_url != section_dir and p.title %}
+        <li>
+          <a href="{{ p.url | relative_url }}" class="{% if current_url == p_url %}active{% endif %}">
+            {{ p.title }}
+            
+            {% comment %} Subsection Logic: Show chevron if page is an index in a deeper folder {% endcomment %}
+            {% if p.url contains "index.html" %}
+              <span class="chevron-icon">
+                <svg width="7" height="11" viewBox="0 0 7 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L5.5 5.5L1 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            {% endif %}
+          </a>
+        </li>
       {% endif %}
     {% endfor %}
   </ul>
