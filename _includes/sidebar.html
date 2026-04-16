@@ -1,5 +1,21 @@
-<a href="{{ p.url | relative_url }}" 
-   class="{% if page.url == p.url %}active{% endif %}"
-   style="...">
-  {{ p.title }}
-</a>
+<nav class="sidebar">
+  <!-- Section Header -->
+  <div class="nav__title">
+    <a href="/">Navigation</a>
+  </div>
+
+  <ul style="list-style: none; padding: 0; margin: 0;">
+    {% for p in site.pages %}
+      {% assign parts = p.url | split: '/' %}
+      <!-- Only show top-level pages and skip index -->
+      {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
+        <li>
+          <a href="{{ p.url | relative_url }}" 
+             class="{% if page.url == p.url %}current-page{% endif %}">
+            {{ p.title }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>
