@@ -14,12 +14,12 @@
   
   <div class="sidebar sticky">
     <nav class="nav__list">
-      <!-- Section Header: Always Black/White, Bold only if on Index -->
+      <!-- Section Header: Bold only if active, blue like other links -->
       <h3 class="nav__title" style="margin: 0 0 12px 0; padding: 0; text-align: left;">
         <a href="{{ section_index_url | relative_url }}" 
            style="text-decoration: none; text-transform: none; 
-                  color: var(--apple-text); 
-                  font-weight: {% if page.url == section_index_url or page.url == section_dir | append: 'index.html' %}700{% else %}400{% endif %};">
+                  color: {% if page.url == section_index_url %}var(--apple-link-dark){% else %}var(--apple-link){% endif %}; 
+                  font-weight: {% if page.url == section_index_url %}700{% else %}400{% endif %};">
           {{ section_title }}
         </a>
       </h3>
@@ -27,7 +27,7 @@
       <ul style="list-style: none; padding: 0; margin: 0; text-align: left;">
         {% for p in site.pages %}
           {% if p.url contains section_dir and p.title %}
-            {% if p.url != section_index_url and p.url != section_dir | append: 'index.html' %}
+            {% if p.url != section_index_url %}
               <li style="margin-bottom: 12px; padding: 0;">
                 <a href="{{ p.url | relative_url }}" 
                    style="text-decoration: none; display: block; font-size: 14px; 
