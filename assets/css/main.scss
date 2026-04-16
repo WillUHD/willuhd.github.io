@@ -2,18 +2,20 @@
 ---
 @import "minimal-mistakes";
 
-/* --- Force Native OS Text Selection --- */
-::selection {
-  background-color: Highlight !important;
-  color: HighlightText !important;
+/* --- FORCE VANILLA SYSTEM SELECTION --- */
+/* 'unset' tells the browser to ignore the theme and use the OS default */
+*::selection {
+  background-color: unset !important;
+  color: unset !important;
 }
-::-moz-selection {
-  background-color: Highlight !important;
-  color: HighlightText !important;
+*::-moz-selection {
+  background-color: unset !important;
+  color: unset !important;
 }
 
-/* --- Force Pointer Cursor (Glove Hand) --- */
-a, a:hover {
+/* --- FORCE VANILLA GLOVE CURSOR --- */
+/* We target 'a' and all its children to ensure the pointer appears */
+a, a *, button, .btn, [role="button"] {
   cursor: pointer !important;
 }
 
@@ -22,7 +24,8 @@ a, a:hover {
   --apple-bg: #ffffff;
   --apple-text: #1d1d1f;
   --apple-secondary: #6e6e73;
-  --apple-link: #0066cc;
+  --apple-link: #0066cc;        /* Standard Apple Blue */
+  --apple-link-dark: #004499;   /* Darker Blue for selection */
   --apple-border: #d2d2d7;
   --apple-footer: #f5f5f7;
   --font-family: "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -34,6 +37,7 @@ a, a:hover {
     --apple-text: #f5f5f7;
     --apple-secondary: #86868b;
     --apple-link: #2997ff;
+    --apple-link-dark: #66b2ff;
     --apple-border: #424245;
     --apple-footer: #161617;
   }
@@ -46,12 +50,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* --- Hide Auto-Generated Titles --- */
+/* --- Layout Adjustments --- */
 #page-title, .page__title, .page__header, .header-link {
   display: none !important;
 }
 
-/* --- Masthead (Apple Global Nav Style) --- */
+/* Padding between Masthead and Markdown Content */
+.page__inner-wrap {
+  margin-top: 60px !important; /* Added more breathing room at the top */
+}
+
 .masthead {
   background: rgba(var(--apple-bg), 0.8) !important;
   backdrop-filter: saturate(180%) blur(20px);
@@ -73,91 +81,50 @@ body {
   color: var(--apple-text) !important;
 }
 
-/* Header Links (No animation, no blue text) */
 .greedy-nav a {
   color: var(--apple-text) !important;
   opacity: 0.8;
   font-size: 14px !important;
-  transition: opacity 0.2s;
 }
 
 .greedy-nav a:hover {
   opacity: 1 !important;
-  color: var(--apple-text) !important;
   text-decoration: none !important;
 }
 
-.greedy-nav a::before,
-.greedy-nav a::after {
+.greedy-nav a::before, .greedy-nav a::after {
   display: none !important;
 }
 
-/* --- Content Styling (Markdown files) --- */
-.page__inner-wrap {
-  margin-top: 40px;
-}
-
-h2, h3, h4 {
-  font-weight: 600 !important;
-  color: var(--apple-text) !important;
-}
-
+/* --- Content Typography --- */
 p {
   font-size: 19px !important;
   line-height: 1.5 !important;
   font-weight: 400 !important;
-  color: var(--apple-text) !important;
 }
 
-/* Make Markdown links the exact same Apple blue */
 .page__content a {
   color: var(--apple-link) !important;
   text-decoration: none;
 }
-.page__content a:hover {
-  text-decoration: underline;
-}
 
-/* --- Sidebar --- */
+/* --- Sidebar (No separator) --- */
 .sidebar {
-  border-right: 1px solid var(--apple-border);
+  border-right: none !important; /* REMOVED SEPARATOR */
   padding-right: 20px;
 }
 
-.nav__title {
-  text-transform: none !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  color: var(--apple-text) !important;
-  margin-bottom: 12px !important;
-}
-
-.nav__title a {
-  color: inherit !important;
-  text-decoration: none !important;
-}
-
-/* Instant dim effect for sidebar links, NO animations */
-.sidebar a:hover {
-  opacity: 0.5 !important;
+.sidebar a {
   transition: none !important; 
 }
 
-/* --- Footer (Apple Style) --- */
+.sidebar a:hover {
+  opacity: 0.5 !important;
+}
+
+/* --- Footer --- */
 .page__footer {
   background-color: var(--apple-footer) !important;
   border-top: 1px solid var(--apple-border) !important;
   padding: 40px 0 !important;
-  font-size: 14px !important;
-  color: var(--apple-secondary) !important;
-}
-
-.page__footer-follow, .page__footer-copyright {
-  max-width: 1024px;
-  margin: 0 auto !important;
-  padding: 0 20px !important;
-}
-
-hr {
-  border-top: 1px solid var(--apple-border);
 }
