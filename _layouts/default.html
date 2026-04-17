@@ -9,6 +9,30 @@
     <link rel="stylesheet" href="{{ script }}">
   {% endfor %}
 </head>
+<body>
+
+  {% include masthead.html %}
+
+  <main id="main-container">
+    <div class="content-wrapper">
+      
+      <!-- Show sidebar if page is in a subfolder -->
+      {% if page.dir != "/" %}
+      <aside class="sidebar-column">
+        {% include sidebar.html %}
+      </aside>
+      {% endif %}
+
+      <article class="article-column markdown-content">
+        {{ content }}
+      </article>
+
+    </div>
+  </main>
+
+  {% include footer.html %}
+
+</body>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const content = document.querySelector('.markdown-content');
@@ -149,28 +173,4 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll('.carousel-remove-temp').forEach(n => n.remove());
 });
 </script>
-<body>
-
-  {% include masthead.html %}
-
-  <main id="main-container">
-    <div class="content-wrapper">
-      
-      <!-- Show sidebar if page is in a subfolder -->
-      {% if page.dir != "/" %}
-      <aside class="sidebar-column">
-        {% include sidebar.html %}
-      </aside>
-      {% endif %}
-
-      <article class="article-column markdown-content">
-        {{ content }}
-      </article>
-
-    </div>
-  </main>
-
-  {% include footer.html %}
-
-</body>
 </html>
