@@ -41,18 +41,15 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentCarousel = [];
     let nodesToRemove = [];
     
-    // Core function to inject the carousel
     const buildCarousel = (pairs, insertRef) => {
         if (!insertRef || !insertRef.parentNode) return;
         
-        // Setup wrapper elements
         const container = document.createElement('div');
         container.className = 'carousel-container';
         
         const imgWrapper = document.createElement('div');
         imgWrapper.className = 'carousel-images-wrapper';
 
-        // 1. Setup Top-Left Pill
         const pill = document.createElement('div');
         pill.className = 'carousel-pill';
         pill.textContent = `1 / ${pairs.length}`;
@@ -61,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const imgElements = [];
         const captionElements = [];
         
-        // 2. Insert Images and Captions
         pairs.forEach((pair, index) => {
             const img = document.createElement('img');
             img.src = pair.imgSrc;
@@ -78,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         container.appendChild(imgWrapper);
 
-        // 3. Setup Bottom Controls (Caption + Chevrons)
         const controls = document.createElement('div');
         controls.className = 'carousel-controls';
 
@@ -99,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
         controls.appendChild(nextBtn);
         container.appendChild(controls);
         
-        // 4. Interactive Cycle Logic
         let currentIndex = 0;
         const updateCarousel = () => {
             imgElements.forEach((el, idx) => el.classList.toggle('active', idx === currentIndex));
@@ -117,18 +111,15 @@ document.addEventListener("DOMContentLoaded", () => {
             updateCarousel();
         });
 
-        // Add to DOM
         insertRef.parentNode.insertBefore(container, insertRef);
     };
 
-    // 5. Scan the DOM for Image/Blockquote sequences
     const children = Array.from(content.children);
     let i = 0;
     
     while (i < children.length) {
         const el = children[i];
         
-        // Identify if the element is an image or a paragraph containing only an image
         let img = null;
         if (el.tagName === 'IMG') {
             img = el;
@@ -138,7 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (img) {
             const nextEl = children[i + 1];
-            // Check if immediate next sibling is a Blockquote (the markdown caption)
             if (nextEl && nextEl.tagName === 'BLOCKQUOTE') {
                 currentCarousel.push({
                     imgSrc: img.src,
@@ -151,25 +141,21 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         
-        // Sequence broken: if we found 2+ pairs, convert them.
         if (currentCarousel.length > 1) {
             buildCarousel(currentCarousel, nodesToRemove[0]);
             nodesToRemove.forEach(n => n.classList.add('carousel-remove-temp'));
         } 
         
-        // Reset tracking vars
         currentCarousel = [];
         nodesToRemove = [];
         i++;
     }
     
-    // Check end-of-document boundary
     if (currentCarousel.length > 1) {
          buildCarousel(currentCarousel, nodesToRemove[0]);
          nodesToRemove.forEach(n => n.classList.add('carousel-remove-temp'));
     }
     
-    // Cleanup the original native markdown elements that have been converted
     document.querySelectorAll('.carousel-remove-temp').forEach(n => n.remove());
 });
 </script>
