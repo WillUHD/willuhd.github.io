@@ -136,11 +136,6 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
 .markdown-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0; }
 .markdown-content hr { border: 0; border-top: 1px solid var(--ui-border); margin: 40px 0; }
 
-
-/* ========================================================
-   CAROUSEL COMPONENT
-   ======================================================== */
-
 .carousel-container {
   margin: 40px 0;
   border-radius: 8px; /* Matches normal image rounding */
@@ -180,7 +175,6 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   pointer-events: auto;
 }
 
-/* The Pill Counter */
 .carousel-pill {
   position: absolute;
   top: 14px; left: 14px;
@@ -215,7 +209,6 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   padding: 0 16px;
 }
 
-/* Dimmed, centered, italic text */
 .carousel-caption-text {
   position: absolute;
   text-align: center;
@@ -233,13 +226,11 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   position: relative; 
 }
 
-/* If markdown compiled the caption to a `<p>` tag, reset its margins */
 .carousel-caption-text p {
   margin: 0;
   display: inline;
 }
 
-/* Left / Right Navigation Chevrons */
 .carousel-btn {
   background: none;
   border: none;
@@ -255,11 +246,6 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
 .carousel-btn:hover {
   color: var(--text-primary);
 }
-
-
-/* ========================================================
-   RESPONSIVE MEDIA QUERIES
-   ======================================================== */
 
 @media (max-width: 900px) {
   .article-column { padding-left: 30px; }
