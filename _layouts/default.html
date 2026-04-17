@@ -9,6 +9,146 @@
     <link rel="stylesheet" href="{{ script }}">
   {% endfor %}
 </head>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const content = document.querySelector('.markdown-content');
+    if (!content) return;
+
+    let currentCarousel = [];
+    let nodesToRemove = [];
+    
+    // Core function to inject the carousel
+    const buildCarousel = (pairs, insertRef) => {
+        if (!insertRef || !insertRef.parentNode) return;
+        
+        // Setup wrapper elements
+        const container = document.createElement('div');
+        container.className = 'carousel-container';
+        
+        const imgWrapper = document.createElement('div');
+        imgWrapper.className = 'carousel-images-wrapper';
+
+        // 1. Setup Top-Left Pill
+        const pill = document.createElement('div');
+        pill.className = 'carousel-pill';
+        pill.textContent = `1 / ${pairs.length}`;
+        imgWrapper.appendChild(pill);
+
+        const imgElements = [];
+        const captionElements = [];
+        
+        // 2. Insert Images and Captions
+        pairs.forEach((pair, index) => {
+            const img = document.createElement('img');
+            img.src = pair.imgSrc;
+            img.alt = pair.imgAlt;
+            if (index === 0) img.classList.add('active');
+            imgElements.push(img);
+            imgWrapper.appendChild(img);
+            
+            const cap = document.createElement('div');
+            cap.className = 'carousel-caption-text';
+            cap.innerHTML = pair.captionHTML; 
+            if (index === 0) cap.classList.add('active');
+            captionElements.push(cap);
+        });
+        container.appendChild(imgWrapper);
+
+        // 3. Setup Bottom Controls (Caption + Chevrons)
+        const controls = document.createElement('div');
+        controls.className = 'carousel-controls';
+
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'carousel-btn prev';
+        prevBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+        
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'carousel-btn next';
+        nextBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+
+        const captionContainer = document.createElement('div');
+        captionContainer.className = 'carousel-caption-container';
+        captionElements.forEach(c => captionContainer.appendChild(c));
+
+        controls.appendChild(prevBtn);
+        controls.appendChild(captionContainer);
+        controls.appendChild(nextBtn);
+        container.appendChild(controls);
+        
+        // 4. Interactive Cycle Logic
+        let currentIndex = 0;
+        const updateCarousel = () => {
+            imgElements.forEach((el, idx) => el.classList.toggle('active', idx === currentIndex));
+            captionElements.forEach((el, idx) => el.classList.toggle('active', idx === currentIndex));
+            pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
+        };
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + pairs.length) % pairs.length;
+            updateCarousel();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % pairs.length;
+            updateCarousel();
+        });
+
+        // Add to DOM
+        insertRef.parentNode.insertBefore(container, insertRef);
+    };
+
+    // 5. Scan the DOM for Image/Blockquote sequences
+    const children = Array.from(content.children);
+    let i = 0;
+    
+    while (i < children.length) {
+        const el = children[i];
+        
+        // Identify if the element is an image or a paragraph containing only an image
+        let img = null;
+        if (el.tagName === 'IMG') {
+            img = el;
+        } else if (el.tagName === 'P' && el.querySelector('img')) {
+            if (el.textContent.trim().length === 0) img = el.querySelector('img');
+        }
+
+        if (img) {
+            const nextEl = children[i + 1];
+            // Check if immediate next sibling is a Blockquote (the markdown caption)
+            if (nextEl && nextEl.tagName === 'BLOCKQUOTE') {
+                currentCarousel.push({
+                    imgSrc: img.src,
+                    imgAlt: img.alt,
+                    captionHTML: nextEl.innerHTML 
+                });
+                nodesToRemove.push(el, nextEl);
+                i += 2;
+                continue;
+            }
+        }
+        
+        // Sequence broken: if we found 2+ pairs, convert them.
+        if (currentCarousel.length > 1) {
+            buildCarousel(currentCarousel, nodesToRemove[0]);
+            nodesToRemove.forEach(n => n.classList.add('carousel-remove-temp'));
+        } 
+        
+        // Reset tracking vars
+        currentCarousel = [];
+        nodesToRemove = [];
+        i++;
+    }
+    
+    // Check end-of-document boundary
+    if (currentCarousel.length > 1) {
+         buildCarousel(currentCarousel, nodesToRemove[0]);
+         nodesToRemove.forEach(n => n.classList.add('carousel-remove-temp'));
+    }
+    
+    // Cleanup the original native markdown elements that have been converted
+    document.querySelectorAll('.carousel-remove-temp').forEach(n => n.remove());
+});
+</script>
 <body>
 
   {% include masthead.html %}
