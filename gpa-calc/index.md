@@ -19,13 +19,13 @@ I completely reworked SHSID's GPA Calculator app to version 3, now with some new
 
 ### Sneak peak on the iteration of the app
 
-<img width="834" height="451" alt="image" src="https://github.com/user-attachments/assets/97e5fe33-d1f2-46c3-bc70-cf13173c1ae9" />
-
-> earliest prototype of a custom programming "GPA" language before switching to XML/plist
-
 <img width="352" height="757" alt="image" src="https://github.com/user-attachments/assets/327770b1-02f0-4215-8f4e-f1109020ba19" />
 
-> experimenting with launch screens for autoupdate
+> earliest versions, experimenting with launch screens for autoupdate
+
+<img width="834" height="451" alt="image" src="https://github.com/user-attachments/assets/97e5fe33-d1f2-46c3-bc70-cf13173c1ae9" />
+
+> prototype of a custom "GPA" programming language before switching to plist then JSON
 
 <img width="351" height="758" alt="image" src="https://github.com/user-attachments/assets/746d96a2-b750-4d10-bd1c-770abe168ede" />
 
