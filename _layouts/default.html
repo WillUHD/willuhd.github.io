@@ -16,8 +16,16 @@
   <main id="main-container">
     <div class="content-wrapper">
       
-      <!-- Show sidebar if page is in a subfolder -->
+      <!-- Show sidebar only if page is in a subfolder with sub-pages -->
+      {% assign has_subpages = false %}
       {% if page.dir != "/" %}
+        {% for sp in site.pages %}
+          {% if sp.dir == page.dir and sp.url != page.dir %}
+            {% assign has_subpages = true %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      {% if page.dir != "/" and has_subpages %}
       <aside class="sidebar-column">
         {% include sidebar.html %}
       </aside>
@@ -114,21 +122,11 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         const getNaturalImgH = () => {
-            const savedTrans = imgWrapper.style.transition;
-            imgWrapper.style.transition = 'none';
-            if (imgWrapper.style.height) {
-                const saved = imgWrapper.style.height;
-                imgWrapper.style.height = '';
-                void imgWrapper.offsetHeight;
-                const h = imgWrapper.offsetHeight;
-                imgWrapper.style.height = saved;
-                void imgWrapper.offsetHeight;
-                imgWrapper.style.transition = savedTrans;
-                return h;
+            if (!imgWrapper.style.height) {
+                return imgWrapper.offsetHeight;
             }
-            const h = imgWrapper.offsetHeight;
-            imgWrapper.style.transition = savedTrans;
-            return h;
+            const w = imgWrapper.offsetWidth;
+            return Math.min(w * 9 / 16, 550);
         };
 
         const updateCarousel = (direction) => {
@@ -154,7 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
             const ctrlPad = 24;
-            const oldCtrlH = Math.max(btnH, oldCapH) + ctrlPad;
             const newCtrlH = Math.max(btnH, newCapH) + ctrlPad;
 
             const maxUsable = window.innerHeight - 80;
@@ -168,15 +165,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const slideOutX = direction === 1 ? '-100%' : '100%';
             const slideInX = direction === 1 ? '100%' : '-100%';
 
-            // --- 2. Constrain to old sizes before DOM swap ---
+            // --- 2. Lock heights to prevent layout snap ---
+            container.style.transition = 'none';
             container.style.height = oldTotalH + 'px';
+            imgWrapper.style.transition = 'none';
             imgWrapper.style.height = oldImgH + 'px';
             void container.offsetHeight;
+            container.style.transition = '';
+            imgWrapper.style.transition = '';
 
             // --- 3. Image slide ---
             newImg.style.transition = 'none';
             newImg.style.transform = `translateX(${slideInX})`;
-            newImg.style.opacity = '1';
             newImg.classList.add('active');
             void newImg.offsetHeight;
 
@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
             oldImg.style.transform = `translateX(${slideOutX})`;
             oldImg.style.opacity = '0';
 
-            newImg.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
+            newImg.style.transition = 'transform 0.35s ease-in-out';
             newImg.style.transform = 'translateX(0)';
 
             // --- 4. Caption slide ---
@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
             newCap.style.transform = 'translateX(0)';
             newCap.style.opacity = '1';
 
-            // --- 5. Animate container & image height ---
+            // --- 5. Height transition ---
             void container.offsetHeight;
             container.style.height = newTotalH + 'px';
             imgWrapper.style.height = newImgH + 'px';
@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 container.style.height = '';
                 pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
                 transitioning = false;
-            }, 350);
+            }, 360);
         };
 
         prevBtn.addEventListener('click', () => updateCarousel(-1));

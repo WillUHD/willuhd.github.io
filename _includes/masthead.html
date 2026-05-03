@@ -6,7 +6,12 @@
         {% for p in site.pages %}
           {% assign parts = p.url | split: '/' %}
           {% if parts.size == 2 and p.title and p.url != '/' and p.url != '/index.html' %}
-            <li><a href="{{ p.url | replace: '.html', '' | relative_url }}">{{ p.title }}</a></li>
+            {% assign page_url_clean = p.url | replace: '.html', '' %}
+            {% assign is_active = false %}
+            {% if page.url == p.url or page.dir == p.url %}
+              {% assign is_active = true %}
+            {% endif %}
+            <li><a href="{{ page_url_clean | relative_url }}"{% if is_active %} class="active"{% endif %}>{{ p.title }}</a></li>
           {% endif %}
         {% endfor %}
       </ul>
