@@ -1,3 +1,4 @@
+
 ---
 title: "Karman Vortex"
 layout: default
@@ -20,7 +21,9 @@ A simple Karman street simulation that uses a D2Q9 LBM CFD solver for real-time 
 
 ### Demo
 Looks pretty cool
-add image here
+<img width="1280" height="720" alt="CFD_Frame" src="https://github.com/user-attachments/assets/8c6acc99-6e53-4f09-944e-b9ff6dcf408d" />
+
+---
 
 Embedded simulation (view the simulation in full-screen [here](https://willuhd.github.io/karman-vortex/karmanVortex.html)):
 <iframe src="karmanVortex.html" class="embedded-page"></iframe>
