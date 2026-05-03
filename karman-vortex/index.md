@@ -1,4 +1,3 @@
-
 ---
 title: "Karman Vortex"
 layout: default
