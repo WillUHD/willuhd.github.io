@@ -20,7 +20,7 @@ A simple Karman street simulation that uses a D2Q9 LBM CFD solver for real-time 
 
 ### Demo
 Looks pretty cool
-<img width="1280" height="720" alt="CFD_Frame_2026_04_30T16_20_28_997Z" src="https://github.com/user-attachments/assets/fe528ced-0bf9-47b6-9921-662399619f8f" />
+add image here
 
 Embedded simulation (view the simulation in full-screen [here](https://willuhd.github.io/karman-vortex/karmanVortex.html)):
-<iframe src="karmanVortex.html" class="karman-vortex"></iframe>
+<iframe src="karmanVortex.html" class="embedded-page"></iframe>
