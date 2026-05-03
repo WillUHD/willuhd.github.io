@@ -19,25 +19,29 @@ I completely reworked SHSID's GPA Calculator app to version 3, now with some new
 
 ### Sneak peak on the iteration of the app
 
-<img width="352" height="757" alt="image" src="https://github.com/user-attachments/assets/327770b1-02f0-4215-8f4e-f1109020ba19" />
+<img width="387" height="844" alt="image" src="https://github.com/user-attachments/assets/64e49bef-516a-4daa-a6a1-b500918785fb" />
 
 > earliest versions, experimenting with launch screens for autoupdate
 
-<img width="834" height="451" alt="image" src="https://github.com/user-attachments/assets/97e5fe33-d1f2-46c3-bc70-cf13173c1ae9" />
+<img width="1332" height="722" alt="image" src="https://github.com/user-attachments/assets/969e561b-ce04-4da8-83a4-20a2293d4e17" />
 
 > prototype of a custom "GPA" programming language before switching to plist then JSON
 
-<img width="351" height="758" alt="image" src="https://github.com/user-attachments/assets/746d96a2-b750-4d10-bd1c-770abe168ede" />
+<img width="386" height="848" alt="image" src="https://github.com/user-attachments/assets/2026691c-7033-4c90-b759-21b676cf3318" />
 
-> having fun with a GPA pie! (kinda useless)
+> having fun with a GPA pie! (pretty useless)
 
-<img width="349" height="758" alt="image" src="https://github.com/user-attachments/assets/6387d4b5-3e81-4587-babb-7d04d31eb978" />
+<img width="335" height="737" alt="image" src="https://github.com/user-attachments/assets/cfe24191-3ca7-48e1-9639-875fd6acbf15" />
 
 > dynamic update working! 
 
-<img width="916" height="752" alt="image" src="https://github.com/user-attachments/assets/a4370358-5f22-4eb5-9445-59f8f351c8ea" />
+<img width="869" height="838" alt="image" src="https://github.com/user-attachments/assets/a2ab4714-82b3-48af-8a4e-f8f8a4d9c62c" />
 
-> earliest version of the dynamic selectors that will show a menu if there isn't enough space to fit all on a picker
+> earliest version of the dynamic pickers that show a menu if there wasn't enough space to fit all on a picker
+
+<img width="733" height="842" alt="image" src="https://github.com/user-attachments/assets/9f0ff86d-c293-4a56-8d33-d83150b61cc0" />
+
+> early implementation of rule checking
 
 <img width="333" height="311" alt="image" src="https://github.com/user-attachments/assets/9092e360-ee77-43e0-9d7f-db148ada8d80" />
 
@@ -49,5 +53,5 @@ I completely reworked SHSID's GPA Calculator app to version 3, now with some new
 
 <img width="505" height="756" alt="image" src="https://github.com/user-attachments/assets/9139b9b2-43d4-40a2-94ea-b9b1db23b12f" />
 
-> a finalized version with the same backend as the current one, solving some view bugs!
+> a finalized version with the same backend as the current one, solving some view bugs
 
