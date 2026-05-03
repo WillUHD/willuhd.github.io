@@ -102,13 +102,11 @@ document.addEventListener("DOMContentLoaded", () => {
         controls.appendChild(nextBtn);
         container.appendChild(controls);
 
-        let currentIndex = 0;
+let currentIndex = 0;
         let transitioning = false;
 
         const measureCapHeight = (el) => {
-            if (el.classList.contains('active')) {
-                return el.offsetHeight;
-            }
+            if (el.classList.contains('active')) return el.offsetHeight;
             const w = captionContainer.offsetWidth;
             const clone = el.cloneNode(true);
             clone.classList.add('active');
@@ -119,28 +117,16 @@ document.addEventListener("DOMContentLoaded", () => {
             return h;
         };
 
-        const getNaturalImgH = () => {
-            if (!imgWrapper.style.height) {
-                return imgWrapper.offsetHeight;
-            }
-            return imgWrapper.offsetWidth * 9 / 16;
-        };
+        const getMinImgH = () => imgWrapper.offsetWidth * 9 / 16;
 
         const setCarouselHeight = () => {
-            const activeCaption = captionElements[currentIndex];
-            const capH = measureCapHeight(activeCaption);
+            const capH = measureCapHeight(captionElements[currentIndex]);
             const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
             const ctrlH = Math.max(btnH, capH) + 24;
-
-            const naturalImgH = getNaturalImgH();
             const maxUsable = window.innerHeight - 80;
-            const naturalTotal = naturalImgH + ctrlH;
-            const newTotal = Math.min(naturalTotal, maxUsable);
-            let newImgH = naturalImgH;
-            if (naturalTotal > maxUsable) {
-                newImgH = Math.max(naturalImgH - (naturalTotal - maxUsable), 100);
-            }
-
+            const minImgH = getMinImgH();
+            const newImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
+            const newTotal = newImgH + ctrlH;
             container.style.transition = 'none';
             imgWrapper.style.transition = 'none';
             container.style.height = newTotal + 'px';
@@ -166,9 +152,23 @@ document.addEventListener("DOMContentLoaded", () => {
             const slideOutX = direction === 1 ? '-100%' : '100%';
             const slideInX = direction === 1 ? '100%' : '-100%';
 
-            // --- 1. Lock heights ---
+            // --- 0. Measure ---
             const oldTotalH = container.offsetHeight;
             const oldImgH = imgWrapper.offsetHeight;
+            const newCapH = measureCapHeight(newCap);
+            const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
+            const ctrlH = Math.max(btnH, newCapH) + 24;
+            const maxUsable = window.innerHeight - 80;
+
+            // Phase 1: caption grows at current image height (grow down)
+            const phase1Total = oldImgH + ctrlH;
+            // Phase 2: adjust image to fill viewport (shrink if overflow, grow if space)
+            const minImgH = getMinImgH();
+            const fillImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
+
+            const heightChanges = oldTotalH !== phase1Total;
+
+            // --- 1. Lock current heights ---
             container.style.transition = 'none';
             container.style.height = oldTotalH + 'px';
             imgWrapper.style.transition = 'none';
@@ -210,25 +210,33 @@ document.addEventListener("DOMContentLoaded", () => {
             newCap.style.transform = 'translateX(0)';
             newCap.style.opacity = '1';
 
-            // --- 4. Height transition ---
-            const capH = measureCapHeight(newCap);
-            const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
-            const ctrlH = Math.max(btnH, capH) + 24;
-            const naturalImgH = getNaturalImgH();
-            const maxUsable = window.innerHeight - 80;
-            const naturalTotal = naturalImgH + ctrlH;
-            const newTotal = Math.min(naturalTotal, maxUsable);
-            let newImgH = naturalImgH;
-            if (naturalTotal > maxUsable) {
-                newImgH = Math.max(naturalImgH - (naturalTotal - maxUsable), 100);
+            // --- 4. Phase 1: Grow caption down ---
+            if (heightChanges) {
+                void container.offsetHeight;
+                container.style.height = phase1Total + 'px';
             }
 
-            void container.offsetHeight;
-            container.style.height = newTotal + 'px';
-            imgWrapper.style.height = newImgH + 'px';
+            // --- 5. Phase 2: After caption settles, adjust image to fill viewport ---
+            const needsAdjust = fillImgH !== oldImgH;
 
-            // --- 5. Cleanup ---
-            setTimeout(() => {
+            if (needsAdjust) {
+                setTimeout(() => {
+                    container.style.transition = 'none';
+                    imgWrapper.style.transition = 'none';
+                    container.style.height = phase1Total + 'px';
+                    imgWrapper.style.height = oldImgH + 'px';
+                    void container.offsetHeight;
+                    container.style.transition = '';
+                    imgWrapper.style.transition = '';
+                    container.style.height = (fillImgH + ctrlH) + 'px';
+                    imgWrapper.style.height = fillImgH + 'px';
+                    setTimeout(cleanup, 360);
+                }, 360);
+            } else {
+                setTimeout(cleanup, 360);
+            }
+
+            function cleanup() {
                 oldImg.classList.remove('active');
                 oldImg.style.cssText = '';
                 newImg.style.cssText = '';
@@ -236,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 newCap.style.cssText = '';
                 pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
                 transitioning = false;
-            }, 360);
+            }
         };
 
         prevBtn.addEventListener('click', () => updateCarousel(-1));
