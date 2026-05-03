@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karman Vortex Street</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+        crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+    <style>
+        :root {
+            --bg-dark: #030712;
+            --panel-bg: #0f172a;
+            --border: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #60a5fa;
+            --input-bg: #1e293b;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* --- Sidebar Improvements --- */
+        #sidebar {
+            width: 420px;
+            min-width: 420px;
+            background: var(--panel-bg);
+            padding: 30px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            letter-spacing: -0.025em;
+            color: var(--text-main);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .value-display {
+            color: var(--accent);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* --- Modern Form Elements --- */
+        select {
+            appearance: none;
+            width: 100%;
+            padding: 12px;
+            background: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        select:hover {
+            border-color: var(--accent);
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: var(--input-bg);
+            border-radius: 10px;
+            outline: none;
+            margin: 15px 0;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--accent-hover);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #2d3748;
+            border-color: var(--text-muted);
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        button.primary {
+            background: var(--accent);
+            border: none;
+            color: white;
+            grid-column: span 2;
+        }
+
+        button.primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* --- Main Content Layout --- */
+        #main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+            background: var(--bg-dark);
+        }
+
+        /* Section that fits exactly to the viewport height */
+        .viewport-section {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            min-height: 100vh;
+            flex-shrink: 0;
+        }
+
+        #metrics-bar {
+            display: flex;
+            justify-content: space-around;
+            background: var(--panel-bg);
+            padding: 18px;
+            border-bottom: 1px solid var(--border);
+            font-family: ui-monospace, monospace;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .metric span {
+            color: var(--accent);
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .canvas-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: radial-gradient(circle at center, #0f172a 0%, #030712 100%);
+            overflow: hidden;
+        }
+
+        canvas {
+            background: #000;
+            border-radius: 8px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--border);
+            max-width: 95%;
+            max-height: 95%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        /* --- Documentation Panel --- */
+        .docs-panel {
+            padding: 50px 60px;
+            background: var(--panel-bg);
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .docs-panel h3 {
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+            margin-top: 0;
+            font-weight: 600;
+        }
+
+        .docs-panel p {
+            line-height: 1.8;
+            font-size: 15px;
+            max-width: 900px;
+        }
+
+        .copyright {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            text-align: center;
+            color: #4b5563;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="sidebar">
+        <h2>Karman vortex LBM CFD solver</h2>
+
+        <div class="control-group">
+            <label>View Mode</label>
+            <select id="viewMode">
+                <option value="velocity" selected>Velocity Magnitude (Fluid Dynamic)</option>
+                <option value="vorticity">Vorticity (Infrared Curl)</option>
+                <option value="particles">Discrete Particle Tracking</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Flow Presets</label>
+            <select id="preset" onchange="applyPreset()">
+                <option value="water" selected>Water (Re ~160, Perfect Karman)</option>
+                <option value="air">Air (Re ~750, Turbulent)</option>
+                <option value="oil">Thick Oil (Re ~15, Laminar Wake)</option>
+                <option value="custom">Custom Configuration</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label><span>Flow velocity (U)</span> <span class="value-display" id="velVal">0.100</span></label>
+            <input type="range" id="velSlider" min="0.02" max="0.15" step="0.005" value="0.10">
+
+            <label><span>Cylinder diameter (D)</span> <span class="value-display" id="radiusVal">15.0</span></label>
+            <input type="range" id="radiusSlider" min="5" max="30" step="1" value="15">
+
+            <label><span>Kinematic viscosity (nu)</span> <span class="value-display" id="viscVal">0.0090</span></label>
+            <input type="range" id="viscSlider" min="0.002" max="0.05" step="0.001" value="0.009">
+
+            <label><span>Time steps per frame</span> <span class="value-display" id="speedVal">10</span></label>
+            <input type="range" id="speedSlider" min="1" max="25" step="1" value="10">
+        </div>
+
+        <div class="btn-grid">
+            <button class="primary" id="playBtn" onclick="togglePlay()">⏸ Pause Simulation</button>
+            <button onclick="initSimulation()">Restart</button>
+            <button onclick="saveFrame()">Save frame</button>
+        </div>
+    </div>
+
+    <div id="main">
+        <div class="viewport-section">
+            <div id="metrics-bar">
+                <div class="metric">Reynolds (Re):<span id="reDisplay">0</span></div>
+                <div class="metric">Strouhal (St):<span id="stDisplay">0.00</span></div>
+                <div class="metric">Expected freq (f):<span id="freqDisplay">0.00</span></div>
+                <div class="metric">Grid:<span style="color: #9ca3af;">320x180</span></div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="simCanvas" width="1280" height="720"></canvas>
+            </div>
+        </div>
+
+        <div class="docs-panel">
+            <h3>Solving Procedures</h3>
+            <p>This implementation utilizes the <strong>Lattice Boltzmann Method (LBM)</strong> utilizing a
+                <strong>D2Q9</strong> lattice grid layout. Unlike macroscopic Navier-Stokes derivations, LBM resolves
+                mesoscopic kinetic particle distributions tracking a pure, uncompromised BGK single-relaxation time step
+                approach.
+            </p>
+            <p><strong>Stability Clamping:</strong> The solver prevents catastrophic interference blow-up (where $M \to
+                c_s$) by strictly bounding calculated macroscopic variables pre-collision. This allows the BGK collision
+                operator to naturally smooth out unbounded eddy interference without the overhead performance penalties
+                of MRT, Smagorinsky models, or Bouzidi extrapolations.</p>
+
+            <div style="display: flex; gap: 40px; margin-top: 30px; flex-wrap: wrap;">
+                <div>
+                    <strong>LBM BGK Collision Equation</strong>
+                    <p>$$ f_i(\vec{x} + \vec{c}_i \Delta t, t + \Delta t) = f_i(\vec{x}, t) - \frac{1}{\tau} \left[
+                        f_i(\vec{x}, t) - f_i^{eq}(\vec{x}, t) \right] $$</p>
+                </div>
+                <div>
+                    <strong>D2Q9 Local Equilibrium Limit</strong>
+                    <p>$$ f_i^{eq} = w_i \rho \left( 1 + \frac{3 \vec{c}_i \cdot \vec{u}}{c_s^2} + \frac{9 (\vec{c}_i
+                        \cdot \vec{u})^2}{2 c_s^4} - \frac{3 \vec{u}^2}{2 c_s^2} \right) $$</p>
+                </div>
+            </div>
+
+            <div class="copyright">© 2026 willuhd | Implementation: D2Q9 Lattice Boltzmann
+                Equations</div>
+        </div>
+    </div>
+
+    <script>
+        const nx = 320, ny = 180;
+        const velU = new Float32Array(nx * ny); const velV = new Float32Array(nx * ny);
+        const density = new Float32Array(nx * ny); const obstacle = new Uint8Array(nx * ny);
+
+        let f = new Float32Array(nx * ny * 9); let f_next = new Float32Array(nx * ny * 9);
+        let smoke = new Float32Array(nx * ny); let smoke_next = new Float32Array(nx * ny);
+
+        const num_particles = 3000;
+        const pX = new Float32Array(num_particles); const pY = new Float32Array(num_particles);
+
+        const w0 = 4.0 / 9.0, w1 = 1.0 / 9.0, w2 = 1.0 / 36.0;
+        const cx = [0, 1, 0, -1, 0, 1, -1, -1, 1];
+        const cy = [0, 0, 1, 0, -1, 1, 1, -1, -1];
+        const weights = [w0, w1, w1, w1, w1, w2, w2, w2, w2];
+
+        let target_u_in = 0.10, u_in = 0.10;
+        let target_visc = 0.009, viscosity = 0.009;
+        let omega = 1.0 / (3.0 * viscosity + 0.5);
+
+        let cylinderDiameter = 15; let cylinderRadius = cylinderDiameter / 2;
+        let cylinderX = 75; let cylinderY = 90.49; // Asymmetric perturbation offset
+
+        let isRunning = true;
+        let isSettingPreset = false;
+
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        ctx.imageSmoothingEnabled = true;
+
+        const hiddenCanvas = document.createElement('canvas');
+        hiddenCanvas.width = nx; hiddenCanvas.height = ny;
+        const ctxH = hiddenCanvas.getContext('2d');
+        const imgData = ctxH.createImageData(nx, ny);
+        const data = imgData.data;
+
+        function initSimulation() {
+            omega = 1.0 / (3.0 * viscosity + 0.5);
+            updateObstacle();
+
+            for (let y = 0; y < ny; y++) {
+                for (let x = 0; x < nx; x++) {
+                    let idx = y * nx + x; let idxf = idx * 9;
+                    let u_init = u_in, v_init = 0;
+
+                    if (x > cylinderX && x < cylinderX + cylinderRadius * 4 && y > cylinderY) {
+                        v_init = u_in * 0.25;
+                    }
+
+                    let u2 = u_init * u_init + v_init * v_init;
+                    f[idxf + 0] = w0 * (1.0 - 1.5 * u2);
+                    for (let i = 1; i <= 8; i++) {
+                        let cu = 3.0 * (cx[i] * u_init + cy[i] * v_init);
+                        f[idxf + i] = weights[i] * (1.0 + cu + 0.5 * cu * cu - 1.5 * u2);
+                    }
+                    for (let i = 0; i < 9; i++) f_next[idxf + i] = f[idxf + i];
+                    velU[idx] = u_init; velV[idx] = v_init; density[idx] = 1.0; smoke[idx] = 0;
+                }
+            }
+            for (let i = 0; i < num_particles; i++) {
+                pX[i] = Math.random() * nx; pY[i] = Math.random() * ny;
+            }
+
+            isRunning = false;
+            document.getElementById('playBtn').innerText = '▶ Play';
+            render();
+        }
+
+        function updateObstacle() {
+            cylinderRadius = cylinderDiameter / 2;
+            for (let y = 0; y < ny; y++) {
+                for (let x = 0; x < nx; x++) {
+                    let dx = x - cylinderX; let dy = y - cylinderY;
+                    let isObs = (dx * dx + dy * dy <= cylinderRadius * cylinderRadius);
+                    let idx = y * nx + x;
+
+                    if (!isObs && obstacle[idx]) {
+                        let u2 = u_in * u_in;
+                        f[idx * 9 + 0] = w0 * (1 - 1.5 * u2);
+                        for (let i = 1; i <= 8; i++) f[idx * 9 + i] = weights[i] * (1 + 3 * (cx[i] * u_in) + 0.5 * Math.pow(3 * cx[i] * u_in, 2) - 1.5 * u2);
+                        for (let i = 0; i < 9; i++) f_next[idx * 9 + i] = f[idx * 9 + i];
+                        velU[idx] = u_in; velV[idx] = 0; density[idx] = 1.0; smoke[idx] = 0.0;
+                    }
+                    obstacle[idx] = isObs ? 1 : 0;
+                }
+            }
+        }
+
+        function lbmStep() {
+            for (let y = 0; y < ny; y++) {
+                for (let x = 0; x < nx; x++) {
+                    let idx = y * nx + x; let idxf = idx * 9;
+
+                    if (obstacle[idx]) { velU[idx] = 0; velV[idx] = 0; smoke_next[idx] = 0; continue; }
+
+                    let f0 = f[idxf + 0], f1, f2, f3, f4, f5, f6, f7, f8;
+
+                    let sx = x - 1, sy = y;
+                    if (sx < 0) { let u2 = u_in * u_in; f1 = w1 * (1 + 3 * u_in + 4.5 * u2 - 1.5 * u2); }
+                    else if (obstacle[sy * nx + sx]) f1 = f[idxf + 3]; else f1 = f[(sy * nx + sx) * 9 + 1];
+
+                    sx = x; sy = y - 1;
+                    if (sy < 0) sy = ny - 1;
+                    if (obstacle[sy * nx + sx]) f2 = f[idxf + 4]; else f2 = f[(sy * nx + sx) * 9 + 2];
+
+                    sx = x + 1; sy = y;
+                    if (sx >= nx) f3 = f[(sy * nx + (nx - 1)) * 9 + 3];
+                    else if (obstacle[sy * nx + sx]) f3 = f[idxf + 1]; else f3 = f[(sy * nx + sx) * 9 + 3];
+
+                    sx = x; sy = y + 1;
+                    if (sy >= ny) sy = 0;
+                    if (obstacle[sy * nx + sx]) f4 = f[idxf + 2]; else f4 = f[(sy * nx + sx) * 9 + 4];
+
+                    sx = x - 1; sy = y - 1;
+                    if (sy < 0) sy = ny - 1;
+                    if (sx < 0) { let u2 = u_in * u_in; f5 = w2 * (1 + 3 * u_in + 4.5 * u2 - 1.5 * u2); }
+                    else if (obstacle[sy * nx + sx]) f5 = f[idxf + 7]; else f5 = f[(sy * nx + sx) * 9 + 5];
+
+                    sx = x + 1; sy = y - 1;
+                    if (sy < 0) sy = ny - 1;
+                    if (sx >= nx) f6 = f[(sy * nx + (nx - 1)) * 9 + 6];
+                    else if (obstacle[sy * nx + sx]) f6 = f[idxf + 8]; else f6 = f[(sy * nx + sx) * 9 + 6];
+
+                    sx = x + 1; sy = y + 1;
+                    if (sy >= ny) sy = 0;
+                    if (sx >= nx) f7 = f[(sy * nx + (nx - 1)) * 9 + 7];
+                    else if (obstacle[sy * nx + sx]) f7 = f[idxf + 5]; else f7 = f[(sy * nx + sx) * 9 + 7];
+
+                    sx = x - 1; sy = y + 1;
+                    if (sy >= ny) sy = 0;
+                    if (sx < 0) { let u2 = u_in * u_in; f8 = w2 * (1 + 3 * u_in + 4.5 * u2 - 1.5 * u2); }
+                    else if (obstacle[sy * nx + sx]) f8 = f[idxf + 6]; else f8 = f[(sy * nx + sx) * 9 + 8];
+
+                    let rho = f0 + f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8;
+                    let u = (f1 + f5 + f8 - f3 - f6 - f7) / rho;
+                    let v = (f2 + f5 + f6 - f4 - f7 - f8) / rho;
+
+                    if (rho < 0.3) rho = 0.3;
+                    if (rho > 2.0) rho = 2.0;
+                    let speedSq = u * u + v * v;
+                    if (speedSq > 0.04) {
+                        let speed = Math.sqrt(speedSq);
+                        u = (u / speed) * 0.2; v = (v / speed) * 0.2;
+                    }
+
+                    velU[idx] = u; velV[idx] = v; density[idx] = rho;
+
+                    let u2v2_15 = 1.5 * (u * u + v * v);
+                    let cu;
+
+                    f_next[idxf + 0] = f0 * (1 - omega) + omega * (w0 * rho * (1 - u2v2_15));
+                    cu = u; f_next[idxf + 1] = f1 * (1 - omega) + omega * (w1 * rho * (1 + 3 * cu + 4.5 * cu * cu - u2v2_15));
+                    cu = v; f_next[idxf + 2] = f2 * (1 - omega) + omega * (w1 * rho * (1 + 3 * cu + 4.5 * cu * cu - u2v2_15));
+                    cu = -u; f_next[idxf + 3] = f3 * (1 - omega) + omega * (w1 * rho * (1 + 3 * cu + 4.5 * cu * cu - u2v2_15));
+                    cu = -v; f_next[idxf + 4] = f4 * (1 - omega) + omega * (w1 * rho * (1 + 3 * cu + 4.5 * cu * cu - u2v2_15));
+                    cu = u + v; f_next[idxf + 5] = f5 * (1 - omega) + omega * (w2 * rho * (1 + 3 * cu + 4.5 * cu * cu - u2v2_15));
+                    cu = -u + v; f_next[idxf + 6] = f6 * (1 - omega) + omega * (w2 * rho * (1 + 3 * cu + 4.5 * cu * cu - u2v2_15));
+                    cu = -u - v; f_next[idxf + 7] = f7 * (1 - omega) + omega * (w2 * rho * (1 + 3 * cu + 4.5 * cu * cu - u2v2_15));
+                    cu = u - v; f_next[idxf + 8] = f8 * (1 - omega) + omega * (w2 * rho * (1 + 3 * cu + 4.5 * cu * cu - u2v2_15));
+
+                    let xs = x - u; let ys = y - v;
+                    let x0 = Math.floor(xs), x1 = x0 + 1;
+                    let y0 = Math.floor(ys), y1 = y0 + 1;
+
+                    if (x0 < 0) x0 = 0; if (x1 >= nx) x1 = nx - 1;
+                    if (y0 < 0) y0 = 0; if (y1 >= ny) y1 = ny - 1;
+
+                    let wx = xs - x0, wy = ys - y0;
+                    smoke_next[idx] = 0.998 * (
+                        (1 - wx) * (1 - wy) * smoke[y0 * nx + x0] + wx * (1 - wy) * smoke[y0 * nx + x1] +
+                        (1 - wx) * wy * smoke[y1 * nx + x0] + wx * wy * smoke[y1 * nx + x1]
+                    );
+                }
+            }
+            let temp = f; f = f_next; f_next = temp;
+            let tempS = smoke; smoke = smoke_next; smoke_next = tempS;
+        }
+
+        function updateInjectorsAndParticles() {
+            for (let y = 0; y < ny; y++) {
+                let isStreak = false;
+                for (let i = 1; i <= 15; i++) { if (Math.abs(y - i * (ny / 16)) < 1.0) isStreak = true; }
+                if (isStreak) smoke[y * nx + 5] = 1.0;
+            }
+
+            for (let i = 0; i < num_particles; i++) {
+                let px = pX[i], py = pY[i], x0 = Math.floor(px), y0 = Math.floor(py);
+                let u = u_in, v = 0;
+
+                if (x0 >= 0 && x0 < nx - 1 && y0 >= 0 && y0 < ny - 1) {
+                    let wx = px - x0, wy = py - y0;
+                    u = (1 - wx) * (1 - wy) * velU[y0 * nx + x0] + wx * (1 - wy) * velU[y0 * nx + x0 + 1] + (1 - wx) * wy * velU[(y0 + 1) * nx + x0] + wx * wy * velU[(y0 + 1) * nx + x0 + 1];
+                    v = (1 - wx) * (1 - wy) * velV[y0 * nx + x0] + wx * (1 - wy) * velV[y0 * nx + x0 + 1] + (1 - wx) * wy * velV[(y0 + 1) * nx + x0] + wx * wy * velV[(y0 + 1) * nx + x0 + 1];
+                }
+                pX[i] += u; pY[i] += v;
+
+                if (pX[i] > nx - 1 || pX[i] < 0 || pY[i] < 0 || pY[i] > ny - 1 || obstacle[Math.floor(pY[i]) * nx + Math.floor(pX[i])]) {
+                    pX[i] = 1; pY[i] = Math.random() * ny;
+                }
+            }
+        }
+
+        function jetColor(v, vmin, vmax) {
+            let c = Math.max(0, Math.min(1, (v - vmin) / (vmax - vmin)));
+            let r = 0, g = 0, b = 0;
+            if (c < 0.125) { r = 0; g = 0; b = 0.5 + 4 * c; }
+            else if (c < 0.375) { r = 0; g = 4 * (c - 0.125); b = 1; }
+            else if (c < 0.625) { r = 4 * (c - 0.375); g = 1; b = 1 - 4 * (c - 0.375); }
+            else if (c < 0.875) { r = 1; g = 1 - 4 * (c - 0.625); b = 0; }
+            else { r = 1 - 4 * (c - 0.875); g = 0; b = 0; }
+            return [r * 255, g * 255, b * 255];
+        }
+
+        function render() {
+            let mode = document.getElementById('viewMode').value;
+            let u_max = u_in * 1.5;
+
+            if (['smoke', 'velocity', 'pressure', 'vorticity'].includes(mode)) {
+                for (let y = 0; y < ny; y++) {
+                    for (let x = 0; x < nx; x++) {
+                        let idx = y * nx + x; let cIdx = idx * 4;
+
+                        if (obstacle[idx]) {
+                            data[cIdx] = 30; data[cIdx + 1] = 41; data[cIdx + 2] = 59; data[cIdx + 3] = 255;
+                            continue;
+                        }
+
+                        if (mode === 'smoke') {
+                            let s = Math.max(0, Math.min(1, smoke[idx]));
+                            data[cIdx] = s * 190; data[cIdx + 1] = s * 255; data[cIdx + 2] = s * 255 + (1 - s) * 30; data[cIdx + 3] = 255;
+                        } else if (mode === 'velocity') {
+                            let speed = Math.sqrt(velU[idx] * velU[idx] + velV[idx] * velV[idx]);
+                            let c = jetColor(speed, 0.0, u_max);
+                            data[cIdx] = c[0]; data[cIdx + 1] = c[1]; data[cIdx + 2] = c[2]; data[cIdx + 3] = 255;
+                        } else if (mode === 'pressure') {
+                            let dp = (density[idx] - 1.0) * 10.0;
+                            let c = jetColor(dp, -0.04, 0.04);
+                            data[cIdx] = c[0]; data[cIdx + 1] = c[1]; data[cIdx + 2] = c[2]; data[cIdx + 3] = 255;
+                        } else if (mode === 'vorticity') {
+                            let dx = x < nx - 1 ? x + 1 : x; let dy = y < ny - 1 ? y + 1 : y;
+                            let sx = x > 0 ? x - 1 : x; let sy = y > 0 ? y - 1 : y;
+                            let vort = ((velV[y * nx + dx] - velV[y * nx + sx]) - (velU[dy * nx + x] - velU[sy * nx + x])) / 2.0;
+                            let v = Math.max(-1, Math.min(1, vort * 25.0));
+                            data[cIdx] = v > 0 ? v * 255 : 0; data[cIdx + 1] = 0; data[cIdx + 2] = v < 0 ? -v * 255 : 0; data[cIdx + 3] = 255;
+                        }
+                    }
+                }
+                ctxH.putImageData(imgData, 0, 0);
+                ctx.drawImage(hiddenCanvas, 0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = '#020617'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                let sX = canvas.width / nx, sY = canvas.height / ny;
+
+                if (mode === 'particles') {
+                    ctx.fillStyle = 'rgba(100, 200, 255, 0.7)'; ctx.beginPath();
+                    for (let i = 0; i < num_particles; i++) {
+                        ctx.moveTo(pX[i] * sX, pY[i] * sY); ctx.arc(pX[i] * sX, pY[i] * sY, 1.5, 0, Math.PI * 2);
+                    }
+                    ctx.fill();
+                } else if (mode === 'vectors') {
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'; ctx.lineWidth = 1; ctx.beginPath();
+                    let step = 8;
+                    for (let y = step / 2; y < ny; y += step) {
+                        for (let x = step / 2; x < nx; x += step) {
+                            let i = Math.floor(y) * nx + Math.floor(x);
+                            if (obstacle[i]) continue;
+                            let len = Math.sqrt(velU[i] * velU[i] + velV[i] * velV[i]);
+                            if (len < 0.001) continue;
+                            let dl = Math.min(len * 200, step * 1.5);
+                            ctx.moveTo(x * sX, y * sY); ctx.lineTo((x + (velU[i] / len) * dl) * sX, (y + (velV[i] / len) * dl) * sY);
+                        }
+                    }
+                    ctx.stroke();
+                }
+                ctx.fillStyle = '#1e293b'; ctx.beginPath();
+                ctx.arc(cylinderX * sX, cylinderY * sY, cylinderRadius * sX, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        function loop() {
+            if (isRunning) {
+                if (Math.abs(u_in - target_u_in) > 0.0001) u_in += (target_u_in - u_in) * 0.02;
+                if (Math.abs(viscosity - target_visc) > 0.00001) {
+                    viscosity += (target_visc - viscosity) * 0.05;
+                    omega = 1.0 / (3.0 * viscosity + 0.5);
+                }
+
+                let steps = parseInt(document.getElementById('speedSlider').value);
+                for (let i = 0; i < steps; i++) {
+                    lbmStep();
+                    updateInjectorsAndParticles();
+                }
+            }
+            render();
+
+            let Re = (u_in * cylinderDiameter) / viscosity;
+            document.getElementById('reDisplay').innerText = Re.toFixed(0);
+
+            let expectedStrouhal = 0;
+            if (Re >= 47) expectedStrouhal = 0.198 * (1.0 - 19.7 / Re);
+            document.getElementById('stDisplay').innerText = expectedStrouhal.toFixed(3);
+
+            let freq = expectedStrouhal * u_in / cylinderDiameter;
+            document.getElementById('freqDisplay').innerText = freq.toFixed(5) + " hz/step";
+
+            requestAnimationFrame(loop);
+        }
+
+        function togglePlay() {
+            isRunning = !isRunning;
+            document.getElementById('playBtn').innerText = isRunning ? '⏸ Pause Simulation' : '▶ Play Simulation';
+        }
+
+        function saveFrame() {
+            let link = document.createElement('a');
+            let timestamp = new Date().toISOString().replace(/[:.-]/g, "_");
+            link.download = `CFD_Frame_${timestamp}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        }
+
+        function applyPreset() {
+            isSettingPreset = true;
+            let p = document.getElementById('preset').value;
+            if (p === 'water') setParams(0.10, 0.009, 15);
+            else if (p === 'air') setParams(0.15, 0.003, 15);
+            else if (p === 'oil') setParams(0.05, 0.05, 15);
+            isSettingPreset = false;
+        }
+
+        function setCustomFlag() {
+            if (!isSettingPreset) document.getElementById('preset').value = 'custom';
+        }
+
+        function setParams(vel, visc, diameter) {
+            document.getElementById('velSlider').value = vel;
+            document.getElementById('viscSlider').value = visc;
+            document.getElementById('radiusSlider').value = diameter;
+            ['velSlider', 'viscSlider', 'radiusSlider'].forEach(id => document.getElementById(id).dispatchEvent(new Event('input')));
+        }
+
+        document.getElementById('velSlider').addEventListener('input', (e) => {
+            setCustomFlag(); target_u_in = parseFloat(e.target.value);
+            document.getElementById('velVal').innerText = target_u_in.toFixed(3);
+        });
+        document.getElementById('viscSlider').addEventListener('input', (e) => {
+            setCustomFlag(); target_visc = parseFloat(e.target.value);
+            document.getElementById('viscVal').innerText = target_visc.toFixed(4);
+        });
+        document.getElementById('radiusSlider').addEventListener('input', (e) => {
+            setCustomFlag(); cylinderDiameter = parseFloat(e.target.value);
+            document.getElementById('radiusVal').innerText = cylinderDiameter.toFixed(1);
+            updateObstacle();
+        });
+        document.getElementById('speedSlider').addEventListener('input', (e) => {
+            document.getElementById('speedVal').innerText = e.target.value;
+        });
+
+        initSimulation();
+        loop();
+    </script>
+</body>
+
+</html>
