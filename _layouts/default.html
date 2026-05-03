@@ -152,36 +152,48 @@ let currentIndex = 0;
             const slideOutX = direction === 1 ? '-100%' : '100%';
             const slideInX = direction === 1 ? '100%' : '-100%';
 
-            // --- 0. Measure ---
+            // --- 1. Measure & calculate final state ---
             const oldTotalH = container.offsetHeight;
             const oldImgH = imgWrapper.offsetHeight;
             const newCapH = measureCapHeight(newCap);
             const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
             const ctrlH = Math.max(btnH, newCapH) + 24;
             const maxUsable = window.innerHeight - 80;
-
-            // Phase 1: caption grows at current image height (grow down)
-            const phase1Total = oldImgH + ctrlH;
-            // Phase 2: adjust image to fill viewport (shrink if overflow, grow if space)
             const minImgH = getMinImgH();
-            const fillImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
 
-            const heightChanges = oldTotalH !== phase1Total;
+            const finalImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
+            const finalTotal = finalImgH + ctrlH;
 
-            // --- 1. Lock current heights ---
+            // --- 2. Set ALL starting states (transitions disabled) ---
             container.style.transition = 'none';
             container.style.height = oldTotalH + 'px';
             imgWrapper.style.transition = 'none';
             imgWrapper.style.height = oldImgH + 'px';
-            void container.offsetHeight;
-            container.style.transition = '';
-            imgWrapper.style.transition = '';
 
-            // --- 2. Image slide ---
             newImg.style.transition = 'none';
             newImg.style.transform = `translateX(${slideInX})`;
             newImg.classList.add('active');
-            void newImg.offsetHeight;
+
+            newCap.style.transition = 'none';
+            newCap.style.transform = `translateX(${slideInX})`;
+            newCap.style.opacity = '0';
+            newCap.style.visibility = 'visible';
+            newCap.style.position = 'relative';
+            newCap.classList.add('active');
+
+            oldCap.style.transition = 'none';
+            oldCap.style.visibility = 'hidden';
+            oldCap.style.position = 'absolute';
+            oldCap.classList.remove('active');
+
+            // --- 3. ONE forced reflow to register starting layout ---
+            void container.offsetHeight;
+
+            // --- 4. Set ALL final values simultaneously (transitions on) ---
+            container.style.transition = '';
+            imgWrapper.style.transition = '';
+            container.style.height = finalTotal + 'px';
+            imgWrapper.style.height = finalImgH + 'px';
 
             oldImg.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
             oldImg.style.transform = `translateX(${slideOutX})`;
@@ -190,53 +202,16 @@ let currentIndex = 0;
             newImg.style.transition = 'transform 0.35s ease-in-out';
             newImg.style.transform = 'translateX(0)';
 
-            // --- 3. Caption slide ---
-            newCap.style.transition = 'none';
-            newCap.style.transform = `translateX(${slideInX})`;
-            newCap.style.opacity = '0';
-            newCap.style.visibility = 'visible';
-            newCap.style.position = 'relative';
-            newCap.classList.add('active');
-            void newCap.offsetHeight;
-
             oldCap.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
             oldCap.style.transform = `translateX(${slideOutX})`;
             oldCap.style.opacity = '0';
-            oldCap.style.visibility = 'hidden';
-            oldCap.style.position = 'absolute';
-            oldCap.classList.remove('active');
 
             newCap.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
             newCap.style.transform = 'translateX(0)';
             newCap.style.opacity = '1';
 
-            // --- 4. Phase 1: Grow caption down ---
-            if (heightChanges) {
-                void container.offsetHeight;
-                container.style.height = phase1Total + 'px';
-            }
-
-            // --- 5. Phase 2: After caption settles, adjust image to fill viewport ---
-            const needsAdjust = fillImgH !== oldImgH;
-
-            if (needsAdjust) {
-                setTimeout(() => {
-                    container.style.transition = 'none';
-                    imgWrapper.style.transition = 'none';
-                    container.style.height = phase1Total + 'px';
-                    imgWrapper.style.height = oldImgH + 'px';
-                    void container.offsetHeight;
-                    container.style.transition = '';
-                    imgWrapper.style.transition = '';
-                    container.style.height = (fillImgH + ctrlH) + 'px';
-                    imgWrapper.style.height = fillImgH + 'px';
-                    setTimeout(cleanup, 360);
-                }, 360);
-            } else {
-                setTimeout(cleanup, 360);
-            }
-
-            function cleanup() {
+            // --- 5. Cleanup ---
+            setTimeout(() => {
                 oldImg.classList.remove('active');
                 oldImg.style.cssText = '';
                 newImg.style.cssText = '';
@@ -244,7 +219,7 @@ let currentIndex = 0;
                 newCap.style.cssText = '';
                 pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
                 transitioning = false;
-            }
+            }, 360);
         };
 
         prevBtn.addEventListener('click', () => updateCarousel(-1));
