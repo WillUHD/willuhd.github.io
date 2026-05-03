@@ -17,21 +17,21 @@
     <div class="content-wrapper">
       
       <!-- Show sidebar only if page is in a subfolder with sub-pages -->
-      {% assign has_subpages = false %}
+      {% assign show_sidebar = false %}
       {% if page.dir != "/" %}
         {% for sp in site.pages %}
           {% if sp.dir == page.dir and sp.url != page.dir %}
-            {% assign has_subpages = true %}
+            {% assign show_sidebar = true %}
           {% endif %}
         {% endfor %}
       {% endif %}
-      {% if page.dir != "/" and has_subpages %}
+      {% if show_sidebar %}
       <aside class="sidebar-column">
         {% include sidebar.html %}
       </aside>
       {% endif %}
 
-      <article class="article-column markdown-content">
+      <article class="article-column markdown-content{% unless show_sidebar %} full-width{% endunless %}">
         {{ content }}
       </article>
 
@@ -51,10 +51,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const buildCarousel = (pairs, insertRef) => {
         if (!insertRef || !insertRef.parentNode) return;
-        
+
         const container = document.createElement('div');
         container.className = 'carousel-container';
-        
+
         const imgWrapper = document.createElement('div');
         imgWrapper.className = 'carousel-images-wrapper';
 
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const imgElements = [];
         const captionElements = [];
-        
+
         pairs.forEach((pair, index) => {
             const img = document.createElement('img');
             img.src = pair.imgSrc;
@@ -73,10 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (index === 0) img.classList.add('active');
             imgElements.push(img);
             imgWrapper.appendChild(img);
-            
+
             const cap = document.createElement('div');
             cap.className = 'carousel-caption-text';
-            cap.innerHTML = pair.captionHTML; 
+            cap.innerHTML = pair.captionHTML;
             if (index === 0) cap.classList.add('active');
             captionElements.push(cap);
         });
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const prevBtn = document.createElement('button');
         prevBtn.className = 'carousel-btn prev';
         prevBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
-        
+
         const nextBtn = document.createElement('button');
         nextBtn.className = 'carousel-btn next';
         nextBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
@@ -101,23 +101,21 @@ document.addEventListener("DOMContentLoaded", () => {
         controls.appendChild(captionContainer);
         controls.appendChild(nextBtn);
         container.appendChild(controls);
-        
+
         let currentIndex = 0;
         let transitioning = false;
 
-        const measureElHeight = (el) => {
-            const wasActive = el.classList.contains('active');
-            if (!wasActive) {
-                el.classList.add('active');
-                el.style.visibility = 'hidden';
-                el.style.opacity = '0';
+        const measureCapHeight = (el) => {
+            if (el.classList.contains('active')) {
+                return el.offsetHeight;
             }
-            const h = el.offsetHeight;
-            if (!wasActive) {
-                el.classList.remove('active');
-                el.style.visibility = '';
-                el.style.opacity = '';
-            }
+            const w = captionContainer.offsetWidth;
+            const clone = el.cloneNode(true);
+            clone.classList.add('active');
+            clone.style.cssText = 'position:absolute;visibility:hidden;opacity:1;width:' + w + 'px;top:0;left:0;pointer-events:none';
+            document.body.appendChild(clone);
+            const h = clone.offsetHeight;
+            document.body.removeChild(clone);
             return h;
         };
 
@@ -125,8 +123,31 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!imgWrapper.style.height) {
                 return imgWrapper.offsetHeight;
             }
-            const w = imgWrapper.offsetWidth;
-            return Math.min(w * 9 / 16, 550);
+            return imgWrapper.offsetWidth * 9 / 16;
+        };
+
+        const setCarouselHeight = () => {
+            const activeCaption = captionElements[currentIndex];
+            const capH = measureCapHeight(activeCaption);
+            const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
+            const ctrlH = Math.max(btnH, capH) + 24;
+
+            const naturalImgH = getNaturalImgH();
+            const maxUsable = window.innerHeight - 80;
+            const naturalTotal = naturalImgH + ctrlH;
+            const newTotal = Math.min(naturalTotal, maxUsable);
+            let newImgH = naturalImgH;
+            if (naturalTotal > maxUsable) {
+                newImgH = Math.max(naturalImgH - (naturalTotal - maxUsable), 100);
+            }
+
+            container.style.transition = 'none';
+            imgWrapper.style.transition = 'none';
+            container.style.height = newTotal + 'px';
+            imgWrapper.style.height = newImgH + 'px';
+            void container.offsetHeight;
+            container.style.transition = '';
+            imgWrapper.style.transition = '';
         };
 
         const updateCarousel = (direction) => {
@@ -142,30 +163,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const oldCap = captionElements[oldIndex];
             const newCap = captionElements[newIndex];
 
-            // --- 1. Measure dimensions ---
-            const naturalImgH = getNaturalImgH();
-            const oldTotalH = container.offsetHeight;
-            const oldImgH = imgWrapper.offsetHeight;
-
-            const oldCapH = measureElHeight(oldCap);
-            const newCapH = measureElHeight(newCap);
-
-            const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
-            const ctrlPad = 24;
-            const newCtrlH = Math.max(btnH, newCapH) + ctrlPad;
-
-            const maxUsable = window.innerHeight - 80;
-            const naturalTotalH = naturalImgH + newCtrlH;
-            const newTotalH = Math.min(naturalTotalH, maxUsable);
-            let newImgH = naturalImgH;
-            if (naturalTotalH > maxUsable) {
-                newImgH = Math.max(naturalImgH - (naturalTotalH - maxUsable), 100);
-            }
-
             const slideOutX = direction === 1 ? '-100%' : '100%';
             const slideInX = direction === 1 ? '100%' : '-100%';
 
-            // --- 2. Lock heights to prevent layout snap ---
+            // --- 1. Lock heights ---
+            const oldTotalH = container.offsetHeight;
+            const oldImgH = imgWrapper.offsetHeight;
             container.style.transition = 'none';
             container.style.height = oldTotalH + 'px';
             imgWrapper.style.transition = 'none';
@@ -174,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
             container.style.transition = '';
             imgWrapper.style.transition = '';
 
-            // --- 3. Image slide ---
+            // --- 2. Image slide ---
             newImg.style.transition = 'none';
             newImg.style.transform = `translateX(${slideInX})`;
             newImg.classList.add('active');
@@ -187,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
             newImg.style.transition = 'transform 0.35s ease-in-out';
             newImg.style.transform = 'translateX(0)';
 
-            // --- 4. Caption slide ---
+            // --- 3. Caption slide ---
             newCap.style.transition = 'none';
             newCap.style.transform = `translateX(${slideInX})`;
             newCap.style.opacity = '0';
@@ -207,19 +210,30 @@ document.addEventListener("DOMContentLoaded", () => {
             newCap.style.transform = 'translateX(0)';
             newCap.style.opacity = '1';
 
-            // --- 5. Height transition ---
+            // --- 4. Height transition ---
+            const capH = measureCapHeight(newCap);
+            const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
+            const ctrlH = Math.max(btnH, capH) + 24;
+            const naturalImgH = getNaturalImgH();
+            const maxUsable = window.innerHeight - 80;
+            const naturalTotal = naturalImgH + ctrlH;
+            const newTotal = Math.min(naturalTotal, maxUsable);
+            let newImgH = naturalImgH;
+            if (naturalTotal > maxUsable) {
+                newImgH = Math.max(naturalImgH - (naturalTotal - maxUsable), 100);
+            }
+
             void container.offsetHeight;
-            container.style.height = newTotalH + 'px';
+            container.style.height = newTotal + 'px';
             imgWrapper.style.height = newImgH + 'px';
 
-            // --- 6. Cleanup ---
+            // --- 5. Cleanup ---
             setTimeout(() => {
                 oldImg.classList.remove('active');
                 oldImg.style.cssText = '';
                 newImg.style.cssText = '';
                 oldCap.style.cssText = '';
                 newCap.style.cssText = '';
-                container.style.height = '';
                 pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
                 transitioning = false;
             }, 360);
@@ -229,6 +243,16 @@ document.addEventListener("DOMContentLoaded", () => {
         nextBtn.addEventListener('click', () => updateCarousel(1));
 
         insertRef.parentNode.insertBefore(container, insertRef);
+
+        // Initialize explicit heights for smooth future transitions
+        setCarouselHeight();
+
+        // Window resize handler
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(setCarouselHeight, 50);
+        });
     };
 
     const children = Array.from(content.children);
