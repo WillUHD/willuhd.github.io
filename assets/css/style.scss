@@ -134,45 +134,58 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
 .markdown-content td { border-bottom: 1px solid var(--ui-border); padding: 10px; }
 
 .markdown-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0; }
+
+.markdown-content iframe.embedded-page {
+  width: 100%;
+  height: 80vh;
+  border: none;
+  border-radius: 8px;
+  border: 1px solid var(--ui-border);
+  display: block;
+  margin: 20px 0;
+}
 .markdown-content hr { border: 0; border-top: 1px solid var(--ui-border); margin: 40px 0; }
 
 .carousel-container {
   margin: 40px 0;
-  border-radius: 8px; /* Matches normal image rounding */
+  border-radius: 8px;
   border: 1px solid var(--ui-border);
-  overflow: hidden; /* Prevents inside elements from bleeding */
+  overflow: hidden;
   background: var(--ui-footer-bg);
   display: flex;
   flex-direction: column;
+  transition: height 0.35s ease-in-out;
 }
 
 .carousel-images-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9; /* Consistent dimensions */
-  max-height: 550px;
-  background: var(--bg-primary); /* Blend seamlessly with background */
+  background: var(--bg-primary);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  transition: height 0.35s ease-in-out;
 }
 
 .carousel-images-wrapper img {
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  object-fit: contain; /* Images scale down to fit inside the fixed box */
-  margin: 0; /* Override markdown default */
-  border-radius: 0; /* Edge handled by container overflow */
+  object-fit: contain;
+  margin: 0;
+  border-radius: 0;
   opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  pointer-events: none; /* Ignore clicks on hidden slides */
+  transform: translateX(0);
+  transition: opacity 0.35s ease-in-out, transform 0.35s ease-in-out;
+  pointer-events: none;
 }
 
 .carousel-images-wrapper img.active {
   opacity: 1;
   z-index: 1;
   pointer-events: auto;
+  transform: translateX(0);
 }
 
 .carousel-pill {
@@ -192,7 +205,7 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
 
 .carousel-controls {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   padding: 12px 16px;
   background: var(--ui-footer-bg);
@@ -217,13 +230,15 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   font-size: 14px;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease-in-out;
+  transform: translateX(0);
+  transition: opacity 0.35s ease-in-out, transform 0.35s ease-in-out;
 }
 
 .carousel-caption-text.active {
   opacity: 1;
   visibility: visible;
-  position: relative; 
+  position: relative;
+  transform: translateX(0);
 }
 
 .carousel-caption-text p {
