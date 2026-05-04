@@ -79,12 +79,16 @@
       const imgWrapper = document.createElement('div');
       imgWrapper.className = 'carousel-images-wrapper';
 
+      const imgElements = [];
       const captionElements = [];
 
       pairs.forEach((pair) => {
         const img = document.createElement('img');
         img.src = pair.imgSrc;
         img.alt = pair.imgAlt;
+        // Trigger resize calculation automatically when image fully loads
+        img.onload = () => { window.requestAnimationFrame(updateScrollSync); };
+        imgElements.push(img);
         imgWrapper.appendChild(img);
 
         const cap = document.createElement('div');
@@ -123,7 +127,7 @@
 
       let currentIndex = 0;
 
-      // Mathematical logic tying scroll pos strictly to UI heights and translates
+      // Master synchronization logic linking swipe/scroll to layout
       const updateScrollSync = () => {
         const width = imgWrapper.offsetWidth;
         if (width === 0) return;
@@ -143,13 +147,37 @@
         const idx2 = Math.min(Math.ceil(safeRatio), pairs.length - 1);
         const mod = safeRatio - idx1;
 
-        // Concurrent Height and Opacity Sync Engine
+        // Concurrent Dynamic Height calculation
         if (idx1 >= 0 && idx2 < pairs.length) {
-          const h1 = captionElements[idx1].offsetHeight;
-          const h2 = captionElements[idx2].offsetHeight;
-          const interpolatedHeight = h1 + (h2 - h1) * mod;
           
-          captionContainer.style.height = `${interpolatedHeight}px`;
+          const getStateMetrics = (idx) => {
+            const capH = captionElements[idx].offsetHeight;
+            const ctrlH = Math.max(24, capH) + 24; // Button size (24) + padding top/bottom (12+12)
+            
+            const img = imgElements[idx];
+            // Provide 16:9 fallback until image actually loads
+            const natW = img.naturalWidth || 16;
+            const natH = img.naturalHeight || 9;
+            let imgH = (width / natW) * natH;
+            
+            // Respect the absolute maximum vertical space available on the screen 
+            const maxUsable = window.innerHeight - 80;
+            if (imgH + ctrlH > maxUsable) {
+              imgH = Math.max(maxUsable - ctrlH, 100);
+            }
+            
+            return { capH, imgH };
+          };
+
+          const s1 = getStateMetrics(idx1);
+          const s2 = getStateMetrics(idx2);
+
+          // Interpolate the heights exactly according to the drag distance
+          const intCapH = s1.capH + (s2.capH - s1.capH) * mod;
+          const intImgH = s1.imgH + (s2.imgH - s1.imgH) * mod;
+          
+          captionContainer.style.height = `${intCapH}px`;
+          imgWrapper.style.height = `${intImgH}px`;
 
           captionElements.forEach((el, i) => {
             if (i === idx1) el.style.opacity = 1 - mod;
