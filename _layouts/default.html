@@ -120,7 +120,6 @@
 
       let currentIndex = 0;
       let transitioning = false;
-      let pendingDirection = 0;
       let transitionTimer = null;
 
       const cancelAnimation = () => {
@@ -133,8 +132,6 @@
         container.style.transition = '';
         imgWrapper.style.transition = '';
         captionContainer.style.transition = '';
-        imgElements.forEach((img, i) => img.classList.toggle('active', i === currentIndex));
-        captionElements.forEach((cap, i) => cap.classList.toggle('active', i === currentIndex));
         transitioning = false;
       };
 
@@ -173,30 +170,30 @@
         captionContainer.style.transition = '';
       };
 
+      const clickQueue = [];
+
       const updateCarousel = (direction) => {
         if (transitioning) {
-          pendingDirection += direction;
-          cancelAnimation();
+          clickQueue.push(direction);
+          return;
         }
 
-        const totalDir = direction + pendingDirection;
-        pendingDirection = 0;
+        let totalDir = direction;
+        while (clickQueue.length > 0) totalDir += clickQueue.shift();
 
         if (totalDir === 0) return;
 
         transitioning = true;
-
         const normalizedDir = totalDir > 0 ? 1 : -1;
         const skipCount = Math.abs(totalDir) - 1;
 
         const oldIndex = currentIndex;
-        const newIndex = (currentIndex + normalizedDir + pairs.length) % pairs.length;
-        currentIndex = newIndex;
+        const animTarget = (currentIndex + normalizedDir + pairs.length) % pairs.length;
 
         const oldImg = imgElements[oldIndex];
-        const newImg = imgElements[newIndex];
+        const newImg = imgElements[animTarget];
         const oldCap = captionElements[oldIndex];
-        const newCap = captionElements[newIndex];
+        const newCap = captionElements[animTarget];
 
         const slideOutX = normalizedDir === 1 ? '-100%' : '100%';
         const slideInX = normalizedDir === 1 ? '100%' : '-100%';
@@ -229,10 +226,10 @@
         // 3. Force reflow
         void container.offsetHeight;
 
-        // 4. Set heights directly (no CSS transition — avoids layout thrashing)
-        container.style.transition = 'none';
-        imgWrapper.style.transition = 'none';
-        captionContainer.style.transition = 'none';
+        // 4. Trigger height transitions with kinetic easing
+        container.style.transition = 'height 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
+        imgWrapper.style.transition = 'height 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
+        captionContainer.style.transition = 'height 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
 
         container.style.height = finalTotal + 'px';
         imgWrapper.style.height = finalImgH + 'px';
@@ -255,6 +252,7 @@
 
         // 6. Final cleanup
         transitionTimer = setTimeout(() => {
+          currentIndex = animTarget;
           oldImg.classList.remove('active');
           oldCap.classList.remove('active');
           newImg.classList.add('active');
@@ -292,10 +290,8 @@
           transitioning = false;
           transitionTimer = null;
 
-          if (pendingDirection !== 0) {
-            const d = pendingDirection;
-            pendingDirection = 0;
-            updateCarousel(d);
+          if (clickQueue.length > 0) {
+            updateCarousel(clickQueue.shift());
           }
         }, 380);
       };
@@ -308,7 +304,7 @@
       let dragStartX = 0;
 
       const onDragStart = (clientX) => {
-        pendingDirection = 0;
+        clickQueue.length = 0;
         cancelAnimation();
         isDragging = true;
         dragStartX = clientX;
@@ -364,27 +360,24 @@
         if (ratio > 0.25 && dx !== 0) {
           const dir = dx > 0 ? -1 : 1;
           const newIdx = (currentIndex + dir + pairs.length) % pairs.length;
-          const remaining = w - Math.abs(dx);
-          const remDir = dx > 0 ? 1 : -1;
+          const slideOutX = dir === 1 ? '-100%' : '100%';
           transitioning = true;
 
           imgElements.forEach((img, i) => {
             if (i === currentIndex) {
-              img.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
-              img.style.transform = `translateX(${remDir * remaining}px)`;
-              img.style.opacity = '0';
+              img.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
+              img.style.transform = `translateX(${slideOutX})`;
             } else if (i === newIdx) {
-              img.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
+              img.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
               img.style.transform = `translateX(0)`;
             }
           });
           captionElements.forEach((cap, i) => {
             if (i === currentIndex) {
-              cap.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
-              cap.style.transform = `translateX(${remDir * remaining}px)`;
-              cap.style.opacity = '0';
+              cap.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
+              cap.style.transform = `translateX(${slideOutX})`;
             } else if (i === newIdx) {
-              cap.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
+              cap.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
               cap.style.transform = `translateX(0)`;
             }
           });
@@ -411,8 +404,8 @@
           }, 220);
         } else {
           transitioning = true;
-          imgElements.forEach(img => { img.style.transition = 'transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)'; img.style.transform = ''; img.style.opacity = ''; });
-          captionElements.forEach(cap => { cap.style.transition = 'transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)'; cap.style.transform = ''; cap.style.visibility = ''; });
+          imgElements.forEach(img => { img.style.transition = 'transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)'; img.style.transform = ''; });
+          captionElements.forEach(cap => { cap.style.transition = 'transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)'; cap.style.transform = ''; cap.style.visibility = ''; });
           transitionTimer = setTimeout(() => {
             imgElements.forEach(img => { img.style.transition = ''; });
             captionElements.forEach(cap => { cap.style.transition = ''; });
