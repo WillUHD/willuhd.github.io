@@ -107,8 +107,7 @@
       let currentIndex = 0;
       let transitioning = false;
 
-      // Calculate the natural 16:9 height of the wrapper without constraints
-      const getNaturalImgH = () => imgWrapper.offsetWidth * 9 / 16;
+      const getMinImgH = () => imgWrapper.offsetWidth * 9 / 16;
 
       const setCarouselHeight = () => {
         const activeCap = captionElements[currentIndex];
@@ -116,13 +115,13 @@
         const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
         const ctrlH = Math.max(btnH, capH) + 24;
         const maxUsable = window.innerHeight - 80;
+        const minImgH = getMinImgH();
 
-        const naturalImgH = getNaturalImgH();
+        // 1. Reverted to your original base math (allows stretching to fill viewport)
+        let finalImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
+        let finalTotal = finalImgH + ctrlH;
 
-        let finalImgH = naturalImgH;
-        let finalTotal = naturalImgH + ctrlH;
-
-        // Cap the height and ONLY steal from the image if it exceeds limits
+        // 2. Maintained the "steal from image" logic if it hits bounds
         if (finalTotal > maxUsable) {
           finalImgH = Math.max(maxUsable - ctrlH, 100);
           finalTotal = finalImgH + ctrlH;
@@ -159,16 +158,15 @@
         const slideOutX = direction === 1 ? '-100%' : '100%';
         const slideInX = direction === 1 ? '100%' : '-100%';
 
-        // 1. Calculate future heights
+        // 1. Calculate future heights using the un-capped stretch logic
         const newCapH = newCap.offsetHeight;
         const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
         const ctrlH = Math.max(btnH, newCapH) + 24;
         const maxUsable = window.innerHeight - 80;
+        const minImgH = getMinImgH();
 
-        const naturalImgH = getNaturalImgH();
-
-        let finalImgH = naturalImgH;
-        let finalTotal = naturalImgH + ctrlH;
+        let finalImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
+        let finalTotal = finalImgH + ctrlH;
 
         if (finalTotal > maxUsable) {
           finalImgH = Math.max(maxUsable - ctrlH, 100);
@@ -188,7 +186,7 @@
         // 3. Force reflow
         void container.offsetHeight;
 
-        // 4. Trigger height structural expansions
+        // 4. Trigger height structural expansions (downward or upward shrinking)
         container.style.transition = 'height 0.35s ease-in-out';
         imgWrapper.style.transition = 'height 0.35s ease-in-out';
         captionContainer.style.transition = 'height 0.35s ease-in-out';
