@@ -86,8 +86,8 @@
         const img = document.createElement('img');
         img.src = pair.imgSrc;
         img.alt = pair.imgAlt;
-        // Trigger resize calculation automatically when image fully loads
-        img.onload = () => { window.requestAnimationFrame(updateScrollSync); };
+        // Check dimension metrics implicitly whenever individual images load
+        img.onload = () => { window.requestAnimationFrame(updateMetrics); };
         imgElements.push(img);
         imgWrapper.appendChild(img);
 
@@ -126,58 +126,59 @@
       insertRef.parentNode.insertBefore(container, insertRef);
 
       let currentIndex = 0;
+      let slideMetrics = [];
 
-      // Master synchronization logic linking swipe/scroll to layout
-      const updateScrollSync = () => {
+      // Calculate fixed dimensions universally required to encase every layout state
+      const updateMetrics = () => {
         const width = imgWrapper.offsetWidth;
         if (width === 0) return;
+        const maxUsable = window.innerHeight - 80;
+        let maxTotalH = 0;
+
+        slideMetrics = pairs.map((pair, idx) => {
+          const capH = captionElements[idx].offsetHeight;
+          const img = imgElements[idx];
+          const natW = img.naturalWidth || 16;
+          const natH = img.naturalHeight || 9;
+          const imgH = (width / natW) * natH;
+          
+          const ctrlH = Math.max(24, capH) + 24; // Align-items bottom offset guarantees 24px pad footprint
+          const totalH = imgH + ctrlH;
+          
+          maxTotalH = Math.max(maxTotalH, totalH);
+          return { capH, imgH };
+        });
+
+        // Cap height entirely so flexbox triggers shrink containment properly
+        container.style.height = `${Math.min(maxTotalH, maxUsable)}px`;
+        updateScrollSync();
+      };
+
+      // Master synchronization logic mapping swipe vectors seamlessly to upwards height adjustments
+      const updateScrollSync = () => {
+        const width = imgWrapper.offsetWidth;
+        if (width === 0 || slideMetrics.length === 0) return;
         
         const scrollLeft = imgWrapper.scrollLeft;
         const ratio = scrollLeft / width;
         
-        // Transform the track along X naturally using CSS percentage width bounds 
         captionTrack.style.transform = `translateX(-${ratio * 100}%)`;
 
-        // Calculate safety clamps for interpolations (e.g., Mac overscroll bounces)
-        let safeRatio = ratio;
-        if (safeRatio < 0) safeRatio = 0;
-        if (safeRatio > pairs.length - 1) safeRatio = pairs.length - 1;
+        let safeRatio = Math.max(0, Math.min(ratio, pairs.length - 1));
 
         const idx1 = Math.floor(safeRatio);
         const idx2 = Math.min(Math.ceil(safeRatio), pairs.length - 1);
         const mod = safeRatio - idx1;
 
-        // Concurrent Dynamic Height calculation
         if (idx1 >= 0 && idx2 < pairs.length) {
+          const h1 = slideMetrics[idx1].capH;
+          const h2 = slideMetrics[idx2].capH;
           
-          const getStateMetrics = (idx) => {
-            const capH = captionElements[idx].offsetHeight;
-            const ctrlH = Math.max(24, capH) + 24; // Button size (24) + padding top/bottom (12+12)
-            
-            const img = imgElements[idx];
-            // Provide 16:9 fallback until image actually loads
-            const natW = img.naturalWidth || 16;
-            const natH = img.naturalHeight || 9;
-            let imgH = (width / natW) * natH;
-            
-            // Respect the absolute maximum vertical space available on the screen 
-            const maxUsable = window.innerHeight - 80;
-            if (imgH + ctrlH > maxUsable) {
-              imgH = Math.max(maxUsable - ctrlH, 100);
-            }
-            
-            return { capH, imgH };
-          };
-
-          const s1 = getStateMetrics(idx1);
-          const s2 = getStateMetrics(idx2);
-
-          // Interpolate the heights exactly according to the drag distance
-          const intCapH = s1.capH + (s2.capH - s1.capH) * mod;
-          const intImgH = s1.imgH + (s2.imgH - s1.imgH) * mod;
-          
+          // Interpolate the upwards expansion footprint
+          const intCapH = h1 + (h2 - h1) * mod;
           captionContainer.style.height = `${intCapH}px`;
-          imgWrapper.style.height = `${intImgH}px`;
+          // Note: Image dimensions adapt beautifully automatically because `flex: 1` 
+          // naturally accommodates the dynamic vertical constraints of the fixed overarching container.
 
           captionElements.forEach((el, i) => {
             if (i === idx1) el.style.opacity = 1 - mod;
@@ -186,7 +187,6 @@
           });
         }
 
-        // Handle Active Buttons and Pill States
         const newIndex = Math.round(safeRatio);
         if (newIndex !== currentIndex) {
           currentIndex = newIndex;
@@ -200,7 +200,6 @@
         }
       };
 
-      // Native scrolling hook
       let isScrolling = false;
       imgWrapper.addEventListener('scroll', () => {
         if (!isScrolling) {
@@ -212,7 +211,6 @@
         }
       });
 
-      // Quick-first, smooth ease-out custom interpolator
       let animId = null;
       const customScrollTo = (targetIndex) => {
         if (animId) cancelAnimationFrame(animId);
@@ -222,13 +220,11 @@
         const distance = targetScrollLeft - startScrollLeft;
         if (distance === 0) return;
 
-        const duration = 500; // ms
+        const duration = 500; 
         let startTime = null;
 
-        // Remove CSS snapping friction during mathematical JS interpolation
         imgWrapper.style.scrollSnapType = 'none';
 
-        // Quartic Ease-out function formula
         const easeOutQuart = t => 1 - Math.pow(1 - t, 4);
 
         const step = (currentTime) => {
@@ -260,7 +256,6 @@
         customScrollTo(targetIndex);
       });
 
-      // Initialize
       prevBtn.style.opacity = '0.3';
       prevBtn.style.cursor = 'default';
       if (pairs.length <= 1) {
@@ -269,14 +264,14 @@
       }
 
       window.requestAnimationFrame(() => {
-        updateScrollSync();
+        updateMetrics();
       });
 
       let resizeTimer;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
-          updateScrollSync();
+          updateMetrics();
           imgWrapper.scrollTo({ left: currentIndex * imgWrapper.offsetWidth, behavior: 'auto' });
         }, 50);
       });

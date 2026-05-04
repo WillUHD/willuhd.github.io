@@ -356,6 +356,8 @@ a {
 .carousel-images-wrapper {
   position: relative;
   display: flex;
+  flex: 1 1 auto; /* Fill dynamic remaining space beautifully natively via flexbox */
+  min-height: 0;
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
@@ -398,10 +400,11 @@ a {
 .carousel-controls {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end; /* Pin UI buttons firmly to the bottom */
   padding: 12px 16px;
   background: var(--ui-footer-bg);
   border-top: 1px solid var(--ui-border);
+  flex-shrink: 0; 
 }
 
 .carousel-caption-container {
@@ -414,7 +417,7 @@ a {
 .carousel-caption-track {
   display: flex;
   flex-wrap: nowrap;
-  align-items: flex-start;
+  align-items: flex-start; /* Let headers stack naturally up-down */
   width: 100%;
   will-change: transform;
 }
