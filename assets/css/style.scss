@@ -104,6 +104,11 @@ a {
   backdrop-filter: saturate(180%) blur(10px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--ui-border);
+  transition: border-bottom-color 0.3s ease;
+}
+
+.masthead.scrolled {
+  border-bottom-color: transparent;
 }
 
 .masthead__inner-wrap {
@@ -140,6 +145,7 @@ a {
 
 .visible-links a.active {
   opacity: 0.85;
+  font-weight: 600;
 }
 
 .visible-links a.active:hover {
@@ -230,7 +236,6 @@ a {
   background: var(--ui-footer-bg);
   padding: 40px 0;
   margin-top: 100px;
-  border-top: 1px solid var(--ui-border);
 }
 
 .social-icons {
@@ -372,7 +377,7 @@ a {
   border-radius: 0;
   opacity: 0;
   transform: translateX(0);
-  transition: opacity 0.35s ease-in-out, transform 0.35s ease-in-out;
+  transition: opacity 0.35s cubic-bezier(0, 0, 0.2, 1), transform 0.35s cubic-bezier(0, 0, 0.2, 1);
   pointer-events: none;
 }
 

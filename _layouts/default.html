@@ -45,6 +45,16 @@
 </body>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    const masthead = document.querySelector('.masthead');
+    if (masthead) {
+      const onScroll = () => masthead.classList.toggle('scrolled', window.scrollY > 0);
+      window.addEventListener('scroll', onScroll);
+      onScroll();
+    }
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
     const content = document.querySelector('.markdown-content');
     if (!content) return;
 
@@ -187,27 +197,27 @@
         void container.offsetHeight;
 
         // 4. Trigger height structural expansions (downward or upward shrinking)
-        container.style.transition = 'height 0.35s ease-in-out';
-        imgWrapper.style.transition = 'height 0.35s ease-in-out';
-        captionContainer.style.transition = 'height 0.35s ease-in-out';
+        container.style.transition = 'height 0.35s cubic-bezier(0, 0, 0.2, 1)';
+        imgWrapper.style.transition = 'height 0.35s cubic-bezier(0, 0, 0.2, 1)';
+        captionContainer.style.transition = 'height 0.35s cubic-bezier(0, 0, 0.2, 1)';
 
         container.style.height = finalTotal + 'px';
         imgWrapper.style.height = finalImgH + 'px';
         captionContainer.style.height = newCapH + 'px';
 
         // 5. Trigger sliding transitions
-        oldImg.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
+        oldImg.style.transition = 'transform 0.35s cubic-bezier(0, 0, 0.2, 1), opacity 0.35s cubic-bezier(0, 0, 0.2, 1)';
         oldImg.style.transform = `translateX(${slideOutX})`;
         oldImg.style.opacity = '0';
 
-        newImg.style.transition = 'transform 0.35s ease-in-out';
+        newImg.style.transition = 'transform 0.35s cubic-bezier(0, 0, 0.2, 1)';
         newImg.style.transform = 'translateX(0)';
 
-        oldCap.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
+        oldCap.style.transition = 'transform 0.35s cubic-bezier(0, 0, 0.2, 1), opacity 0.35s cubic-bezier(0, 0, 0.2, 1)';
         oldCap.style.transform = `translateX(${slideOutX})`;
         oldCap.style.opacity = '0';
 
-        newCap.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
+        newCap.style.transition = 'transform 0.35s cubic-bezier(0, 0, 0.2, 1), opacity 0.35s cubic-bezier(0, 0, 0.2, 1)';
         newCap.style.transform = 'translateX(0)';
 
         // 6. Final cleanup 
