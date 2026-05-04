@@ -47,7 +47,11 @@
   document.addEventListener("DOMContentLoaded", () => {
     const masthead = document.querySelector('.masthead');
     if (masthead) {
-      const onScroll = () => masthead.classList.toggle('scrolled', window.scrollY > 0);
+      const onScroll = () => {
+        const t = 50;
+        const a = Math.max(0, 1 - window.scrollY / t);
+        masthead.style.borderBottomColor = `rgba(var(--ui-border-rgb), ${a})`;
+      };
       window.addEventListener('scroll', onScroll);
       onScroll();
     }
@@ -124,11 +128,11 @@
           clearTimeout(transitionTimer);
           transitionTimer = null;
         }
-        imgElements.forEach(img => img.style.cssText = '');
-        captionElements.forEach(cap => cap.style.cssText = '');
-        container.style.cssText = '';
-        imgWrapper.style.cssText = '';
-        captionContainer.style.cssText = '';
+        imgElements.forEach(img => { img.style.transition = ''; img.style.transform = ''; img.style.opacity = ''; });
+        captionElements.forEach(cap => { cap.style.transition = ''; cap.style.transform = ''; cap.style.opacity = ''; cap.style.visibility = ''; });
+        container.style.transition = '';
+        imgWrapper.style.transition = '';
+        captionContainer.style.transition = '';
         imgElements.forEach((img, i) => img.classList.toggle('active', i === currentIndex));
         captionElements.forEach((cap, i) => cap.classList.toggle('active', i === currentIndex));
         transitioning = false;
@@ -172,7 +176,7 @@
       const updateCarousel = (direction) => {
         if (transitioning) {
           pendingDirection += direction;
-          return;
+          cancelAnimation();
         }
 
         const totalDir = direction + pendingDirection;
@@ -197,7 +201,7 @@
         const slideOutX = normalizedDir === 1 ? '-100%' : '100%';
         const slideInX = normalizedDir === 1 ? '100%' : '-100%';
 
-        // 1. Calculate future heights using the un-capped stretch logic
+        // 1. Calculate future heights
         const newCapH = newCap.offsetHeight;
         const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
         const ctrlH = Math.max(btnH, newCapH) + 24;
@@ -225,28 +229,28 @@
         // 3. Force reflow
         void container.offsetHeight;
 
-        // 4. Trigger height structural expansions
-        container.style.transition = 'height 0.5s cubic-bezier(0, 0, 0.06, 1)';
-        imgWrapper.style.transition = 'height 0.5s cubic-bezier(0, 0, 0.06, 1)';
-        captionContainer.style.transition = 'height 0.5s cubic-bezier(0, 0, 0.06, 1)';
+        // 4. Trigger height structural transitions
+        container.style.transition = 'height 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
+        imgWrapper.style.transition = 'height 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
+        captionContainer.style.transition = 'height 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
 
         container.style.height = finalTotal + 'px';
         imgWrapper.style.height = finalImgH + 'px';
         captionContainer.style.height = newCapH + 'px';
 
         // 5. Trigger sliding transitions
-        oldImg.style.transition = 'transform 0.5s cubic-bezier(0, 0, 0.06, 1), opacity 0.5s cubic-bezier(0, 0, 0.06, 1)';
+        oldImg.style.transition = 'transform 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0), opacity 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
         oldImg.style.transform = `translateX(${slideOutX})`;
         oldImg.style.opacity = '0';
 
-        newImg.style.transition = 'transform 0.5s cubic-bezier(0, 0, 0.06, 1)';
+        newImg.style.transition = 'transform 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
         newImg.style.transform = 'translateX(0)';
 
-        oldCap.style.transition = 'transform 0.5s cubic-bezier(0, 0, 0.06, 1), opacity 0.5s cubic-bezier(0, 0, 0.06, 1)';
+        oldCap.style.transition = 'transform 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0), opacity 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
         oldCap.style.transform = `translateX(${slideOutX})`;
         oldCap.style.opacity = '0';
 
-        newCap.style.transition = 'transform 0.5s cubic-bezier(0, 0, 0.06, 1), opacity 0.5s cubic-bezier(0, 0, 0.06, 1)';
+        newCap.style.transition = 'transform 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0), opacity 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
         newCap.style.transform = 'translateX(0)';
 
         // 6. Final cleanup
@@ -256,32 +260,44 @@
           newImg.classList.add('active');
           newCap.classList.add('active');
 
-          oldImg.style.cssText = '';
-          newImg.style.cssText = '';
-          oldCap.style.cssText = '';
-          newCap.style.cssText = '';
+          oldImg.style.transition = '';
+          oldImg.style.transform = '';
+          oldImg.style.opacity = '';
+          newImg.style.transition = '';
+          newImg.style.transform = '';
+          newImg.style.opacity = '';
+          oldCap.style.transition = '';
+          oldCap.style.transform = '';
+          oldCap.style.opacity = '';
+          oldCap.style.visibility = '';
+          newCap.style.transition = '';
+          newCap.style.transform = '';
+          newCap.style.opacity = '';
+          newCap.style.visibility = '';
 
-          container.style.cssText = '';
-          imgWrapper.style.cssText = '';
-          captionContainer.style.cssText = '';
+          container.style.transition = '';
+          imgWrapper.style.transition = '';
+          captionContainer.style.transition = '';
 
           if (skipCount > 0) {
             const finalIdx = ((currentIndex + skipCount * normalizedDir) % pairs.length + pairs.length) % pairs.length;
             currentIndex = finalIdx;
             imgElements.forEach((img, i) => img.classList.toggle('active', i === finalIdx));
             captionElements.forEach((cap, i) => cap.classList.toggle('active', i === finalIdx));
+            setCarouselHeight();
           }
 
           pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
-          if (skipCount > 0) setCarouselHeight();
 
           transitioning = false;
           transitionTimer = null;
 
           if (pendingDirection !== 0) {
-            updateCarousel(pendingDirection > 0 ? 1 : -1);
+            const d = pendingDirection;
+            pendingDirection = 0;
+            updateCarousel(d);
           }
-        }, 520);
+        }, 330);
       };
 
       prevBtn.addEventListener('click', () => updateCarousel(-1));
@@ -292,6 +308,7 @@
       let dragStartX = 0;
 
       const onDragStart = (clientX) => {
+        pendingDirection = 0;
         cancelAnimation();
         isDragging = true;
         dragStartX = clientX;
@@ -345,22 +362,61 @@
         const ratio = Math.abs(dx) / w;
 
         if (ratio > 0.25 && dx !== 0) {
-          const direction = dx > 0 ? -1 : 1;
-          const newIdx = (currentIndex + direction + pairs.length) % pairs.length;
+          const dir = dx > 0 ? -1 : 1;
+          const newIdx = (currentIndex + dir + pairs.length) % pairs.length;
+          const remaining = w - Math.abs(dx);
+          const remDir = dx > 0 ? 1 : -1;
+          transitioning = true;
+
           imgElements.forEach((img, i) => {
-            img.classList.toggle('active', i === newIdx);
-            img.style.cssText = '';
+            if (i === currentIndex) {
+              img.style.transition = `transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)`;
+              img.style.transform = `translateX(${remDir * remaining}px)`;
+            } else if (i === newIdx) {
+              img.style.transition = `transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)`;
+              img.style.transform = `translateX(0)`;
+            }
           });
           captionElements.forEach((cap, i) => {
-            cap.classList.toggle('active', i === newIdx);
-            cap.style.cssText = '';
+            if (i === currentIndex) {
+              cap.style.transition = `transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)`;
+              cap.style.transform = `translateX(${remDir * remaining}px)`;
+            } else if (i === newIdx) {
+              cap.style.transition = `transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)`;
+              cap.style.transform = `translateX(0)`;
+            }
           });
-          currentIndex = newIdx;
-          pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
-          setCarouselHeight();
+
+          transitionTimer = setTimeout(() => {
+            imgElements.forEach((img, i) => {
+              img.classList.toggle('active', i === newIdx);
+              img.style.transition = '';
+              img.style.transform = '';
+              img.style.opacity = '';
+            });
+            captionElements.forEach((cap, i) => {
+              cap.classList.toggle('active', i === newIdx);
+              cap.style.transition = '';
+              cap.style.transform = '';
+              cap.style.opacity = '';
+              cap.style.visibility = '';
+            });
+            currentIndex = newIdx;
+            pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
+            setCarouselHeight();
+            transitioning = false;
+            transitionTimer = null;
+          }, 220);
         } else {
-          imgElements.forEach(img => img.style.cssText = '');
-          captionElements.forEach(cap => cap.style.cssText = '');
+          transitioning = true;
+          imgElements.forEach(img => { img.style.transition = 'transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)'; img.style.transform = ''; });
+          captionElements.forEach(cap => { cap.style.transition = 'transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)'; cap.style.transform = ''; cap.style.visibility = ''; });
+          transitionTimer = setTimeout(() => {
+            imgElements.forEach(img => { img.style.transition = ''; });
+            captionElements.forEach(cap => { cap.style.transition = ''; });
+            transitioning = false;
+            transitionTimer = null;
+          }, 220);
         }
       };
 
