@@ -8,8 +8,8 @@ A simple Karman street simulation that uses a D2Q9 LBM CFD solver for real-time 
 
 ### Approach
 - A genuine discretized D2Q9 LBM model on a grid measuring `320x180` cells, with boundary interactions handling halfway bounceback logic, which establishes actual no-slip conditions around the cylinder (no shortcuts taken).
-- High-efficiency density and velocity clamped before the collision step (`U_max = 0.2`) to make sure there are no particle explosions. The BGK collision relaxes the clamped values back into the physical bounds.
-- Adjustable values in accordance to the Strouhal formula (sliders for flow velocity `U`, diameter `D`) make sure the LBM field reacts to the `f = St(U/D)` principle. The Reynolds number `Re` and kinematic viscocity `v` are also provided.
+- High-efficiency density and velocity clamping before the collision step (`U_max = 0.2`) to make sure there are no particle explosions. The BGK collision relaxes the clamped values back into the physical bounds.
+- Adjustable values for the `f = St(U/D)` formula (sliders for flow velocity `U`, diameter `D`, kinematic viscocity `v`) to make sure the LBM field reacts to the Strouhal principle, with the Reynolds number `Re` provided as well
 - Optimized for JIT compilers to reduce object allocations on the hot path, uses CDNs/mirrors for global resource coverage
 
 ### Trade-offs

@@ -34,7 +34,6 @@
             user-select: none;
         }
 
-        /* --- Sidebar Improvements --- */
         #sidebar {
             width: 420px;
             min-width: 420px;
@@ -261,24 +260,24 @@
 <body>
 
     <div id="sidebar">
-        <h2>Karman vortex LBM CFD solver</h2>
+        <h2>Karman Vortex simulation by willuhd</h2>
 
         <div class="control-group">
-            <label>View Mode</label>
+            <label>View mode</label>
             <select id="viewMode">
-                <option value="velocity" selected>Velocity Magnitude (Fluid Dynamic)</option>
-                <option value="vorticity">Vorticity (Infrared Curl)</option>
-                <option value="particles">Discrete Particle Tracking</option>
+                <option value="velocity" selected>Velocity magnitude (fluid dynamic)</option>
+                <option value="vorticity">Vorticity (infrared curls)</option>
+                <option value="particles">Discrete particle tracking</option>
             </select>
         </div>
 
         <div class="control-group">
-            <label>Flow Presets</label>
+            <label>Flow presets</label>
             <select id="preset" onchange="applyPreset()">
-                <option value="water" selected>Water (Re ~160, Perfect Karman)</option>
-                <option value="air">Air (Re ~750, Turbulent)</option>
-                <option value="oil">Thick Oil (Re ~15, Laminar Wake)</option>
-                <option value="custom">Custom Configuration</option>
+                <option value="water" selected>Water (Re 160, Perfect Karman)</option>
+                <option value="air">Air (Re 750, Turbulent)</option>
+                <option value="oil">Thick oil (Re 15, Laminar Wake)</option>
+                <option value="custom">Custom configuration</option>
             </select>
         </div>
 
@@ -657,7 +656,7 @@
 
         function togglePlay() {
             isRunning = !isRunning;
-            document.getElementById('playBtn').innerText = isRunning ? '⏸ Pause Simulation' : '▶ Play Simulation';
+            document.getElementById('playBtn').innerText = isRunning ? '⏸ Pause Simulation' : '▶ Play simulation';
         }
 
         function saveFrame() {

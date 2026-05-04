@@ -383,7 +383,7 @@ a {
   border-radius: 0;
   opacity: 0;
   transform: translateX(0);
-  transition: opacity 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0), transform 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0);
+  transition: opacity 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0), transform 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0);
   pointer-events: none;
 }
 
@@ -407,12 +407,11 @@ a {
   font-size: 13px;
   font-weight: 500;
   z-index: 10;
-  border: 1px solid var(--ui-border);
 }
 
 .carousel-controls {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
   background: var(--ui-footer-bg);

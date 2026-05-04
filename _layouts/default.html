@@ -229,28 +229,28 @@
         // 3. Force reflow
         void container.offsetHeight;
 
-        // 4. Trigger height structural transitions
-        container.style.transition = 'height 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
-        imgWrapper.style.transition = 'height 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
-        captionContainer.style.transition = 'height 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
+        // 4. Set heights directly (no CSS transition — avoids layout thrashing)
+        container.style.transition = 'none';
+        imgWrapper.style.transition = 'none';
+        captionContainer.style.transition = 'none';
 
         container.style.height = finalTotal + 'px';
         imgWrapper.style.height = finalImgH + 'px';
         captionContainer.style.height = newCapH + 'px';
 
         // 5. Trigger sliding transitions
-        oldImg.style.transition = 'transform 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0), opacity 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
+        oldImg.style.transition = 'transform 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
         oldImg.style.transform = `translateX(${slideOutX})`;
         oldImg.style.opacity = '0';
 
-        newImg.style.transition = 'transform 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
+        newImg.style.transition = 'transform 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
         newImg.style.transform = 'translateX(0)';
 
-        oldCap.style.transition = 'transform 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0), opacity 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
+        oldCap.style.transition = 'transform 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
         oldCap.style.transform = `translateX(${slideOutX})`;
         oldCap.style.opacity = '0';
 
-        newCap.style.transition = 'transform 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0), opacity 0.3s cubic-bezier(0.0, 0.5, 0.1, 1.0)';
+        newCap.style.transition = 'transform 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
         newCap.style.transform = 'translateX(0)';
 
         // 6. Final cleanup
@@ -297,7 +297,7 @@
             pendingDirection = 0;
             updateCarousel(d);
           }
-        }, 330);
+        }, 380);
       };
 
       prevBtn.addEventListener('click', () => updateCarousel(-1));
@@ -370,19 +370,21 @@
 
           imgElements.forEach((img, i) => {
             if (i === currentIndex) {
-              img.style.transition = `transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)`;
+              img.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
               img.style.transform = `translateX(${remDir * remaining}px)`;
+              img.style.opacity = '0';
             } else if (i === newIdx) {
-              img.style.transition = `transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)`;
+              img.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
               img.style.transform = `translateX(0)`;
             }
           });
           captionElements.forEach((cap, i) => {
             if (i === currentIndex) {
-              cap.style.transition = `transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)`;
+              cap.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
               cap.style.transform = `translateX(${remDir * remaining}px)`;
+              cap.style.opacity = '0';
             } else if (i === newIdx) {
-              cap.style.transition = `transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)`;
+              cap.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
               cap.style.transform = `translateX(0)`;
             }
           });
@@ -409,8 +411,8 @@
           }, 220);
         } else {
           transitioning = true;
-          imgElements.forEach(img => { img.style.transition = 'transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)'; img.style.transform = ''; });
-          captionElements.forEach(cap => { cap.style.transition = 'transform 0.2s cubic-bezier(0.0, 0.5, 0.1, 1.0)'; cap.style.transform = ''; cap.style.visibility = ''; });
+          imgElements.forEach(img => { img.style.transition = 'transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)'; img.style.transform = ''; img.style.opacity = ''; });
+          captionElements.forEach(cap => { cap.style.transition = 'transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)'; cap.style.transform = ''; cap.style.visibility = ''; });
           transitionTimer = setTimeout(() => {
             imgElements.forEach(img => { img.style.transition = ''; });
             captionElements.forEach(cap => { cap.style.transition = ''; });
