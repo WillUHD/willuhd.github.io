@@ -71,13 +71,14 @@
       const container = document.createElement('div');
       container.className = 'carousel-container';
 
-      const imgWrapper = document.createElement('div');
-      imgWrapper.className = 'carousel-images-wrapper';
-
+      // Attach pill directly to container so it doesn't drift away on native swipe
       const pill = document.createElement('div');
       pill.className = 'carousel-pill';
       pill.textContent = `1 / ${pairs.length}`;
-      imgWrapper.appendChild(pill);
+      container.appendChild(pill);
+
+      const imgWrapper = document.createElement('div');
+      imgWrapper.className = 'carousel-images-wrapper';
 
       const imgElements = [];
       const captionElements = [];
@@ -86,7 +87,6 @@
         const img = document.createElement('img');
         img.src = pair.imgSrc;
         img.alt = pair.imgAlt;
-        if (index === 0) img.classList.add('active');
         imgElements.push(img);
         imgWrapper.appendChild(img);
 
@@ -113,340 +113,104 @@
       captionContainer.className = 'carousel-caption-container';
       captionElements.forEach(c => captionContainer.appendChild(c));
 
+      // Flexbox implicitly arranges prev -> spacing/caption -> next
       controls.appendChild(prevBtn);
       controls.appendChild(captionContainer);
       controls.appendChild(nextBtn);
       container.appendChild(controls);
 
+      insertRef.parentNode.insertBefore(container, insertRef);
+
       let currentIndex = 0;
-      let transitioning = false;
-      let transitionTimer = null;
-
-      const cancelAnimation = () => {
-        if (transitionTimer) {
-          clearTimeout(transitionTimer);
-          transitionTimer = null;
-        }
-        imgElements.forEach(img => { img.style.transition = ''; img.style.transform = ''; img.style.opacity = ''; });
-        captionElements.forEach(cap => { cap.style.transition = ''; cap.style.transform = ''; cap.style.opacity = ''; cap.style.visibility = ''; });
-        container.style.transition = '';
-        imgWrapper.style.transition = '';
-        captionContainer.style.transition = '';
-        transitioning = false;
-      };
-
-      const getMinImgH = () => imgWrapper.offsetWidth * 9 / 16;
 
       const setCarouselHeight = () => {
         const activeCap = captionElements[currentIndex];
         const capH = activeCap.offsetHeight;
-        const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
-        const ctrlH = Math.max(btnH, capH) + 24;
+        const btnH = 24; 
+        const ctrlH = Math.max(btnH, capH) + 24; // 12px pad-top + 12px pad-bottom
         const maxUsable = window.innerHeight - 80;
-        const minImgH = getMinImgH();
+        
+        // Use exact 16:9 ratio to calculate natural height, allowing downward expansion first
+        const naturalImgH = (imgWrapper.offsetWidth || 800) * 9 / 16;
 
-        // 1. Reverted to your original base math (allows stretching to fill viewport)
-        let finalImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
+        let finalImgH = naturalImgH;
         let finalTotal = finalImgH + ctrlH;
 
-        // 2. Maintained the "steal from image" logic if it hits bounds
+        // Shrink upwards only if space is not enough for vertical bounds
         if (finalTotal > maxUsable) {
           finalImgH = Math.max(maxUsable - ctrlH, 100);
           finalTotal = finalImgH + ctrlH;
         }
-
-        container.style.transition = 'none';
-        imgWrapper.style.transition = 'none';
-        captionContainer.style.transition = 'none';
 
         container.style.height = finalTotal + 'px';
         imgWrapper.style.height = finalImgH + 'px';
         captionContainer.style.height = capH + 'px';
-
-        void container.offsetHeight;
-
-        container.style.transition = '';
-        imgWrapper.style.transition = '';
-        captionContainer.style.transition = '';
       };
 
-      const clickQueue = [];
-
-      const updateCarousel = (direction) => {
-        if (transitioning) {
-          clickQueue.push(direction);
-          return;
-        }
-
-        let totalDir = direction;
-        while (clickQueue.length > 0) totalDir += clickQueue.shift();
-
-        if (totalDir === 0) return;
-
-        transitioning = true;
-        const normalizedDir = totalDir > 0 ? 1 : -1;
-        const skipCount = Math.abs(totalDir) - 1;
-
-        const oldIndex = currentIndex;
-        const animTarget = (currentIndex + normalizedDir + pairs.length) % pairs.length;
-
-        const oldImg = imgElements[oldIndex];
-        const newImg = imgElements[animTarget];
-        const oldCap = captionElements[oldIndex];
-        const newCap = captionElements[animTarget];
-
-        const slideOutX = normalizedDir === 1 ? '-100%' : '100%';
-        const slideInX = normalizedDir === 1 ? '100%' : '-100%';
-
-        // 1. Calculate future heights
-        const newCapH = newCap.offsetHeight;
-        const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
-        const ctrlH = Math.max(btnH, newCapH) + 24;
-        const maxUsable = window.innerHeight - 80;
-        const minImgH = getMinImgH();
-
-        let finalImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
-        let finalTotal = finalImgH + ctrlH;
-
-        if (finalTotal > maxUsable) {
-          finalImgH = Math.max(maxUsable - ctrlH, 100);
-          finalTotal = finalImgH + ctrlH;
-        }
-
-        // 2. Set instant layout for incoming elements off-screen
-        newImg.style.transition = 'none';
-        newImg.style.transform = `translateX(${slideInX})`;
-        newImg.style.opacity = '1';
-
-        newCap.style.transition = 'none';
-        newCap.style.transform = `translateX(${slideInX})`;
-        newCap.style.opacity = '1';
-        newCap.style.visibility = 'visible';
-
-        // 3. Force reflow
-        void container.offsetHeight;
-
-        // 4. Trigger height transitions with kinetic easing
-        container.style.transition = 'height 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
-        imgWrapper.style.transition = 'height 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
-        captionContainer.style.transition = 'height 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
-
-        container.style.height = finalTotal + 'px';
-        imgWrapper.style.height = finalImgH + 'px';
-        captionContainer.style.height = newCapH + 'px';
-
-        // 5. Trigger sliding transitions
-        oldImg.style.transition = 'transform 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
-        oldImg.style.transform = `translateX(${slideOutX})`;
-        oldImg.style.opacity = '0';
-
-        newImg.style.transition = 'transform 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
-        newImg.style.transform = 'translateX(0)';
-
-        oldCap.style.transition = 'transform 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
-        oldCap.style.transform = `translateX(${slideOutX})`;
-        oldCap.style.opacity = '0';
-
-        newCap.style.transition = 'transform 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0), opacity 0.35s cubic-bezier(0.1, 0.7, 0.05, 1.0)';
-        newCap.style.transform = 'translateX(0)';
-
-        // 6. Final cleanup
-        transitionTimer = setTimeout(() => {
-          currentIndex = animTarget;
-          oldImg.classList.remove('active');
-          oldCap.classList.remove('active');
-          newImg.classList.add('active');
-          newCap.classList.add('active');
-
-          oldImg.style.transition = '';
-          oldImg.style.transform = '';
-          oldImg.style.opacity = '';
-          newImg.style.transition = '';
-          newImg.style.transform = '';
-          newImg.style.opacity = '';
-          oldCap.style.transition = '';
-          oldCap.style.transform = '';
-          oldCap.style.opacity = '';
-          oldCap.style.visibility = '';
-          newCap.style.transition = '';
-          newCap.style.transform = '';
-          newCap.style.opacity = '';
-          newCap.style.visibility = '';
-
-          container.style.transition = '';
-          imgWrapper.style.transition = '';
-          captionContainer.style.transition = '';
-
-          if (skipCount > 0) {
-            const finalIdx = ((currentIndex + skipCount * normalizedDir) % pairs.length + pairs.length) % pairs.length;
-            currentIndex = finalIdx;
-            imgElements.forEach((img, i) => img.classList.toggle('active', i === finalIdx));
-            captionElements.forEach((cap, i) => cap.classList.toggle('active', i === finalIdx));
-            setCarouselHeight();
-          }
-
-          pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
-
-          transitioning = false;
-          transitionTimer = null;
-
-          if (clickQueue.length > 0) {
-            updateCarousel(clickQueue.shift());
-          }
-        }, 380);
-      };
-
-      prevBtn.addEventListener('click', () => updateCarousel(-1));
-      nextBtn.addEventListener('click', () => updateCarousel(1));
-
-      // Drag/swipe support
-      let isDragging = false;
-      let dragStartX = 0;
-
-      const onDragStart = (clientX) => {
-        clickQueue.length = 0;
-        cancelAnimation();
-        isDragging = true;
-        dragStartX = clientX;
-        imgWrapper.style.cursor = 'grabbing';
-        container.style.userSelect = 'none';
-      };
-
-      const onDragMove = (clientX) => {
-        if (!isDragging) return;
-        const dx = clientX - dragStartX;
-        const w = imgWrapper.offsetWidth || 1;
-
-        imgElements.forEach((img, i) => {
-          const cap = captionElements[i];
-          if (i === currentIndex) {
-            img.style.transition = 'none';
-            img.style.transform = `translateX(${dx}px)`;
-            img.style.opacity = '1';
-            cap.style.transition = 'none';
-            cap.style.transform = `translateX(${dx}px)`;
-            cap.style.opacity = '1';
-            cap.style.visibility = 'visible';
-          } else if (dx < 0 && i === (currentIndex + 1) % pairs.length) {
-            img.style.transition = 'none';
-            img.style.transform = `translateX(${dx + w}px)`;
-            img.style.opacity = '1';
-            cap.style.transition = 'none';
-            cap.style.transform = `translateX(${dx + w}px)`;
-            cap.style.opacity = '1';
-            cap.style.visibility = 'visible';
-          } else if (dx > 0 && i === (currentIndex - 1 + pairs.length) % pairs.length) {
-            img.style.transition = 'none';
-            img.style.transform = `translateX(${dx - w}px)`;
-            img.style.opacity = '1';
-            cap.style.transition = 'none';
-            cap.style.transform = `translateX(${dx - w}px)`;
-            cap.style.opacity = '1';
-            cap.style.visibility = 'visible';
-          }
-        });
-      };
-
-      const onDragEnd = (clientX) => {
-        if (!isDragging) return;
-        isDragging = false;
-        imgWrapper.style.cursor = 'grab';
-        container.style.userSelect = '';
-
-        const dx = clientX - dragStartX;
-        const w = imgWrapper.offsetWidth || 1;
-        const ratio = Math.abs(dx) / w;
-
-        if (ratio > 0.25 && dx !== 0) {
-          const dir = dx > 0 ? -1 : 1;
-          const newIdx = (currentIndex + dir + pairs.length) % pairs.length;
-          const slideOutX = dir === 1 ? '-100%' : '100%';
-          transitioning = true;
-
-          imgElements.forEach((img, i) => {
-            if (i === currentIndex) {
-              img.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
-              img.style.transform = `translateX(${slideOutX})`;
-            } else if (i === newIdx) {
-              img.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
-              img.style.transform = `translateX(0)`;
-            }
-          });
-          captionElements.forEach((cap, i) => {
-            if (i === currentIndex) {
-              cap.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
-              cap.style.transform = `translateX(${slideOutX})`;
-            } else if (i === newIdx) {
-              cap.style.transition = `transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)`;
-              cap.style.transform = `translateX(0)`;
-            }
-          });
-
-          transitionTimer = setTimeout(() => {
-            imgElements.forEach((img, i) => {
-              img.classList.toggle('active', i === newIdx);
-              img.style.transition = '';
-              img.style.transform = '';
-              img.style.opacity = '';
-            });
-            captionElements.forEach((cap, i) => {
-              cap.classList.toggle('active', i === newIdx);
-              cap.style.transition = '';
-              cap.style.transform = '';
-              cap.style.opacity = '';
-              cap.style.visibility = '';
-            });
-            currentIndex = newIdx;
-            pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
-            setCarouselHeight();
-            transitioning = false;
-            transitionTimer = null;
-          }, 220);
-        } else {
-          transitioning = true;
-          imgElements.forEach(img => { img.style.transition = 'transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)'; img.style.transform = ''; });
-          captionElements.forEach(cap => { cap.style.transition = 'transform 0.2s cubic-bezier(0.1, 0.7, 0.05, 1.0)'; cap.style.transform = ''; cap.style.visibility = ''; });
-          transitionTimer = setTimeout(() => {
-            imgElements.forEach(img => { img.style.transition = ''; });
-            captionElements.forEach(cap => { cap.style.transition = ''; });
-            transitioning = false;
-            transitionTimer = null;
-          }, 220);
-        }
-      };
-
-      imgWrapper.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        onDragStart(e.clientX);
-        const onMove = (e2) => onDragMove(e2.clientX);
-        const onUp = (e2) => {
-          document.removeEventListener('mousemove', onMove);
-          document.removeEventListener('mouseup', onUp);
-          onDragEnd(e2.clientX);
-        };
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onUp);
-      });
-
-      imgWrapper.addEventListener('touchstart', (e) => {
-        onDragStart(e.touches[0].clientX);
-      }, { passive: true });
-      imgWrapper.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        onDragMove(e.touches[0].clientX);
-      }, { passive: false });
-      imgWrapper.addEventListener('touchend', (e) => {
-        onDragEnd(e.changedTouches[0].clientX);
-      });
-
-      insertRef.parentNode.insertBefore(container, insertRef);
-
+      // Set initial explicit pixel layouts before DOM repaints
       setCarouselHeight();
+
+      const updateUI = (index) => {
+        if (index === currentIndex) return;
+        
+        captionElements[currentIndex].classList.remove('active');
+        captionElements[index].classList.add('active');
+        
+        currentIndex = index;
+        pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
+        
+        prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
+        prevBtn.style.cursor = currentIndex === 0 ? 'default' : 'pointer';
+        
+        nextBtn.style.opacity = currentIndex === pairs.length - 1 ? '0.3' : '1';
+        nextBtn.style.cursor = currentIndex === pairs.length - 1 ? 'default' : 'pointer';
+
+        setCarouselHeight();
+      };
+
+      // Detect snap-scrolling via native swipe kinetics
+      let isScrolling = false;
+      imgWrapper.addEventListener('scroll', () => {
+        if (!isScrolling) {
+          window.requestAnimationFrame(() => {
+            const width = imgWrapper.offsetWidth;
+            if (width > 0) {
+              const newIndex = Math.round(imgWrapper.scrollLeft / width);
+              if (newIndex >= 0 && newIndex < pairs.length && newIndex !== currentIndex) {
+                updateUI(newIndex);
+              }
+            }
+            isScrolling = false;
+          });
+          isScrolling = true;
+        }
+      });
+
+      prevBtn.addEventListener('click', () => {
+        const target = Math.max(0, currentIndex - 1);
+        imgWrapper.scrollTo({ left: target * imgWrapper.offsetWidth, behavior: 'smooth' });
+      });
+
+      nextBtn.addEventListener('click', () => {
+        const target = Math.min(pairs.length - 1, currentIndex + 1);
+        imgWrapper.scrollTo({ left: target * imgWrapper.offsetWidth, behavior: 'smooth' });
+      });
+
+      // Default disable buttons
+      prevBtn.style.opacity = '0.3';
+      prevBtn.style.cursor = 'default';
+      if (pairs.length <= 1) {
+        nextBtn.style.opacity = '0.3';
+        nextBtn.style.cursor = 'default';
+      }
 
       let resizeTimer;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(setCarouselHeight, 50);
+        resizeTimer = setTimeout(() => {
+          setCarouselHeight();
+          imgWrapper.scrollTo({ left: currentIndex * imgWrapper.offsetWidth, behavior: 'auto' });
+        }, 50);
       });
     };
 
