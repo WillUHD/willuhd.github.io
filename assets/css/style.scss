@@ -356,7 +356,7 @@ a {
 .carousel-images-wrapper {
   position: relative;
   display: flex;
-  flex: 1 1 auto; /* Fill dynamic remaining space beautifully natively via flexbox */
+  flex: 1 1 auto; 
   min-height: 0;
   width: 100%;
   overflow-x: auto;
@@ -400,7 +400,7 @@ a {
 .carousel-controls {
   position: relative;
   display: flex;
-  align-items: flex-end; /* Pin UI buttons firmly to the bottom */
+  align-items: flex-end; /* Pins buttons universally to the bottom */
   padding: 12px 16px;
   background: var(--ui-footer-bg);
   border-top: 1px solid var(--ui-border);
@@ -412,14 +412,18 @@ a {
   position: relative;
   margin: 0 16px;
   overflow: hidden;
+  will-change: height;
 }
 
 .carousel-caption-track {
   display: flex;
   flex-wrap: nowrap;
-  align-items: flex-start; /* Let headers stack naturally up-down */
+  align-items: flex-end; /* CRITICAL: Anchors text strictly to the bottom to eliminate Y-axis layout jitter */
   width: 100%;
+  height: 100%;
   will-change: transform;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
 }
 
 .carousel-caption-text {
@@ -432,6 +436,7 @@ a {
   color: var(--text-secondary);
   font-size: 14px;
   line-height: 24px;
+  will-change: opacity;
 }
 
 .carousel-caption-text p {
@@ -452,6 +457,7 @@ a {
   justify-content: center;
   transition: color 0.2s ease;
   z-index: 2;
+  align-self: flex-end; /* Bulletproofs button anchoring exactly parallel to the bottom line of text */
 }
 
 .carousel-btn:hover {

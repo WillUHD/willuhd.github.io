@@ -86,7 +86,6 @@
         const img = document.createElement('img');
         img.src = pair.imgSrc;
         img.alt = pair.imgAlt;
-        // Check dimension metrics implicitly whenever individual images load
         img.onload = () => { window.requestAnimationFrame(updateMetrics); };
         imgElements.push(img);
         imgWrapper.appendChild(img);
@@ -128,8 +127,12 @@
       let currentIndex = 0;
       let slideMetrics = [];
 
-      // Calculate fixed dimensions universally required to encase every layout state
+      // Computes structural heights required globally so that layout logic is abstracted away from scroll physics loop
       const updateMetrics = () => {
+        // Unbind momentarily to obtain natural measurements
+        container.style.height = 'auto';
+        captionContainer.style.height = 'auto';
+
         const width = imgWrapper.offsetWidth;
         if (width === 0) return;
         const maxUsable = window.innerHeight - 80;
@@ -142,19 +145,19 @@
           const natH = img.naturalHeight || 9;
           const imgH = (width / natW) * natH;
           
-          const ctrlH = Math.max(24, capH) + 24; // Align-items bottom offset guarantees 24px pad footprint
+          const ctrlH = Math.max(24, capH) + 24; 
           const totalH = imgH + ctrlH;
           
           maxTotalH = Math.max(maxTotalH, totalH);
-          return { capH, imgH };
+          return { capH };
         });
 
-        // Cap height entirely so flexbox triggers shrink containment properly
+        // Set overarching container clamp so flex-boxes automatically adapt internally
         container.style.height = `${Math.min(maxTotalH, maxUsable)}px`;
         updateScrollSync();
       };
 
-      // Master synchronization logic mapping swipe vectors seamlessly to upwards height adjustments
+      // Lightweight, GPU-accelerated sync engine mapping swipe vectors to UI adjustments
       const updateScrollSync = () => {
         const width = imgWrapper.offsetWidth;
         if (width === 0 || slideMetrics.length === 0) return;
@@ -162,7 +165,8 @@
         const scrollLeft = imgWrapper.scrollLeft;
         const ratio = scrollLeft / width;
         
-        captionTrack.style.transform = `translateX(-${ratio * 100}%)`;
+        // GPU accelerated vector transform 
+        captionTrack.style.transform = `translate3d(-${ratio * 100}%, 0, 0)`;
 
         let safeRatio = Math.max(0, Math.min(ratio, pairs.length - 1));
 
@@ -174,11 +178,9 @@
           const h1 = slideMetrics[idx1].capH;
           const h2 = slideMetrics[idx2].capH;
           
-          // Interpolate the upwards expansion footprint
+          // Apply exact upwards expansion limit, flex:1 directly triggers perfectly inverted inverse on the image wrapper
           const intCapH = h1 + (h2 - h1) * mod;
           captionContainer.style.height = `${intCapH}px`;
-          // Note: Image dimensions adapt beautifully automatically because `flex: 1` 
-          // naturally accommodates the dynamic vertical constraints of the fixed overarching container.
 
           captionElements.forEach((el, i) => {
             if (i === idx1) el.style.opacity = 1 - mod;
