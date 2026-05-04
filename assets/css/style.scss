@@ -161,19 +161,18 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   background: var(--ui-footer-bg);
   display: flex;
   flex-direction: column;
-  transition: height 0.35s ease-in-out;
 }
 
 .carousel-images-wrapper {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
+  max-height: calc(100vh - 150px);
   background: var(--bg-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  transition: height 0.35s ease-in-out;
 }
 
 .carousel-images-wrapper img {
@@ -223,15 +222,14 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
 .carousel-caption-container {
   flex-grow: 1;
   position: relative;
-  display: flex;
-  justify-content: center;
+  display: grid;
   align-items: center;
   min-height: 24px;
   padding: 0 16px;
 }
 
 .carousel-caption-text {
-  position: absolute;
+  grid-area: 1 / 1;
   text-align: center;
   font-style: italic;
   color: var(--text-secondary);
@@ -239,13 +237,12 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   opacity: 0;
   visibility: hidden;
   transform: translateX(0);
-  transition: opacity 0.35s ease-in-out, transform 0.35s ease-in-out;
+  transition: opacity 0.35s ease-in-out, transform 0.35s ease-in-out, visibility 0.35s;
 }
 
 .carousel-caption-text.active {
   opacity: 1;
   visibility: visible;
-  position: relative;
   transform: translateX(0);
 }
 

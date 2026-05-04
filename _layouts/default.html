@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="{{ site.locale | default: 'en-US' }}">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ page.title }} | {{ site.title }}</title>
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   {% for script in site.head_scripts %}
-    <link rel="stylesheet" href="{{ script }}">
+  <link rel="stylesheet" href="{{ script }}">
   {% endfor %}
 </head>
+
 <body>
 
   {% include masthead.html %}
 
   <main id="main-container">
     <div class="content-wrapper">
-      
+
       <!-- Show sidebar only if page is in a subfolder with sub-pages -->
       {% assign show_sidebar = false %}
       {% if page.dir != "/" %}
-        {% for sp in site.pages %}
-          {% if sp.dir == page.dir and sp.url != page.dir %}
-            {% assign show_sidebar = true %}
-          {% endif %}
-        {% endfor %}
+      {% for sp in site.pages %}
+      {% if sp.dir == page.dir and sp.url != page.dir %}
+      {% assign show_sidebar = true %}
+      {% endif %}
+      {% endfor %}
       {% endif %}
       {% if show_sidebar %}
       <aside class="sidebar-column">
@@ -42,245 +44,172 @@
 
 </body>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const content = document.querySelector('.markdown-content');
     if (!content) return;
 
     let currentCarousel = [];
     let nodesToRemove = [];
-    
+
     const buildCarousel = (pairs, insertRef) => {
-        if (!insertRef || !insertRef.parentNode) return;
+      if (!insertRef || !insertRef.parentNode) return;
 
-        const container = document.createElement('div');
-        container.className = 'carousel-container';
+      const container = document.createElement('div');
+      container.className = 'carousel-container';
 
-        const imgWrapper = document.createElement('div');
-        imgWrapper.className = 'carousel-images-wrapper';
+      const imgWrapper = document.createElement('div');
+      imgWrapper.className = 'carousel-images-wrapper';
 
-        const pill = document.createElement('div');
-        pill.className = 'carousel-pill';
-        pill.textContent = `1 / ${pairs.length}`;
-        imgWrapper.appendChild(pill);
+      const pill = document.createElement('div');
+      pill.className = 'carousel-pill';
+      pill.textContent = `1 / ${pairs.length}`;
+      imgWrapper.appendChild(pill);
 
-        const imgElements = [];
-        const captionElements = [];
+      const imgElements = [];
+      const captionElements = [];
 
-        pairs.forEach((pair, index) => {
-            const img = document.createElement('img');
-            img.src = pair.imgSrc;
-            img.alt = pair.imgAlt;
-            if (index === 0) img.classList.add('active');
-            imgElements.push(img);
-            imgWrapper.appendChild(img);
+      pairs.forEach((pair, index) => {
+        const img = document.createElement('img');
+        img.src = pair.imgSrc;
+        img.alt = pair.imgAlt;
+        if (index === 0) img.classList.add('active');
+        imgElements.push(img);
+        imgWrapper.appendChild(img);
 
-            const cap = document.createElement('div');
-            cap.className = 'carousel-caption-text';
-            cap.innerHTML = pair.captionHTML;
-            if (index === 0) cap.classList.add('active');
-            captionElements.push(cap);
-        });
-        container.appendChild(imgWrapper);
+        const cap = document.createElement('div');
+        cap.className = 'carousel-caption-text';
+        cap.innerHTML = pair.captionHTML;
+        if (index === 0) cap.classList.add('active');
+        captionElements.push(cap);
+      });
+      container.appendChild(imgWrapper);
 
-        const controls = document.createElement('div');
-        controls.className = 'carousel-controls';
+      const controls = document.createElement('div');
+      controls.className = 'carousel-controls';
 
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'carousel-btn prev';
-        prevBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'carousel-btn prev';
+      prevBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
 
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'carousel-btn next';
-        nextBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'carousel-btn next';
+      nextBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
 
-        const captionContainer = document.createElement('div');
-        captionContainer.className = 'carousel-caption-container';
-        captionElements.forEach(c => captionContainer.appendChild(c));
+      const captionContainer = document.createElement('div');
+      captionContainer.className = 'carousel-caption-container';
+      captionElements.forEach(c => captionContainer.appendChild(c));
 
-        controls.appendChild(prevBtn);
-        controls.appendChild(captionContainer);
-        controls.appendChild(nextBtn);
-        container.appendChild(controls);
+      controls.appendChild(prevBtn);
+      controls.appendChild(captionContainer);
+      controls.appendChild(nextBtn);
+      container.appendChild(controls);
 
-let currentIndex = 0;
-        let transitioning = false;
+      let currentIndex = 0;
+      let transitioning = false;
 
-        const measureCapHeight = (el) => {
-            if (el.classList.contains('active')) return el.offsetHeight;
-            const w = captionContainer.offsetWidth;
-            const clone = el.cloneNode(true);
-            clone.classList.add('active');
-            clone.style.cssText = 'position:absolute;visibility:hidden;opacity:1;width:' + w + 'px;top:0;left:0;pointer-events:none';
-            document.body.appendChild(clone);
-            const h = clone.offsetHeight;
-            document.body.removeChild(clone);
-            return h;
-        };
+      const updateCarousel = (direction) => {
+        if (transitioning) return;
+        transitioning = true;
 
-        const getMinImgH = () => imgWrapper.offsetWidth * 9 / 16;
+        const oldIndex = currentIndex;
+        const newIndex = (currentIndex + direction + pairs.length) % pairs.length;
+        currentIndex = newIndex;
 
-        const setCarouselHeight = () => {
-            const capH = measureCapHeight(captionElements[currentIndex]);
-            const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
-            const ctrlH = Math.max(btnH, capH) + 24;
-            const maxUsable = window.innerHeight - 80;
-            const minImgH = getMinImgH();
-            const newImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
-            const newTotal = newImgH + ctrlH;
-            container.style.transition = 'none';
-            imgWrapper.style.transition = 'none';
-            container.style.height = newTotal + 'px';
-            imgWrapper.style.height = newImgH + 'px';
-            void container.offsetHeight;
-            container.style.transition = '';
-            imgWrapper.style.transition = '';
-        };
+        const oldImg = imgElements[oldIndex];
+        const newImg = imgElements[newIndex];
+        const oldCap = captionElements[oldIndex];
+        const newCap = captionElements[newIndex];
 
-        const updateCarousel = (direction) => {
-            if (transitioning) return;
-            transitioning = true;
+        const slideOutX = direction === 1 ? '-100%' : '100%';
+        const slideInX = direction === 1 ? '100%' : '-100%';
 
-            const oldIndex = currentIndex;
-            const newIndex = (currentIndex + direction + pairs.length) % pairs.length;
-            currentIndex = newIndex;
+        // 1. Prepare new elements off-screen instantly
+        newImg.style.transition = 'none';
+        newImg.style.transform = `translateX(${slideInX})`;
 
-            const oldImg = imgElements[oldIndex];
-            const newImg = imgElements[newIndex];
-            const oldCap = captionElements[oldIndex];
-            const newCap = captionElements[newIndex];
+        newCap.style.transition = 'none';
+        newCap.style.transform = `translateX(${slideInX})`;
 
-            const slideOutX = direction === 1 ? '-100%' : '100%';
-            const slideInX = direction === 1 ? '100%' : '-100%';
+        // 2. Force reflow
+        void container.offsetHeight;
 
-            // --- 1. Measure & calculate final state ---
-            const oldTotalH = container.offsetHeight;
-            const oldImgH = imgWrapper.offsetHeight;
-            const newCapH = measureCapHeight(newCap);
-            const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
-            const ctrlH = Math.max(btnH, newCapH) + 24;
-            const maxUsable = window.innerHeight - 80;
-            const minImgH = getMinImgH();
+        // 3. Clear inline transforms and enable transitions for new elements
+        newImg.style.transition = '';
+        newImg.style.transform = '';
+        newImg.classList.add('active');
 
-            const finalImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
-            const finalTotal = finalImgH + ctrlH;
+        newCap.style.transition = '';
+        newCap.style.transform = '';
+        newCap.classList.add('active');
 
-            // --- 2. Set ALL starting states (transitions disabled) ---
-            container.style.transition = 'none';
-            container.style.height = oldTotalH + 'px';
-            imgWrapper.style.transition = 'none';
-            imgWrapper.style.height = oldImgH + 'px';
+        // 4. Set inline transforms for old elements to slide them out
+        oldImg.style.transition = '';
+        oldImg.style.transform = `translateX(${slideOutX})`;
+        oldImg.classList.remove('active');
 
-            newImg.style.transition = 'none';
-            newImg.style.transform = `translateX(${slideInX})`;
-            newImg.classList.add('active');
+        oldCap.style.transition = '';
+        oldCap.style.transform = `translateX(${slideOutX})`;
+        oldCap.classList.remove('active');
 
-            newCap.style.transition = 'none';
-            newCap.style.transform = `translateX(${slideInX})`;
-            newCap.style.opacity = '0';
-            newCap.style.visibility = 'visible';
-            newCap.style.position = 'relative';
-            newCap.classList.add('active');
+        // 5. Cleanup inline styles dynamically after animation finishes
+        setTimeout(() => {
+          oldImg.style.transform = '';
+          oldCap.style.transform = '';
+          pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
+          transitioning = false;
+        }, 360);
+      };
 
-            oldCap.style.transition = 'none';
-            oldCap.style.visibility = 'hidden';
-            oldCap.style.position = 'absolute';
-            oldCap.classList.remove('active');
+      prevBtn.addEventListener('click', () => updateCarousel(-1));
+      nextBtn.addEventListener('click', () => updateCarousel(1));
 
-            // --- 3. ONE forced reflow to register starting layout ---
-            void container.offsetHeight;
-
-            // --- 4. Set ALL final values simultaneously (transitions on) ---
-            container.style.transition = '';
-            imgWrapper.style.transition = '';
-            container.style.height = finalTotal + 'px';
-            imgWrapper.style.height = finalImgH + 'px';
-
-            oldImg.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
-            oldImg.style.transform = `translateX(${slideOutX})`;
-            oldImg.style.opacity = '0';
-
-            newImg.style.transition = 'transform 0.35s ease-in-out';
-            newImg.style.transform = 'translateX(0)';
-
-            oldCap.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
-            oldCap.style.transform = `translateX(${slideOutX})`;
-            oldCap.style.opacity = '0';
-
-            newCap.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
-            newCap.style.transform = 'translateX(0)';
-            newCap.style.opacity = '1';
-
-            // --- 5. Cleanup ---
-            setTimeout(() => {
-                oldImg.classList.remove('active');
-                oldImg.style.cssText = '';
-                newImg.style.cssText = '';
-                oldCap.style.cssText = '';
-                newCap.style.cssText = '';
-                pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
-                transitioning = false;
-            }, 360);
-        };
-
-        prevBtn.addEventListener('click', () => updateCarousel(-1));
-        nextBtn.addEventListener('click', () => updateCarousel(1));
-
-        insertRef.parentNode.insertBefore(container, insertRef);
-
-        // Initialize explicit heights for smooth future transitions
-        setCarouselHeight();
-
-        // Window resize handler
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(setCarouselHeight, 50);
-        });
+      insertRef.parentNode.insertBefore(container, insertRef);
     };
 
     const children = Array.from(content.children);
     let i = 0;
-    
-    while (i < children.length) {
-        const el = children[i];
-        
-        let img = null;
-        if (el.tagName === 'IMG') {
-            img = el;
-        } else if (el.tagName === 'P' && el.querySelector('img')) {
-            if (el.textContent.trim().length === 0) img = el.querySelector('img');
-        }
 
-        if (img) {
-            const nextEl = children[i + 1];
-            if (nextEl && nextEl.tagName === 'BLOCKQUOTE') {
-                currentCarousel.push({
-                    imgSrc: img.src,
-                    imgAlt: img.alt,
-                    captionHTML: nextEl.innerHTML 
-                });
-                nodesToRemove.push(el, nextEl);
-                i += 2;
-                continue;
-            }
+    while (i < children.length) {
+      const el = children[i];
+
+      let img = null;
+      if (el.tagName === 'IMG') {
+        img = el;
+      } else if (el.tagName === 'P' && el.querySelector('img')) {
+        if (el.textContent.trim().length === 0) img = el.querySelector('img');
+      }
+
+      if (img) {
+        const nextEl = children[i + 1];
+        if (nextEl && nextEl.tagName === 'BLOCKQUOTE') {
+          currentCarousel.push({
+            imgSrc: img.src,
+            imgAlt: img.alt,
+            captionHTML: nextEl.innerHTML
+          });
+          nodesToRemove.push(el, nextEl);
+          i += 2;
+          continue;
         }
-        
-        if (currentCarousel.length > 1) {
-            buildCarousel(currentCarousel, nodesToRemove[0]);
-            nodesToRemove.forEach(n => n.classList.add('carousel-remove-temp'));
-        } 
-        
-        currentCarousel = [];
-        nodesToRemove = [];
-        i++;
+      }
+
+      if (currentCarousel.length > 1) {
+        buildCarousel(currentCarousel, nodesToRemove[0]);
+        nodesToRemove.forEach(n => n.classList.add('carousel-remove-temp'));
+      }
+
+      currentCarousel = [];
+      nodesToRemove = [];
+      i++;
     }
-    
+
     if (currentCarousel.length > 1) {
-         buildCarousel(currentCarousel, nodesToRemove[0]);
-         nodesToRemove.forEach(n => n.classList.add('carousel-remove-temp'));
+      buildCarousel(currentCarousel, nodesToRemove[0]);
+      nodesToRemove.forEach(n => n.classList.add('carousel-remove-temp'));
     }
-    
+
     document.querySelectorAll('.carousel-remove-temp').forEach(n => n.remove());
-});
+  });
 </script>
+
 </html>
