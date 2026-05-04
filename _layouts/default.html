@@ -107,6 +107,34 @@
       let currentIndex = 0;
       let transitioning = false;
 
+      const getMinImgH = () => imgWrapper.offsetWidth * 9 / 16;
+
+      const setCarouselHeight = () => {
+        const activeCap = captionElements[currentIndex];
+        const capH = activeCap.offsetHeight;
+        const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
+        const ctrlH = Math.max(btnH, capH) + 24;
+        const maxUsable = window.innerHeight - 80;
+        const minImgH = getMinImgH();
+
+        const newImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
+        const newTotal = newImgH + ctrlH;
+
+        container.style.transition = 'none';
+        imgWrapper.style.transition = 'none';
+        captionContainer.style.transition = 'none';
+
+        container.style.height = newTotal + 'px';
+        imgWrapper.style.height = newImgH + 'px';
+        captionContainer.style.height = capH + 'px';
+
+        void container.offsetHeight;
+
+        container.style.transition = '';
+        imgWrapper.style.transition = '';
+        captionContainer.style.transition = '';
+      };
+
       const updateCarousel = (direction) => {
         if (transitioning) return;
         transitioning = true;
@@ -123,38 +151,70 @@
         const slideOutX = direction === 1 ? '-100%' : '100%';
         const slideInX = direction === 1 ? '100%' : '-100%';
 
-        // 1. Prepare new elements off-screen instantly
+        // 1. Measure and calculate accurate final layout metrics
+        const newCapH = newCap.offsetHeight;
+        const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
+        const ctrlH = Math.max(btnH, newCapH) + 24;
+        const maxUsable = window.innerHeight - 80;
+        const minImgH = getMinImgH();
+
+        const finalImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
+        const finalTotal = finalImgH + ctrlH;
+
+        // 2. Set starting visual states instantly
         newImg.style.transition = 'none';
         newImg.style.transform = `translateX(${slideInX})`;
+        newImg.style.opacity = '1';
 
         newCap.style.transition = 'none';
         newCap.style.transform = `translateX(${slideInX})`;
+        newCap.style.opacity = '1';
+        newCap.style.visibility = 'visible';
 
-        // 2. Force reflow
+        // 3. Force reflow to prepare for structural transition
         void container.offsetHeight;
 
-        // 3. Clear inline transforms and enable transitions for new elements
-        newImg.style.transition = '';
-        newImg.style.transform = '';
-        newImg.classList.add('active');
+        // 4. Trigger coordinated container expansions
+        container.style.transition = 'height 0.35s ease-in-out';
+        imgWrapper.style.transition = 'height 0.35s ease-in-out';
+        captionContainer.style.transition = 'height 0.35s ease-in-out';
 
-        newCap.style.transition = '';
-        newCap.style.transform = '';
-        newCap.classList.add('active');
+        container.style.height = finalTotal + 'px';
+        imgWrapper.style.height = finalImgH + 'px';
+        captionContainer.style.height = newCapH + 'px';
 
-        // 4. Set inline transforms for old elements to slide them out
-        oldImg.style.transition = '';
+        // 5. Trigger sliding elements
+        oldImg.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
         oldImg.style.transform = `translateX(${slideOutX})`;
-        oldImg.classList.remove('active');
+        oldImg.style.opacity = '0';
 
-        oldCap.style.transition = '';
+        newImg.style.transition = 'transform 0.35s ease-in-out';
+        newImg.style.transform = 'translateX(0)';
+
+        oldCap.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
         oldCap.style.transform = `translateX(${slideOutX})`;
-        oldCap.classList.remove('active');
+        oldCap.style.opacity = '0';
 
-        // 5. Cleanup inline styles dynamically after animation finishes
+        newCap.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
+        newCap.style.transform = 'translateX(0)';
+
+        // 6. Final cleanup 
         setTimeout(() => {
-          oldImg.style.transform = '';
-          oldCap.style.transform = '';
+          oldImg.classList.remove('active');
+          oldCap.classList.remove('active');
+
+          newImg.classList.add('active');
+          newCap.classList.add('active');
+
+          oldImg.style.cssText = '';
+          newImg.style.cssText = '';
+          oldCap.style.cssText = '';
+          newCap.style.cssText = '';
+
+          container.style.transition = '';
+          imgWrapper.style.transition = '';
+          captionContainer.style.transition = '';
+
           pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
           transitioning = false;
         }, 360);
@@ -164,6 +224,13 @@
       nextBtn.addEventListener('click', () => updateCarousel(1));
 
       insertRef.parentNode.insertBefore(container, insertRef);
+
+      setCarouselHeight();
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(setCarouselHeight, 50);
+      });
     };
 
     const children = Array.from(content.children);
