@@ -71,7 +71,6 @@
       const container = document.createElement('div');
       container.className = 'carousel-container';
 
-      // Attach pill directly to container so it doesn't drift away on native swipe
       const pill = document.createElement('div');
       pill.className = 'carousel-pill';
       pill.textContent = `1 / ${pairs.length}`;
@@ -80,20 +79,17 @@
       const imgWrapper = document.createElement('div');
       imgWrapper.className = 'carousel-images-wrapper';
 
-      const imgElements = [];
       const captionElements = [];
 
-      pairs.forEach((pair, index) => {
+      pairs.forEach((pair) => {
         const img = document.createElement('img');
         img.src = pair.imgSrc;
         img.alt = pair.imgAlt;
-        imgElements.push(img);
         imgWrapper.appendChild(img);
 
         const cap = document.createElement('div');
         cap.className = 'carousel-caption-text';
         cap.innerHTML = pair.captionHTML;
-        if (index === 0) cap.classList.add('active');
         captionElements.push(cap);
       });
       container.appendChild(imgWrapper);
@@ -111,9 +107,13 @@
 
       const captionContainer = document.createElement('div');
       captionContainer.className = 'carousel-caption-container';
-      captionElements.forEach(c => captionContainer.appendChild(c));
+      
+      const captionTrack = document.createElement('div');
+      captionTrack.className = 'carousel-caption-track';
+      
+      captionElements.forEach(c => captionTrack.appendChild(c));
+      captionContainer.appendChild(captionTrack);
 
-      // Flexbox implicitly arranges prev -> spacing/caption -> next
       controls.appendChild(prevBtn);
       controls.appendChild(captionContainer);
       controls.appendChild(nextBtn);
@@ -123,80 +123,116 @@
 
       let currentIndex = 0;
 
-      const setCarouselHeight = () => {
-        const activeCap = captionElements[currentIndex];
-        const capH = activeCap.offsetHeight;
-        const btnH = 24; 
-        const ctrlH = Math.max(btnH, capH) + 24; // 12px pad-top + 12px pad-bottom
-        const maxUsable = window.innerHeight - 80;
+      // Mathematical logic tying scroll pos strictly to UI heights and translates
+      const updateScrollSync = () => {
+        const width = imgWrapper.offsetWidth;
+        if (width === 0) return;
         
-        // Use exact 16:9 ratio to calculate natural height, allowing downward expansion first
-        const naturalImgH = (imgWrapper.offsetWidth || 800) * 9 / 16;
+        const scrollLeft = imgWrapper.scrollLeft;
+        const ratio = scrollLeft / width;
+        
+        // Transform the track along X naturally using CSS percentage width bounds 
+        captionTrack.style.transform = `translateX(-${ratio * 100}%)`;
 
-        let finalImgH = naturalImgH;
-        let finalTotal = finalImgH + ctrlH;
+        // Calculate safety clamps for interpolations (e.g., Mac overscroll bounces)
+        let safeRatio = ratio;
+        if (safeRatio < 0) safeRatio = 0;
+        if (safeRatio > pairs.length - 1) safeRatio = pairs.length - 1;
 
-        // Shrink upwards only if space is not enough for vertical bounds
-        if (finalTotal > maxUsable) {
-          finalImgH = Math.max(maxUsable - ctrlH, 100);
-          finalTotal = finalImgH + ctrlH;
+        const idx1 = Math.floor(safeRatio);
+        const idx2 = Math.min(Math.ceil(safeRatio), pairs.length - 1);
+        const mod = safeRatio - idx1;
+
+        // Concurrent Height and Opacity Sync Engine
+        if (idx1 >= 0 && idx2 < pairs.length) {
+          const h1 = captionElements[idx1].offsetHeight;
+          const h2 = captionElements[idx2].offsetHeight;
+          const interpolatedHeight = h1 + (h2 - h1) * mod;
+          
+          captionContainer.style.height = `${interpolatedHeight}px`;
+
+          captionElements.forEach((el, i) => {
+            if (i === idx1) el.style.opacity = 1 - mod;
+            else if (i === idx2 && idx1 !== idx2) el.style.opacity = mod;
+            else el.style.opacity = 0;
+          });
         }
 
-        container.style.height = finalTotal + 'px';
-        imgWrapper.style.height = finalImgH + 'px';
-        captionContainer.style.height = capH + 'px';
+        // Handle Active Buttons and Pill States
+        const newIndex = Math.round(safeRatio);
+        if (newIndex !== currentIndex) {
+          currentIndex = newIndex;
+          pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
+          
+          prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
+          prevBtn.style.cursor = currentIndex === 0 ? 'default' : 'pointer';
+          
+          nextBtn.style.opacity = currentIndex === pairs.length - 1 ? '0.3' : '1';
+          nextBtn.style.cursor = currentIndex === pairs.length - 1 ? 'default' : 'pointer';
+        }
       };
 
-      // Set initial explicit pixel layouts before DOM repaints
-      setCarouselHeight();
-
-      const updateUI = (index) => {
-        if (index === currentIndex) return;
-        
-        captionElements[currentIndex].classList.remove('active');
-        captionElements[index].classList.add('active');
-        
-        currentIndex = index;
-        pill.textContent = `${currentIndex + 1} / ${pairs.length}`;
-        
-        prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
-        prevBtn.style.cursor = currentIndex === 0 ? 'default' : 'pointer';
-        
-        nextBtn.style.opacity = currentIndex === pairs.length - 1 ? '0.3' : '1';
-        nextBtn.style.cursor = currentIndex === pairs.length - 1 ? 'default' : 'pointer';
-
-        setCarouselHeight();
-      };
-
-      // Detect snap-scrolling via native swipe kinetics
+      // Native scrolling hook
       let isScrolling = false;
       imgWrapper.addEventListener('scroll', () => {
         if (!isScrolling) {
           window.requestAnimationFrame(() => {
-            const width = imgWrapper.offsetWidth;
-            if (width > 0) {
-              const newIndex = Math.round(imgWrapper.scrollLeft / width);
-              if (newIndex >= 0 && newIndex < pairs.length && newIndex !== currentIndex) {
-                updateUI(newIndex);
-              }
-            }
+            updateScrollSync();
             isScrolling = false;
           });
           isScrolling = true;
         }
       });
 
+      // Quick-first, smooth ease-out custom interpolator
+      let animId = null;
+      const customScrollTo = (targetIndex) => {
+        if (animId) cancelAnimationFrame(animId);
+
+        const startScrollLeft = imgWrapper.scrollLeft;
+        const targetScrollLeft = targetIndex * imgWrapper.offsetWidth;
+        const distance = targetScrollLeft - startScrollLeft;
+        if (distance === 0) return;
+
+        const duration = 500; // ms
+        let startTime = null;
+
+        // Remove CSS snapping friction during mathematical JS interpolation
+        imgWrapper.style.scrollSnapType = 'none';
+
+        // Quartic Ease-out function formula
+        const easeOutQuart = t => 1 - Math.pow(1 - t, 4);
+
+        const step = (currentTime) => {
+          if (!startTime) startTime = currentTime;
+          const timeElapsed = currentTime - startTime;
+          let progress = timeElapsed / duration;
+
+          if (progress >= 1) {
+            imgWrapper.scrollLeft = targetScrollLeft;
+            imgWrapper.style.scrollSnapType = 'x mandatory';
+            animId = null;
+            return;
+          }
+
+          imgWrapper.scrollLeft = startScrollLeft + distance * easeOutQuart(progress);
+          animId = requestAnimationFrame(step);
+        };
+
+        animId = requestAnimationFrame(step);
+      };
+
       prevBtn.addEventListener('click', () => {
-        const target = Math.max(0, currentIndex - 1);
-        imgWrapper.scrollTo({ left: target * imgWrapper.offsetWidth, behavior: 'smooth' });
+        const targetIndex = Math.max(0, currentIndex - 1);
+        customScrollTo(targetIndex);
       });
 
       nextBtn.addEventListener('click', () => {
-        const target = Math.min(pairs.length - 1, currentIndex + 1);
-        imgWrapper.scrollTo({ left: target * imgWrapper.offsetWidth, behavior: 'smooth' });
+        const targetIndex = Math.min(pairs.length - 1, currentIndex + 1);
+        customScrollTo(targetIndex);
       });
 
-      // Default disable buttons
+      // Initialize
       prevBtn.style.opacity = '0.3';
       prevBtn.style.cursor = 'default';
       if (pairs.length <= 1) {
@@ -204,11 +240,15 @@
         nextBtn.style.cursor = 'default';
       }
 
+      window.requestAnimationFrame(() => {
+        updateScrollSync();
+      });
+
       let resizeTimer;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
-          setCarouselHeight();
+          updateScrollSync();
           imgWrapper.scrollTo({ left: currentIndex * imgWrapper.offsetWidth, behavior: 'auto' });
         }, 50);
       });
