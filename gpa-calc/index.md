@@ -17,6 +17,9 @@ I completely reworked SHSID's GPA Calculator app to version 3, now with some new
 - Online course autoupdate when the catalog changes
 - Selectors adjust to dropdown to fit all screen sizes
 
+### Download
+<iframe src="https://apps.apple.com/us/app/gpa-calculator-by-michel/id1540111715?itscg=30200&itsct=apps_box_link&mttnsubad=1540111715" class="embedded-page"></iframe>
+
 ### Sneak peak on the iteration of the app
 
 <img width="387" height="844" alt="image" src="https://github.com/user-attachments/assets/64e49bef-516a-4daa-a6a1-b500918785fb" />
