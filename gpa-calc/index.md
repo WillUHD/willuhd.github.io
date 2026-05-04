@@ -11,11 +11,11 @@ In Nov 2025, I started working on an update of SHSID's GPA Calculator with [Mich
 
 <img align="center" width="1920" height="1080" alt="GPA Calc Showcase" src="https://github.com/user-attachments/assets/38c85a2e-f196-48d5-abe5-e426442df215" />
 
-<a href="https://apps.apple.com/us/app/gpa-calculator-by-michel/id1540111715?itscg=30200&itsct=apps_box_badge&mttnsubad=1540111715">
-    <img align="right" width="200" alt="Download on the App Store" src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/white/en-us?releaseDate=1605225600" />
-</a>
-
 I completely reworked SHSID's GPA Calculator app to version 3, now with some new features: 
+
+<a href="https://apps.apple.com/us/app/gpa-calculator-by-michel/id1540111715?itscg=30200&itsct=apps_box_badge&mttnsubad=1540111715">
+    <img align="right" width="200" alt="Download GPA Calculator on the App Store" src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/white/en-us?releaseDate=1605225600" />
+</a>
 
 - Rule-based solver for accurate course selection
 - Online course autoupdate when the catalog changes
