@@ -24,6 +24,10 @@
     --ui-border: #424245;
     --ui-footer-bg: #161617;
   }
+
+  .visible-links a.active:hover {
+    color: #fff;
+  }
 }
 
 body {
@@ -144,8 +148,12 @@ a {
 }
 
 .visible-links a.active {
-  opacity: 0.85;
-  font-weight: 600;
+  opacity: 1;
+}
+
+.visible-links a.active:hover {
+  opacity: 1;
+  color: #000;
 }
 
 .visible-links a.active:hover {
@@ -364,6 +372,7 @@ a {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  cursor: grab;
 }
 
 .carousel-images-wrapper img {
@@ -377,7 +386,7 @@ a {
   border-radius: 0;
   opacity: 0;
   transform: translateX(0);
-  transition: opacity 0.35s cubic-bezier(0, 0, 0.2, 1), transform 0.35s cubic-bezier(0, 0, 0.2, 1);
+  transition: opacity 0.5s cubic-bezier(0, 0, 0.06, 1), transform 0.5s cubic-bezier(0, 0, 0.06, 1);
   pointer-events: none;
 }
 
