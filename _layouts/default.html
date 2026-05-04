@@ -107,7 +107,7 @@
       let currentIndex = 0;
       let transitioning = false;
 
-      const getMinImgH = () => imgWrapper.offsetWidth * 9 / 16;
+      const getIdealImgH = () => imgWrapper.offsetWidth * 9 / 16;
 
       const setCarouselHeight = () => {
         const activeCap = captionElements[currentIndex];
@@ -115,17 +115,23 @@
         const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
         const ctrlH = Math.max(btnH, capH) + 24;
         const maxUsable = window.innerHeight - 80;
-        const minImgH = getMinImgH();
+        const idealImgH = getIdealImgH();
 
-        const newImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
-        const newTotal = newImgH + ctrlH;
+        let finalImgH = idealImgH;
+        let finalTotal = idealImgH + ctrlH;
+
+        // Cap the height and steal from the image if it exceeds limits
+        if (finalTotal > maxUsable) {
+          finalImgH = Math.max(maxUsable - ctrlH, 100);
+          finalTotal = finalImgH + ctrlH;
+        }
 
         container.style.transition = 'none';
         imgWrapper.style.transition = 'none';
         captionContainer.style.transition = 'none';
 
-        container.style.height = newTotal + 'px';
-        imgWrapper.style.height = newImgH + 'px';
+        container.style.height = finalTotal + 'px';
+        imgWrapper.style.height = finalImgH + 'px';
         captionContainer.style.height = capH + 'px';
 
         void container.offsetHeight;
@@ -151,17 +157,22 @@
         const slideOutX = direction === 1 ? '-100%' : '100%';
         const slideInX = direction === 1 ? '100%' : '-100%';
 
-        // 1. Measure and calculate accurate final layout metrics
+        // 1. Calculate future heights
         const newCapH = newCap.offsetHeight;
         const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
         const ctrlH = Math.max(btnH, newCapH) + 24;
         const maxUsable = window.innerHeight - 80;
-        const minImgH = getMinImgH();
+        const idealImgH = getIdealImgH();
 
-        const finalImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
-        const finalTotal = finalImgH + ctrlH;
+        let finalImgH = idealImgH;
+        let finalTotal = idealImgH + ctrlH;
 
-        // 2. Set starting visual states instantly
+        if (finalTotal > maxUsable) {
+          finalImgH = Math.max(maxUsable - ctrlH, 100);
+          finalTotal = finalImgH + ctrlH;
+        }
+
+        // 2. Set instant layout for incoming elements off-screen
         newImg.style.transition = 'none';
         newImg.style.transform = `translateX(${slideInX})`;
         newImg.style.opacity = '1';
@@ -171,10 +182,10 @@
         newCap.style.opacity = '1';
         newCap.style.visibility = 'visible';
 
-        // 3. Force reflow to prepare for structural transition
+        // 3. Force reflow
         void container.offsetHeight;
 
-        // 4. Trigger coordinated container expansions
+        // 4. Trigger height structural expansions (downward or upward shrinking)
         container.style.transition = 'height 0.35s ease-in-out';
         imgWrapper.style.transition = 'height 0.35s ease-in-out';
         captionContainer.style.transition = 'height 0.35s ease-in-out';
@@ -183,7 +194,7 @@
         imgWrapper.style.height = finalImgH + 'px';
         captionContainer.style.height = newCapH + 'px';
 
-        // 5. Trigger sliding elements
+        // 5. Trigger sliding transitions
         oldImg.style.transition = 'transform 0.35s ease-in-out, opacity 0.35s ease-in-out';
         oldImg.style.transform = `translateX(${slideOutX})`;
         oldImg.style.opacity = '0';
@@ -225,7 +236,9 @@
 
       insertRef.parentNode.insertBefore(container, insertRef);
 
+      // Lock in ideal bounds immediately
       setCarouselHeight();
+
       let resizeTimer;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);

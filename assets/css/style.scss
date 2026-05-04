@@ -212,7 +212,7 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
 
 .carousel-controls {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-start; /* Pins the buttons to the absolute top of the bar */
   justify-content: space-between;
   padding: 12px 16px;
   background: var(--ui-footer-bg);
@@ -223,6 +223,7 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   flex-grow: 1;
   position: relative;
   min-height: 24px;
+  overflow: hidden; /* Neatly clips the text while it slides in/out */
 }
 
 .carousel-caption-text {
@@ -230,7 +231,7 @@ a { cursor: pointer; text-decoration: none; color: inherit; }
   top: 0; 
   left: 0; 
   width: 100%;
-  padding: 0 16px; 
+  padding: 0 16px; /* Moved padding from the container to the absolute text layer */
   box-sizing: border-box;
   text-align: center;
   font-style: italic;
