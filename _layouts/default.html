@@ -107,24 +107,15 @@
       let currentIndex = 0;
       let transitioning = false;
 
-      const getIdealImgH = () => imgWrapper.offsetWidth * 9 / 16;
-
       const setCarouselHeight = () => {
         const activeCap = captionElements[currentIndex];
         const capH = activeCap.offsetHeight;
         const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
         const ctrlH = Math.max(btnH, capH) + 24;
         const maxUsable = window.innerHeight - 80;
-        const idealImgH = getIdealImgH();
-
-        let finalImgH = idealImgH;
-        let finalTotal = idealImgH + ctrlH;
-
-        // Cap the height and steal from the image if it exceeds limits
-        if (finalTotal > maxUsable) {
-          finalImgH = Math.max(maxUsable - ctrlH, 100);
-          finalTotal = finalImgH + ctrlH;
-        }
+        const minImgH = imgWrapper.offsetWidth * 9 / 16;
+        const finalImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
+        const finalTotal = finalImgH + ctrlH;
 
         container.style.transition = 'none';
         imgWrapper.style.transition = 'none';
@@ -162,15 +153,9 @@
         const btnH = Math.max(prevBtn.offsetHeight, nextBtn.offsetHeight);
         const ctrlH = Math.max(btnH, newCapH) + 24;
         const maxUsable = window.innerHeight - 80;
-        const idealImgH = getIdealImgH();
-
-        let finalImgH = idealImgH;
-        let finalTotal = idealImgH + ctrlH;
-
-        if (finalTotal > maxUsable) {
-          finalImgH = Math.max(maxUsable - ctrlH, 100);
-          finalTotal = finalImgH + ctrlH;
-        }
+        const minImgH = imgWrapper.offsetWidth * 9 / 16;
+        const finalImgH = Math.max(maxUsable - ctrlH, minImgH, 100);
+        const finalTotal = finalImgH + ctrlH;
 
         // 2. Set instant layout for incoming elements off-screen
         newImg.style.transition = 'none';
